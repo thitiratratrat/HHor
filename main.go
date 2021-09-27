@@ -14,5 +14,5 @@ func init() {
 }
 
 func main() {
-	server.Run("localhost:8081")
+	server.Run(":8081")
 }
