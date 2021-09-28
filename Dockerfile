@@ -1,4 +1,4 @@
-FROM golang:1.17-alpine
+FROM golang:1.17-buster AS build
 
 WORKDIR /app
 
@@ -10,8 +10,20 @@ RUN go mod download
 COPY *.go ./
 COPY /src ./src
 
-RUN go build -o ./hhor 
+RUN go build -o /hhor 
+
+
+##
+## Deploy
+##
+FROM gcr.io/distroless/base-debian10
+
+WORKDIR /
+
+COPY --from=build /hhor /hhor
 
 EXPOSE 8081
 
-CMD [ "./hhor" ]
+USER nonroot:nonroot
+
+ENTRYPOINT ["/hhor"]
