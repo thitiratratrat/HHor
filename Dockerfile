@@ -7,8 +7,7 @@ COPY go.sum ./
 ENV GO111MODULE on
 RUN go mod download
 
-COPY *.go ./
-COPY /src ./src
+COPY . .
 
 RUN go build -o /hhor 
 
