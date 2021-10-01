@@ -1,5 +1,8 @@
 # HHor
 
+## Swagger Documentation
+Head to route /swagger/index.html#/
+
 ## Set up for development
 ### Prerequisites
 - Go version at least 1.13
