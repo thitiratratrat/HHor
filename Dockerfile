@@ -23,6 +23,8 @@ COPY --from=build /hhor /hhor
 
 EXPOSE 8081
 
+ENV PORT 8081
+
 USER nonroot:nonroot
 
 ENTRYPOINT ["/hhor"]
