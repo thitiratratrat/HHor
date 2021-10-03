@@ -6,6 +6,7 @@ import (
    	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/thitiratratrat/hhor/src/router"
 	docs "github.com/thitiratratrat/hhor/docs"
+	"os"
 )
 
 var server *gin.Engine
@@ -21,5 +22,8 @@ func main() {
 
 	router.InitRoutes(server)
 	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
-	server.Run(":8081")
+	
+	port := os.Getenv("PORT")
+	
+	server.Run(":" + port)
 }
