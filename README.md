@@ -13,12 +13,18 @@ Head to route /swagger/index.html#/
 export GO111MODULE=on
 ```
 
-2. Download dependencies
+2. Set port environment variable
+```
+export PORT={VALID_PORT_NUMBER}
+```
+
+
+3. Download dependencies
 ```
 go mod download
 ```
 
-3. Run code
+4. Run code
 ```
 go run .
 ```
