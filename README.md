@@ -1,7 +1,29 @@
 # HHor
 
-## Swagger Documentation
-Head to route /swagger/index.html#/
+## Deployed url
+https://hhor-fydi7fajxq-uc.a.run.app/
+
+## Swagger documentation
+https://hhor-fydi7fajxq-uc.a.run.app/swagger/index.html
+
+<br/>
+
+## Run locally
+### Prerequisites
+- Docker
+
+### Run
+1. Build docker image
+```
+docker build -t hhor:latest .
+```
+
+2. Run docker image
+```
+docker run -e PORT={VALID_PORT_NUMBER} -p {VALID_PORT_NUMBER}:{VALID_PORT_NUMBER} hhor:latest
+```
+
+<br/>
 
 ## Set up for development
 ### Prerequisites
@@ -17,7 +39,6 @@ export GO111MODULE=on
 ```
 export PORT={VALID_PORT_NUMBER}
 ```
-
 
 3. Download dependencies
 ```
