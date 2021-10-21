@@ -35,12 +35,23 @@ docker run -e PORT={VALID_PORT_NUMBER} -p {VALID_PORT_NUMBER}:{VALID_PORT_NUMBER
 export GO111MODULE=on
 ```
 
-2. Set port environment variable
+2. Build and run development postgres image
 ```
-export PORT={VALID_PORT_NUMBER}
+docker build -t hhor-db -f Dockerfile.dev .
+docker run -p 5342:5342 hhor-db
 ```
 
-3. Download dependencies
+3. Set environment variables
+```
+export PORT={VALID_PORT_NUMBER}
+export DB_HOST=localhost
+export DB_USER=postgres
+export DB_PASSWORD=postgres
+export DB_NAME=hhor
+export DB_PORT=5342
+```
+
+4. Download dependencies
 ```
 go mod download
 ```
