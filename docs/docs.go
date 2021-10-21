@@ -23,23 +23,413 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/hello": {
+        "/dorm": {
             "get": {
-                "description": "returns hello string",
+                "description": "returns list of dorms filter by dorm type, zone,capacity, location, dorm and room facilities",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "greeting"
+                    "dorm"
                 ],
-                "summary": "get hello",
+                "summary": "get list of dorms",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "name": "capacity",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "name": "dorm_facilities",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "name": "lat",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "name": "long",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "lower_price",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "name": "room_facilities",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "name": "type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "upper_price",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "zone",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.DormDTO"
+                            }
                         }
                     }
+                }
+            }
+        },
+        "/dorm/facility": {
+            "get": {
+                "description": "returns list of dorm facilities",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dorm"
+                ],
+                "summary": "get dorm facilities",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/dorm/name/{letter}": {
+            "get": {
+                "description": "returns list of dorm names from first letter (case sensitive)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dorm"
+                ],
+                "summary": "get dorm names from first letter",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "First Letter",
+                        "name": "letter",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/dorm/{id}": {
+            "get": {
+                "description": "returns dorm details",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dorm"
+                ],
+                "summary": "get dorm details from dorm id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Dorm ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Dorm"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/room/facility": {
+            "get": {
+                "description": "returns list of room facilities",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "room"
+                ],
+                "summary": "get list of room facilities",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "dto.DormDTO": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "picture": {
+                    "type": "string"
+                },
+                "starting_price": {
+                    "type": "integer"
+                },
+                "zone": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Account": {
+            "type": "object",
+            "properties": {
+                "firstname": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "lastname": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.AllDormFacility": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.AllRoomFacility": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Dorm": {
+            "type": "object",
+            "properties": {
+                "account": {
+                    "$ref": "#/definitions/model.Account"
+                },
+                "address": {
+                    "type": "string"
+                },
+                "facilities": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.AllDormFacility"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "nearby_locations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.NearbyLocation"
+                    }
+                },
+                "pictures": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.DormPicture"
+                    }
+                },
+                "rooms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Room"
+                    }
+                },
+                "rules": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "zone": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.DormPicture": {
+            "type": "object",
+            "properties": {
+                "picture_url": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Location": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.NearbyLocation": {
+            "type": "object",
+            "properties": {
+                "distance": {
+                    "type": "number"
+                },
+                "location": {
+                    "$ref": "#/definitions/model.Location"
+                }
+            }
+        },
+        "model.Room": {
+            "type": "object",
+            "properties": {
+                "available": {
+                    "type": "boolean"
+                },
+                "capacity": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "facilities": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.AllRoomFacility"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "pictures": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.RoomPicture"
+                    }
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "number"
+                }
+            }
+        },
+        "model.RoomPicture": {
+            "type": "object",
+            "properties": {
+                "picture_url": {
+                    "type": "string"
                 }
             }
         }
