@@ -1,17 +1,269 @@
+definitions:
+  dto.DormDTO:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      picture:
+        type: string
+      starting_price:
+        type: integer
+      zone:
+        type: string
+    type: object
+  dto.ErrorResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  model.Account:
+    properties:
+      firstname:
+        type: string
+      id:
+        type: integer
+      lastname:
+        type: string
+    type: object
+  model.AllDormFacility:
+    properties:
+      name:
+        type: string
+    type: object
+  model.AllRoomFacility:
+    properties:
+      name:
+        type: string
+    type: object
+  model.Dorm:
+    properties:
+      account:
+        $ref: '#/definitions/model.Account'
+      address:
+        type: string
+      facilities:
+        items:
+          $ref: '#/definitions/model.AllDormFacility'
+        type: array
+      id:
+        type: integer
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+      nearby_locations:
+        items:
+          $ref: '#/definitions/model.NearbyLocation'
+        type: array
+      pictures:
+        items:
+          $ref: '#/definitions/model.DormPicture'
+        type: array
+      rooms:
+        items:
+          $ref: '#/definitions/model.Room'
+        type: array
+      rules:
+        type: string
+      type:
+        type: string
+      zone:
+        type: string
+    type: object
+  model.DormPicture:
+    properties:
+      picture_url:
+        type: string
+    type: object
+  model.Location:
+    properties:
+      id:
+        type: integer
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+    type: object
+  model.NearbyLocation:
+    properties:
+      distance:
+        type: number
+      location:
+        $ref: '#/definitions/model.Location'
+    type: object
+  model.Room:
+    properties:
+      available:
+        type: boolean
+      capacity:
+        type: integer
+      description:
+        type: string
+      facilities:
+        items:
+          $ref: '#/definitions/model.AllRoomFacility'
+        type: array
+      id:
+        type: integer
+      name:
+        type: string
+      pictures:
+        items:
+          $ref: '#/definitions/model.RoomPicture'
+        type: array
+      price:
+        type: integer
+      size:
+        type: number
+    type: object
+  model.RoomPicture:
+    properties:
+      picture_url:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
-  /hello:
+  /dorm:
     get:
-      description: returns hello string
+      consumes:
+      - application/json
+      description: returns list of dorms filter by dorm type, zone,capacity, location,
+        dorm and room facilities
+      parameters:
+      - in: query
+        name: capacity
+        type: integer
+      - in: query
+        items:
+          type: string
+        name: dorm_facilities
+        type: array
+      - in: query
+        name: lat
+        type: number
+      - in: query
+        name: long
+        type: number
+      - in: query
+        name: lower_price
+        type: integer
+      - in: query
+        name: name
+        type: string
+      - in: query
+        items:
+          type: string
+        name: room_facilities
+        type: array
+      - in: query
+        items:
+          type: string
+        name: type
+        type: array
+      - in: query
+        name: upper_price
+        type: integer
+      - in: query
+        name: zone
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            type: string
-      summary: get hello
+            items:
+              $ref: '#/definitions/dto.DormDTO'
+            type: array
+      summary: get list of dorms
       tags:
-      - greeting
+      - dorm
+  /dorm/{id}:
+    get:
+      description: returns dorm details
+      parameters:
+      - description: Dorm ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Dorm'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: get dorm details from dorm id
+      tags:
+      - dorm
+  /dorm/facility:
+    get:
+      description: returns list of dorm facilities
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              items:
+                type: string
+              type: array
+            type: array
+      summary: get dorm facilities
+      tags:
+      - dorm
+  /dorm/name/{letter}:
+    get:
+      description: returns list of dorm names from first letter (case sensitive)
+      parameters:
+      - description: First Letter
+        in: path
+        name: letter
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              items:
+                type: string
+              type: array
+            type: array
+      summary: get dorm names from first letter
+      tags:
+      - dorm
+  /room/facility:
+    get:
+      description: returns list of room facilities
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+      summary: get list of room facilities
+      tags:
+      - room
 swagger: "2.0"
