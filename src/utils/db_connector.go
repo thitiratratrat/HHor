@@ -23,9 +23,9 @@ type dbConnector struct {
 }
 
 func (dbConnector *dbConnector) Open() {
-	dbHost := os.Getenv("DB_HOST")
+	dbHost := os.Getenv("INSTANCE_CONNECTION_NAME")
 	dbUser := os.Getenv("DB_USER")
-	dbPassword := os.Getenv("DB_PASSWORD")
+	dbPassword := os.Getenv("DB_PASS")
 	dbName := os.Getenv("DB_NAME")
 	dbPort := os.Getenv("DB_PORT")
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable", dbHost, dbUser, dbPassword, dbName, dbPort)
