@@ -15,6 +15,7 @@ type DormController interface {
 	GetDormDetail(context *gin.Context)
 	GetDormNames(context *gin.Context)
 	GetAllDormFacilities(context *gin.Context)
+	GetDormZones(context *gin.Context)
 }
 
 func DormControllerHandler(dormService service.DormService) DormController {
@@ -85,7 +86,7 @@ func (dormController *dormController) GetDormDetail(context *gin.Context) {
 // @Description returns list of dorm names from first letter (case sensitive)
 // @Tags dorm
 // @Produce json
-// @Success 200 {array} []string "OK"
+// @Success 200 {array} string "OK"
 // @Param letter path string true "First Letter"
 // @Router /dorm/name/{letter} [get]
 func (dormController *dormController) GetDormNames(context *gin.Context) {
@@ -100,10 +101,22 @@ func (dormController *dormController) GetDormNames(context *gin.Context) {
 // @Description returns list of dorm facilities
 // @Tags dorm
 // @Produce json
-// @Success 200 {array} []string "OK"
+// @Success 200 {array} string "OK"
 // @Router /dorm/facility [get]
 func (dormController *dormController) GetAllDormFacilities(context *gin.Context) {
 	dormFacilities := dormController.dormService.GetAllDormFacilities()
 
 	context.IndentedJSON(http.StatusOK, dormFacilities)
+}
+
+// @Summary get dorm zones
+// @Description returns list of dorm zones
+// @Tags dorm
+// @Produce json
+// @Success 200 {array} string "OK"
+// @Router /dorm/zone [get]
+func (dormController *dormController) GetDormZones(context *gin.Context) {
+	dormZones := dormController.dormService.GetDormZones()
+
+	context.IndentedJSON(http.StatusOK, dormZones)
 }

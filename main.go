@@ -53,9 +53,10 @@ func init() {
 
 	dormRepository := repository.DormRepositoryHandler(dbConnector.GetDB())
 	dormFacilityRepository := repository.DormFacilityRepositoryHandler(dbConnector.GetDB())
+	dormZoneRepository := repository.DormZoneRepositoryHandler(dbConnector.GetDB())
 	roomFacilityRepository := repository.RoomFacilityRepositoryHandler(dbConnector.GetDB())
 
-	dormService := service.DormServiceHandler(dormRepository, dormFacilityRepository)
+	dormService := service.DormServiceHandler(dormRepository, dormFacilityRepository, dormZoneRepository)
 	roomService := service.RoomServiceHandler(roomFacilityRepository)
 
 	dormController := controller.DormControllerHandler(dormService)

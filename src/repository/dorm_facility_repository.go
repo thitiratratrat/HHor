@@ -10,16 +10,16 @@ type DormFacilityRepository interface {
 }
 
 func DormFacilityRepositoryHandler(db *gorm.DB) DormFacilityRepository {
-	return &dormFacility{
+	return &dormFacilityRepository{
 		db: db,
 	}
 }
 
-type dormFacility struct {
+type dormFacilityRepository struct {
 	db *gorm.DB
 }
 
-func (repository *dormFacility) FindAllDormFacilities() []string {
+func (repository *dormFacilityRepository) FindAllDormFacilities() []string {
 	var facilities []string
 
 	repository.db.Model(&model.AllDormFacility{}).Pluck("name", &facilities)

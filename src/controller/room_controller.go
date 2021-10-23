@@ -21,7 +21,7 @@ type roomController struct {
 	roomService service.RoomService
 }
 
-// @Summary get list of room facilities
+// @Summary get room facilities
 // @Description returns list of room facilities
 // @Tags room
 // @Produce json

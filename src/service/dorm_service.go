@@ -13,18 +13,22 @@ type DormService interface {
 	GetDorm(dormID string) (model.Dorm, error)
 	GetDormNames(firstLetter string) []string
 	GetAllDormFacilities() []string
+	GetDormZones() []string
 }
 
-func DormServiceHandler(dormRepository repository.DormRepository, dormFacilityRepository repository.DormFacilityRepository) DormService {
+func DormServiceHandler(dormRepository repository.DormRepository, dormFacilityRepository repository.DormFacilityRepository,
+	dormZoneRepository repository.DormZoneRepository) DormService {
 	return &dormService{
 		dormRepository:         dormRepository,
 		dormFacilityRepository: dormFacilityRepository,
+		dormZoneRepository:     dormZoneRepository,
 	}
 }
 
 type dormService struct {
 	dormRepository         repository.DormRepository
 	dormFacilityRepository repository.DormFacilityRepository
+	dormZoneRepository     repository.DormZoneRepository
 }
 
 func (dormService *dormService) GetDorms(dormFilterDTO dto.DormFilterDTO) []dto.DormDTO {
@@ -62,6 +66,12 @@ func (dormService *dormService) GetAllDormFacilities() []string {
 	dormFacilities := dormService.dormFacilityRepository.FindAllDormFacilities()
 
 	return dormFacilities
+}
+
+func (dormService *dormService) GetDormZones() []string {
+	dormZones := dormService.dormZoneRepository.FindDormZones()
+
+	return dormZones
 }
 
 func getCheapestRoomPrice(rooms []model.Room) int {
