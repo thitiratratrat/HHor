@@ -126,10 +126,7 @@ var doc = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                }
+                                "type": "string"
                             }
                         }
                     }
@@ -161,10 +158,30 @@ var doc = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                }
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/dorm/zone": {
+            "get": {
+                "description": "returns list of dorm zones",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dorm"
+                ],
+                "summary": "get dorm zones",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
                             }
                         }
                     }
@@ -221,7 +238,7 @@ var doc = `{
                 "tags": [
                     "room"
                 ],
-                "summary": "get list of room facilities",
+                "summary": "get room facilities",
                 "responses": {
                     "200": {
                         "description": "OK",

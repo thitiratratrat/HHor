@@ -221,9 +221,7 @@ paths:
           description: OK
           schema:
             items:
-              items:
-                type: string
-              type: array
+              type: string
             type: array
       summary: get dorm facilities
       tags:
@@ -244,11 +242,24 @@ paths:
           description: OK
           schema:
             items:
-              items:
-                type: string
-              type: array
+              type: string
             type: array
       summary: get dorm names from first letter
+      tags:
+      - dorm
+  /dorm/zone:
+    get:
+      description: returns list of dorm zones
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+      summary: get dorm zones
       tags:
       - dorm
   /room/facility:
@@ -263,7 +274,7 @@ paths:
             items:
               type: string
             type: array
-      summary: get list of room facilities
+      summary: get room facilities
       tags:
       - room
 swagger: "2.0"
