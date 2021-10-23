@@ -39,7 +39,11 @@ func (dormService *dormService) GetDorms(dormFilterDTO dto.DormFilterDTO) []dto.
 		dormDTO := dto.DormDTO{}
 
 		dormDTO.ID = fmt.Sprint(dorm.ID)
-		dormDTO.Picture = dorm.Pictures[0].PictureUrl
+
+		if len(dorm.Pictures) != 0 {
+			dormDTO.Picture = dorm.Pictures[0].PictureUrl
+		}
+
 		dormDTO.Name = dorm.Name
 		dormDTO.StartingPrice = getCheapestRoomPrice(dorm.Rooms)
 		dormDTO.Zone = dorm.DormZone.Name
