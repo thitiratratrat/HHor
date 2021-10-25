@@ -13,7 +13,7 @@ import (
 type DormController interface {
 	GetDorms(context *gin.Context)
 	GetDormDetail(context *gin.Context)
-	GetDormNames(context *gin.Context)
+	GetDormSuggestions(context *gin.Context)
 	GetAllDormFacilities(context *gin.Context)
 	GetDormZones(context *gin.Context)
 }
@@ -86,15 +86,15 @@ func (dormController *dormController) GetDormDetail(context *gin.Context) {
 // @Description returns list of dorm names from first letter (case sensitive)
 // @Tags dorm
 // @Produce json
-// @Success 200 {array} string "OK"
+// @Success 200 {array} dto.DormSuggestionDTO "OK"
 // @Param letter path string true "First Letter"
-// @Router /dorm/name/{letter} [get]
-func (dormController *dormController) GetDormNames(context *gin.Context) {
+// @Router /dorm/suggest/{letter} [get]
+func (dormController *dormController) GetDormSuggestions(context *gin.Context) {
 	letter := context.Param("letter")
 
-	dormNames := dormController.dormService.GetDormNames(letter)
+	dormSuggestionDTOs := dormController.dormService.GetDormSuggestions(letter)
 
-	context.IndentedJSON(http.StatusOK, dormNames)
+	context.IndentedJSON(http.StatusOK, dormSuggestionDTOs)
 }
 
 // @Summary get dorm facilities

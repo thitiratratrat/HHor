@@ -11,7 +11,7 @@ import (
 type DormService interface {
 	GetDorms(dormFilterDTO dto.DormFilterDTO) []dto.DormDTO
 	GetDorm(dormID string) (model.Dorm, error)
-	GetDormNames(firstLetter string) []string
+	GetDormSuggestions(firstLetter string) []dto.DormSuggestionDTO
 	GetAllDormFacilities() []string
 	GetDormZones() []string
 }
@@ -60,7 +60,7 @@ func (dormService *dormService) GetDorm(dormID string) (model.Dorm, error) {
 	return dorm, err
 }
 
-func (dormService *dormService) GetDormNames(firstLetter string) []string {
+func (dormService *dormService) GetDormSuggestions(firstLetter string) []dto.DormSuggestionDTO {
 	dormNames := dormService.dormRepository.FindDormNames(firstLetter)
 
 	return dormNames

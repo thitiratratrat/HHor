@@ -13,7 +13,7 @@ import (
 type DormRepository interface {
 	FindDorms(dormFilterDTO dto.DormFilterDTO) []model.Dorm
 	FindDorm(dormID string) (model.Dorm, error)
-	FindDormNames(firstLetter string) []string
+	FindDormNames(firstLetter string) []dto.DormSuggestionDTO
 }
 
 func DormRepositoryHandler(db *gorm.DB) DormRepository {
@@ -60,10 +60,10 @@ func (repository *dormRepository) FindDorm(dormID string) (model.Dorm, error) {
 	return dorm, err
 }
 
-func (repository *dormRepository) FindDormNames(firstLetter string) []string {
-	var dormNames []string
+func (repository *dormRepository) FindDormNames(firstLetter string) []dto.DormSuggestionDTO {
+	var dormNames []dto.DormSuggestionDTO
 
-	repository.db.Table("dorms").Where("name LIKE ?", firstLetter+"%").Select("name").Find(&dormNames)
+	repository.db.Table("dorms").Where("name LIKE ?", firstLetter+"%").Select("name", "id").Find(&dormNames)
 
 	return dormNames
 }

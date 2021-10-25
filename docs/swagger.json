@@ -114,7 +114,7 @@
                 }
             }
         },
-        "/dorm/name/{letter}": {
+        "/dorm/suggest/{letter}": {
             "get": {
                 "description": "returns list of dorm names from first letter (case sensitive)",
                 "produces": [
@@ -139,7 +139,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "type": "string"
+                                "$ref": "#/definitions/dto.DormSuggestionDTO"
                             }
                         }
                     }
@@ -251,6 +251,17 @@
                     "type": "integer"
                 },
                 "zone": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.DormSuggestionDTO": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 }
             }
