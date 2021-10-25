@@ -133,7 +133,7 @@ var doc = `{
                 }
             }
         },
-        "/dorm/name/{letter}": {
+        "/dorm/suggest/{letter}": {
             "get": {
                 "description": "returns list of dorm names from first letter (case sensitive)",
                 "produces": [
@@ -158,7 +158,7 @@ var doc = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "type": "string"
+                                "$ref": "#/definitions/dto.DormSuggestionDTO"
                             }
                         }
                     }
@@ -270,6 +270,17 @@ var doc = `{
                     "type": "integer"
                 },
                 "zone": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.DormSuggestionDTO": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 }
             }

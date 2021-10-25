@@ -12,6 +12,13 @@ definitions:
       zone:
         type: string
     type: object
+  dto.DormSuggestionDTO:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
   dto.ErrorResponse:
     properties:
       message:
@@ -226,7 +233,7 @@ paths:
       summary: get dorm facilities
       tags:
       - dorm
-  /dorm/name/{letter}:
+  /dorm/suggest/{letter}:
     get:
       description: returns list of dorm names from first letter (case sensitive)
       parameters:
@@ -242,7 +249,7 @@ paths:
           description: OK
           schema:
             items:
-              type: string
+              $ref: '#/definitions/dto.DormSuggestionDTO'
             type: array
       summary: get dorm names from first letter
       tags:
