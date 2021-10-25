@@ -83,7 +83,7 @@ func (dormController *dormController) GetDormDetail(context *gin.Context) {
 }
 
 // @Summary get dorm names from first letter
-// @Description returns list of dorm names from first letter (case sensitive)
+// @Description returns list of dorm names from first letter
 // @Tags dorm
 // @Produce json
 // @Success 200 {array} dto.DormSuggestionDTO "OK"
