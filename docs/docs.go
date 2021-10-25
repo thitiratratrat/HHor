@@ -135,7 +135,7 @@ var doc = `{
         },
         "/dorm/suggest/{letter}": {
             "get": {
-                "description": "returns list of dorm names from first letter (case sensitive)",
+                "description": "returns list of dorm names from first letter",
                 "produces": [
                     "application/json"
                 ],

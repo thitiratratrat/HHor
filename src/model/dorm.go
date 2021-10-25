@@ -10,7 +10,7 @@ const (
 
 type Dorm struct {
 	ID              uint              `gorm:"primaryKey" json:"id"`
-	Name            string            `gorm:"not null" json:"name"`
+	Name            string            `gorm:"not null;type:citext" json:"name"`
 	Type            string            `gorm:"not null" json:"type" sql:"dorm_type"`
 	Rules           string            `gorm:"type:text;" json:"rules"`
 	Longitude       float64           `gorm:"type:decimal(9,6);not null" json:"longitude"`
