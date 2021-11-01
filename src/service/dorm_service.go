@@ -47,6 +47,8 @@ func (dormService *dormService) GetDorms(dormFilterDTO dto.DormFilterDTO) []dto.
 		dormDTO.Name = dorm.Name
 		dormDTO.StartingPrice = getCheapestRoomPrice(dorm.Rooms)
 		dormDTO.Zone = dorm.DormZone.Name
+		dormDTO.Latitude = dorm.Latitude
+		dormDTO.Longitude = dorm.Longitude
 
 		dormDTOs = append(dormDTOs, dormDTO)
 	}

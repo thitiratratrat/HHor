@@ -241,6 +241,12 @@
                 "id": {
                     "type": "string"
                 },
+                "lat": {
+                    "type": "number"
+                },
+                "long": {
+                    "type": "number"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -322,10 +328,10 @@
                 "id": {
                     "type": "integer"
                 },
-                "latitude": {
+                "lat": {
                     "type": "number"
                 },
-                "longitude": {
+                "long": {
                     "type": "number"
                 },
                 "name": {
@@ -374,10 +380,10 @@
                 "id": {
                     "type": "integer"
                 },
-                "latitude": {
+                "lat": {
                     "type": "number"
                 },
-                "longitude": {
+                "long": {
                     "type": "number"
                 },
                 "name": {

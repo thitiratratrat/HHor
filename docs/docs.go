@@ -260,6 +260,12 @@ var doc = `{
                 "id": {
                     "type": "string"
                 },
+                "lat": {
+                    "type": "number"
+                },
+                "long": {
+                    "type": "number"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -341,10 +347,10 @@ var doc = `{
                 "id": {
                     "type": "integer"
                 },
-                "latitude": {
+                "lat": {
                     "type": "number"
                 },
-                "longitude": {
+                "long": {
                     "type": "number"
                 },
                 "name": {
@@ -393,10 +399,10 @@ var doc = `{
                 "id": {
                     "type": "integer"
                 },
-                "latitude": {
+                "lat": {
                     "type": "number"
                 },
-                "longitude": {
+                "long": {
                     "type": "number"
                 },
                 "name": {
