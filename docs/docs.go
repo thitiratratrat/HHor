@@ -23,6 +23,29 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/auth/register/student": {
+            "get": {
+                "description": "register student account",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "register student account",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/dorm": {
             "get": {
                 "description": "returns list of dorms filter by dorm type, zone,capacity, location, dorm and room facilities",
@@ -332,11 +355,14 @@ var doc = `{
         "model.Dorm": {
             "type": "object",
             "properties": {
-                "account": {
-                    "$ref": "#/definitions/model.Account"
-                },
                 "address": {
                     "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "dorm_owner": {
+                    "$ref": "#/definitions/model.Account"
                 },
                 "facilities": {
                     "type": "array",
