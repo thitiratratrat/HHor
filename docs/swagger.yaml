@@ -49,10 +49,12 @@ definitions:
     type: object
   model.Dorm:
     properties:
-      account:
-        $ref: '#/definitions/model.Account'
       address:
         type: string
+      description:
+        type: string
+      dorm_owner:
+        $ref: '#/definitions/model.Account'
       facilities:
         items:
           $ref: '#/definitions/model.AllDormFacility'
@@ -140,6 +142,21 @@ definitions:
 info:
   contact: {}
 paths:
+  /auth/register/student:
+    get:
+      description: register student account
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+      summary: register student account
+      tags:
+      - auth
   /dorm:
     get:
       consumes:

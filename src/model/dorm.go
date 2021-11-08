@@ -16,10 +16,11 @@ type Dorm struct {
 	Longitude       float64           `gorm:"type:decimal(9,6);not null" json:"long"`
 	Latitude        float64           `gorm:"type:decimal(8,6);not null" json:"lat"`
 	Address         string            `gorm:"not null" json:"address"`
+	Description     string            `gorm:"type:text" json:"description"`
 	DormZoneName    string            `json:"zone"`
 	DormZone        DormZone          `json:"-"`
 	AccountID       int               `gorm:"column:owner" json:"-"`
-	Account         Account           `json:"account"`
+	Account         Account           `json:"dorm_owner"`
 	Facilities      []AllDormFacility `gorm:"many2many:dorm_facility;" json:"facilities"`
 	Pictures        []DormPicture     `gorm:"foreignKey:DormID" json:"pictures"`
 	NearbyLocations []NearbyLocation  `gorm:"many2many:nearby_locations;" json:"nearby_locations"`
