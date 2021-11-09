@@ -23,16 +23,27 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/auth/register/student": {
-            "get": {
-                "description": "register student account",
+        "/auth/login": {
+            "post": {
+                "description": "login",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "auth"
                 ],
-                "summary": "register student account",
+                "summary": "login",
+                "parameters": [
+                    {
+                        "description": "login credentials",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.LoginCredentialsDTO"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -41,6 +52,76 @@ var doc = `{
                             "items": {
                                 "type": "string"
                             }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/register/student": {
+            "post": {
+                "description": "register student account",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "register student account",
+                "parameters": [
+                    {
+                        "description": "student registration",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RegisterStudentDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
                         }
                     }
                 }
@@ -248,6 +329,12 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/dto.ErrorResponse"
                         }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
                     }
                 }
             }
@@ -322,17 +409,57 @@ var doc = `{
                 }
             }
         },
-        "model.Account": {
+        "dto.LoginCredentialsDTO": {
             "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
             "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.RegisterStudentDTO": {
+            "type": "object",
+            "required": [
+                "email",
+                "faculty",
+                "firstname",
+                "gender",
+                "lastname",
+                "password",
+                "student_id",
+                "year_of_study"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "faculty": {
+                    "type": "string"
+                },
                 "firstname": {
                     "type": "string"
                 },
-                "id": {
-                    "type": "integer"
+                "gender": {
+                    "type": "string"
                 },
                 "lastname": {
                     "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "student_id": {
+                    "type": "string"
+                },
+                "year_of_study": {
+                    "type": "integer"
                 }
             }
         },
@@ -362,7 +489,7 @@ var doc = `{
                     "type": "string"
                 },
                 "dorm_owner": {
-                    "$ref": "#/definitions/model.Account"
+                    "$ref": "#/definitions/model.DormOwner"
                 },
                 "facilities": {
                     "type": "array",
@@ -407,6 +534,23 @@ var doc = `{
                     "type": "string"
                 },
                 "zone": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.DormOwner": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "firstname": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "lastname": {
                     "type": "string"
                 }
             }

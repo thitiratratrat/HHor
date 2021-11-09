@@ -52,7 +52,7 @@ func (repository *dormRepository) FindDorm(dormID string) (model.Dorm, error) {
 	var dorm model.Dorm
 	var nearbyLocations []model.NearbyLocation
 
-	err := repository.db.Preload("Pictures").Preload("Rooms", "available = ?", "TRUE").Preload("Rooms.Pictures").Preload("Rooms.Facilities").Preload("Account").Preload("Facilities").First(&dorm, dormID).Error
+	err := repository.db.Preload("Pictures").Preload("Rooms", "available = ?", "TRUE").Preload("Rooms.Pictures").Preload("Rooms.Facilities").Preload("DormOwner").Preload("Facilities").First(&dorm, dormID).Error
 	repository.db.Where("dorm_id = ?", dormID).Preload("Location").Find(&nearbyLocations)
 
 	dorm.NearbyLocations = nearbyLocations

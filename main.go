@@ -33,7 +33,7 @@ func setRoutes() {
 }
 
 func migrateDatabase() {
-	dbConnector.GetDB().AutoMigrate(&model.AllDormFacility{}, &model.Account{}, &model.AllRoomFacility{}, &model.DormZone{}, &model.Location{}, &model.Dorm{}, &model.NearbyLocation{}, &model.Room{}, &model.RoomPicture{}, &model.DormPicture{})
+	dbConnector.GetDB().AutoMigrate(&model.AllDormFacility{}, &model.DormOwner{}, &model.AllRoomFacility{}, &model.DormZone{}, &model.Location{}, &model.Dorm{}, &model.NearbyLocation{}, &model.Room{}, &model.RoomPicture{}, &model.DormPicture{}, &model.PetHabit{}, &model.SmokeHabit{}, &model.StudyHabit{}, &model.RoomCareHabit{}, &model.Gender{}, &model.Faculty{}, &model.Student{})
 }
 
 func init() {
@@ -55,16 +55,21 @@ func init() {
 	dormFacilityRepository := repository.DormFacilityRepositoryHandler(dbConnector.GetDB())
 	dormZoneRepository := repository.DormZoneRepositoryHandler(dbConnector.GetDB())
 	roomFacilityRepository := repository.RoomFacilityRepositoryHandler(dbConnector.GetDB())
+	facultyRepository := repository.FacultyRepositoryHandler(dbConnector.GetDB())
+	authRepository := repository.AuthRepositoryHandler(dbConnector.GetDB())
 
 	dormService := service.DormServiceHandler(dormRepository, dormFacilityRepository, dormZoneRepository)
 	roomService := service.RoomServiceHandler(roomFacilityRepository)
+	studentService := service.AuthServiceHandler(facultyRepository, authRepository)
 
 	dormController := controller.DormControllerHandler(dormService)
 	roomController := controller.RoomControllerHandler(roomService)
+	authController := controller.AuthControllerHandler(studentService)
 
 	controllers = router.Controllers{
 		DormController: dormController,
 		RoomController: roomController,
+		AuthController: authController,
 	}
 }
 

@@ -1,13 +1,16 @@
 package controller
 
 import (
+	"errors"
 	"io"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/thitiratratrat/hhor/src/dto"
+	"github.com/thitiratratrat/hhor/src/errortype"
 	"github.com/thitiratratrat/hhor/src/service"
+	"gorm.io/gorm"
 )
 
 type DormController interface {
@@ -39,8 +42,6 @@ type dormController struct {
 func (dormController *dormController) GetDorms(context *gin.Context) {
 	var request dto.DormFilterDTO
 
-	//TODO: fix check ignore case
-
 	if err := context.Bind(&request); err != nil {
 		if err != io.EOF {
 			context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -59,7 +60,7 @@ func (dormController *dormController) GetDorms(context *gin.Context) {
 // @Tags dorm
 // @Produce json
 // @Success 200 {object} model.Dorm "OK"
-// @Failure 400,404 {object} dto.ErrorResponse
+// @Failure 400,404,500 {object} dto.ErrorResponse
 // @Param id path int true "Dorm ID"
 // @Router /dorm/{id} [get]
 func (dormController *dormController) GetDormDetail(context *gin.Context) {
@@ -73,8 +74,12 @@ func (dormController *dormController) GetDormDetail(context *gin.Context) {
 
 	dorm, err := dormController.dormService.GetDorm(dormID)
 
-	if err != nil {
-		context.IndentedJSON(http.StatusNotFound, &dto.ErrorResponse{Message: err.Error()})
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		context.IndentedJSON(http.StatusNotFound, &dto.ErrorResponse{Message: errortype.ErrResourceNotFound.Error()})
+
+		return
+	} else if err != nil {
+		context.IndentedJSON(http.StatusInternalServerError, &dto.ErrorResponse{Message: err.Error()})
 
 		return
 	}
