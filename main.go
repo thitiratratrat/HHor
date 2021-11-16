@@ -56,20 +56,24 @@ func init() {
 	dormZoneRepository := repository.DormZoneRepositoryHandler(dbConnector.GetDB())
 	roomFacilityRepository := repository.RoomFacilityRepositoryHandler(dbConnector.GetDB())
 	facultyRepository := repository.FacultyRepositoryHandler(dbConnector.GetDB())
-	authRepository := repository.AuthRepositoryHandler(dbConnector.GetDB())
+	dormOwnerRepository := repository.DormOwnerRepositoryHandler(dbConnector.GetDB())
+	studentRepository := repository.StudentRepositoryHandler(dbConnector.GetDB())
 
 	dormService := service.DormServiceHandler(dormRepository, dormFacilityRepository, dormZoneRepository)
 	roomService := service.RoomServiceHandler(roomFacilityRepository)
-	studentService := service.AuthServiceHandler(facultyRepository, authRepository)
+	authService := service.AuthServiceHandler(facultyRepository, studentRepository, dormOwnerRepository)
+	studentService := service.StudentServiceHandler(studentRepository)
 
 	dormController := controller.DormControllerHandler(dormService)
 	roomController := controller.RoomControllerHandler(roomService)
-	authController := controller.AuthControllerHandler(studentService)
+	authController := controller.AuthControllerHandler(authService, studentService)
+	studentController := controller.StudentControllerHandler(studentService)
 
 	controllers = router.Controllers{
-		DormController: dormController,
-		RoomController: roomController,
-		AuthController: authController,
+		DormController:    dormController,
+		RoomController:    roomController,
+		AuthController:    authController,
+		StudentController: studentController,
 	}
 }
 

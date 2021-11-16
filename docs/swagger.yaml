@@ -38,34 +38,6 @@ definitions:
     - email
     - password
     type: object
-  dto.RegisterStudentDTO:
-    properties:
-      email:
-        type: string
-      faculty:
-        type: string
-      firstname:
-        type: string
-      gender:
-        type: string
-      lastname:
-        type: string
-      password:
-        type: string
-      student_id:
-        type: string
-      year_of_study:
-        type: integer
-    required:
-    - email
-    - faculty
-    - firstname
-    - gender
-    - lastname
-    - password
-    - student_id
-    - year_of_study
-    type: object
   model.AllDormFacility:
     properties:
       name:
@@ -149,6 +121,11 @@ definitions:
       location:
         $ref: '#/definitions/model.Location'
     type: object
+  model.PetPicture:
+    properties:
+      picture_url:
+        type: string
+    type: object
   model.Room:
     properties:
       available:
@@ -179,10 +156,55 @@ definitions:
       picture_url:
         type: string
     type: object
+  model.Student:
+    properties:
+      biography:
+        type: string
+      email:
+        type: string
+      facebook_url:
+        type: string
+      faculty:
+        type: string
+      firstname:
+        type: string
+      gender:
+        type: string
+      instagram_url:
+        type: string
+      lastname:
+        type: string
+      linkedin_url:
+        type: string
+      pet_habit:
+        type: string
+      pet_pictures:
+        items:
+          $ref: '#/definitions/model.PetPicture'
+        type: array
+      picture_url:
+        type: string
+      preferred_gender:
+        type: string
+      room_care_habit:
+        type: string
+      sleeping_habit:
+        type: string
+      smoke_habit:
+        type: string
+      student_id:
+        type: string
+      study_habit:
+        type: string
+      twitter_url:
+        type: string
+      year_of_study:
+        type: integer
+    type: object
 info:
   contact: {}
 paths:
-  /auth/login:
+  /auth/student/login:
     post:
       description: login
       parameters:
@@ -220,16 +242,48 @@ paths:
       summary: login
       tags:
       - auth
-  /auth/register/student:
+  /auth/student/register:
     post:
+      consumes:
+      - multipart/form-data
       description: register student account
       parameters:
-      - description: student registration
-        in: body
-        name: data
+      - in: formData
+        name: email
         required: true
-        schema:
-          $ref: '#/definitions/dto.RegisterStudentDTO'
+        type: string
+      - in: formData
+        name: faculty
+        required: true
+        type: string
+      - in: formData
+        name: firstname
+        required: true
+        type: string
+      - in: formData
+        name: gender
+        required: true
+        type: string
+      - in: formData
+        name: lastname
+        required: true
+        type: string
+      - in: formData
+        name: password
+        required: true
+        type: string
+      - in: formData
+        name: student_id
+        required: true
+        type: string
+      - in: formData
+        name: year_of_study
+        required: true
+        type: integer
+      - description: profile picture
+        in: formData
+        name: profile_picture
+        type: file
       produces:
       - application/json
       responses:
@@ -402,4 +456,76 @@ paths:
       summary: get room facilities
       tags:
       - room
+  /student:
+    patch:
+      consumes:
+      - multipart/form-data
+      description: update student detail
+      parameters:
+      - in: formData
+        name: biography
+        type: string
+      - in: formData
+        name: email
+        required: true
+        type: string
+      - in: formData
+        name: facebookUrl
+        type: string
+      - in: formData
+        name: instagramUrl
+        type: string
+      - in: formData
+        name: linkedinUrl
+        type: string
+      - in: formData
+        name: twitterUrl
+        type: string
+      - description: profile picture
+        in: formData
+        name: profile_picture
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+      summary: update student detail
+      tags:
+      - student
+  /student/{email}:
+    get:
+      description: returns student profile
+      parameters:
+      - description: Student Email
+        in: path
+        name: email
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Student'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: get student profile
+      tags:
+      - student
 swagger: "2.0"
