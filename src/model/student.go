@@ -1,12 +1,11 @@
 package model
 
 type Student struct {
-	ID                  uint          `gorm:"primaryKey" json:"id"`
+	Email               string        `gorm:"primaryKey;unique" json:"email"`
+	StudentID           string        `gorm:"not null;unique;check:student_id ~ '^\d*$'" json:"student_id"`
 	Firstname           string        `gorm:"not null" json:"firstname"`
 	Lastname            string        `gorm:"not null" json:"lastname"`
-	Email               string        `gorm:"not null;unique" json:"email"`
 	Password            string        `gorm:"not null" json:"-"`
-	StudentID           string        `gorm:"not null;unique;check:student_id ~ '^\d*$'" json:"student_id"`
 	YearOfStudy         int           `gorm:"not null;check:year_of_study > 0 and year_of_study < 9" json:"year_of_study"`
 	GenderName          string        `gorm:"not null" json:"gender"`
 	Gender              Gender        `json:"-"`

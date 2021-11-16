@@ -11,19 +11,21 @@ import (
 type AuthService interface {
 	GetFaculties() []string
 	RegisterStudent(dto.RegisterStudentDTO) error
-	Login(dto.LoginCredentialsDTO) error
+	LoginStudent(dto.LoginCredentialsDTO) error
 }
 
-func AuthServiceHandler(facultyRepository repository.FacultyRepository, authRepository repository.AuthRepository) AuthService {
+func AuthServiceHandler(facultyRepository repository.FacultyRepository, studentRepository repository.StudentRepository, dormOwnerRepository repository.DormOwnerRepository) AuthService {
 	return &authService{
-		facultyRepository: facultyRepository,
-		authRepository:    authRepository,
+		facultyRepository:   facultyRepository,
+		studentRepository:   studentRepository,
+		dormOwnerRepository: dormOwnerRepository,
 	}
 }
 
 type authService struct {
-	facultyRepository repository.FacultyRepository
-	authRepository    repository.AuthRepository
+	facultyRepository   repository.FacultyRepository
+	studentRepository   repository.StudentRepository
+	dormOwnerRepository repository.DormOwnerRepository
 }
 
 func (authService *authService) GetFaculties() []string {
@@ -50,24 +52,14 @@ func (authService *authService) RegisterStudent(registerStudentDTO dto.RegisterS
 		FacultyName: registerStudentDTO.Faculty,
 	}
 
-	return authService.authRepository.CreateStudent(student)
+	return authService.studentRepository.CreateStudent(student)
 }
 
-func (authService *authService) Login(loginCredentialsDTO dto.LoginCredentialsDTO) error {
-	student, getStudentError := authService.authRepository.GetStudent(loginCredentialsDTO.Email)
+func (authService *authService) LoginStudent(loginCredentialsDTO dto.LoginCredentialsDTO) error {
+	student, getStudentError := authService.studentRepository.GetStudent(loginCredentialsDTO.Email)
 
 	if getStudentError == nil {
 		if comparePassword(loginCredentialsDTO.Password, student.Password) {
-			return nil
-		}
-
-		return errortype.ErrUnauthorized
-	}
-
-	dormOwner, getDormOwnerError := authService.authRepository.GetDormOwner(loginCredentialsDTO.Email)
-
-	if getDormOwnerError == nil {
-		if comparePassword(loginCredentialsDTO.Password, dormOwner.Password) {
 			return nil
 		}
 

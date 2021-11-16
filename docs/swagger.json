@@ -4,7 +4,7 @@
         "contact": {}
     },
     "paths": {
-        "/auth/login": {
+        "/auth/student/login": {
             "post": {
                 "description": "login",
                 "produces": [
@@ -62,9 +62,12 @@
                 }
             }
         },
-        "/auth/register/student": {
+        "/auth/student/register": {
             "post": {
                 "description": "register student account",
+                "consumes": [
+                    "multipart/form-data"
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -74,13 +77,58 @@
                 "summary": "register student account",
                 "parameters": [
                     {
-                        "description": "student registration",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.RegisterStudentDTO"
-                        }
+                        "type": "string",
+                        "name": "email",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "faculty",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "firstname",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "gender",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "lastname",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "password",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "student_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "name": "year_of_study",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "profile picture",
+                        "name": "profile_picture",
+                        "in": "formData"
                     }
                 ],
                 "responses": {
@@ -342,6 +390,118 @@
                     }
                 }
             }
+        },
+        "/student": {
+            "patch": {
+                "description": "update student detail",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "student"
+                ],
+                "summary": "update student detail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "biography",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "email",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "facebookUrl",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "instagramUrl",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "linkedinUrl",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "twitterUrl",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "profile picture",
+                        "name": "profile_picture",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/student/{email}": {
+            "get": {
+                "description": "returns student profile",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "student"
+                ],
+                "summary": "get student profile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Student Email",
+                        "name": "email",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Student"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -402,45 +562,6 @@
                 },
                 "password": {
                     "type": "string"
-                }
-            }
-        },
-        "dto.RegisterStudentDTO": {
-            "type": "object",
-            "required": [
-                "email",
-                "faculty",
-                "firstname",
-                "gender",
-                "lastname",
-                "password",
-                "student_id",
-                "year_of_study"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "faculty": {
-                    "type": "string"
-                },
-                "firstname": {
-                    "type": "string"
-                },
-                "gender": {
-                    "type": "string"
-                },
-                "lastname": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "student_id": {
-                    "type": "string"
-                },
-                "year_of_study": {
-                    "type": "integer"
                 }
             }
         },
@@ -572,6 +693,14 @@
                 }
             }
         },
+        "model.PetPicture": {
+            "type": "object",
+            "properties": {
+                "picture_url": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Room": {
             "type": "object",
             "properties": {
@@ -615,6 +744,74 @@
             "properties": {
                 "picture_url": {
                     "type": "string"
+                }
+            }
+        },
+        "model.Student": {
+            "type": "object",
+            "properties": {
+                "biography": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "facebook_url": {
+                    "type": "string"
+                },
+                "faculty": {
+                    "type": "string"
+                },
+                "firstname": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "string"
+                },
+                "instagram_url": {
+                    "type": "string"
+                },
+                "lastname": {
+                    "type": "string"
+                },
+                "linkedin_url": {
+                    "type": "string"
+                },
+                "pet_habit": {
+                    "type": "string"
+                },
+                "pet_pictures": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.PetPicture"
+                    }
+                },
+                "picture_url": {
+                    "type": "string"
+                },
+                "preferred_gender": {
+                    "type": "string"
+                },
+                "room_care_habit": {
+                    "type": "string"
+                },
+                "sleeping_habit": {
+                    "type": "string"
+                },
+                "smoke_habit": {
+                    "type": "string"
+                },
+                "student_id": {
+                    "type": "string"
+                },
+                "study_habit": {
+                    "type": "string"
+                },
+                "twitter_url": {
+                    "type": "string"
+                },
+                "year_of_study": {
+                    "type": "integer"
                 }
             }
         }

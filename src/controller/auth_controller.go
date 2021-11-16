@@ -6,34 +6,40 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/thitiratratrat/hhor/src/constant"
 	"github.com/thitiratratrat/hhor/src/dto"
 	"github.com/thitiratratrat/hhor/src/errortype"
 	"github.com/thitiratratrat/hhor/src/service"
+	"github.com/thitiratratrat/hhor/src/utils"
 )
 
 type AuthController interface {
 	RegisterStudent(context *gin.Context)
-	Login(context *gin.Context)
+	LoginStudent(context *gin.Context)
 }
 
-func AuthControllerHandler(studentService service.AuthService) AuthController {
+func AuthControllerHandler(authService service.AuthService, studentService service.StudentService) AuthController {
 	return &authController{
-		authService: studentService,
+		authService:    authService,
+		studentService: studentService,
 	}
 }
 
 type authController struct {
-	authService service.AuthService
+	authService    service.AuthService
+	studentService service.StudentService
 }
 
 // @Summary register student account
 // @Description register student account
 // @Tags auth
+// @Accept  multipart/form-data
 // @Produce json
-// @Param data body dto.RegisterStudentDTO true "student registration"
+// @Param data formData dto.RegisterStudentDTO true "student registration"
+// @Param profile_picture formData file false "profile picture"
 // @Success 200 {array} string "OK"
 // @Failure 400,409  {object} dto.ErrorResponse
-// @Router /auth/register/student [post]
+// @Router /auth/student/register [post]
 func (authController *authController) RegisterStudent(context *gin.Context) {
 	validate := validator.New()
 
@@ -81,6 +87,31 @@ func (authController *authController) RegisterStudent(context *gin.Context) {
 		return
 	}
 
+	if registerStudentDTO.ProfilePicture != nil {
+		filename := registerStudentDTO.StudentID + ".png"
+		file, _, err := context.Request.FormFile("profile_picture")
+
+		if err != nil {
+			context.IndentedJSON(http.StatusInternalServerError, dto.ErrorResponse{
+				Message: err.Error(),
+			})
+
+			return
+		}
+
+		pictureUrl, err := utils.UploadPicture(file, constant.StudentProfilePictureFolder, filename, context.Request)
+
+		if err != nil {
+			context.IndentedJSON(http.StatusInternalServerError, dto.ErrorResponse{
+				Message: err.Error(),
+			})
+
+			return
+		}
+
+		authController.studentService.UpdateStudent(registerStudentDTO.Email, map[string]interface{}{"picture_url": pictureUrl})
+	}
+
 	context.IndentedJSON(http.StatusOK, "")
 }
 
@@ -91,8 +122,8 @@ func (authController *authController) RegisterStudent(context *gin.Context) {
 // @Param data body dto.LoginCredentialsDTO true "login credentials"
 // @Success 200 {array} string "OK"
 // @Failure 400,404,401,500  {object} dto.ErrorResponse
-// @Router /auth/login [post]
-func (authController *authController) Login(context *gin.Context) {
+// @Router /auth/student/login [post]
+func (authController *authController) LoginStudent(context *gin.Context) {
 	validate := validator.New()
 
 	var loginCredentialsDTO dto.LoginCredentialsDTO
@@ -117,7 +148,7 @@ func (authController *authController) Login(context *gin.Context) {
 		return
 	}
 
-	loginError := authController.authService.Login(loginCredentialsDTO)
+	loginError := authController.authService.LoginStudent(loginCredentialsDTO)
 
 	if errors.Is(loginError, errortype.ErrUnauthorized) {
 		context.IndentedJSON(http.StatusUnauthorized, dto.ErrorResponse{

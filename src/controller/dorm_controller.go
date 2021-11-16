@@ -44,7 +44,7 @@ func (dormController *dormController) GetDorms(context *gin.Context) {
 
 	if err := context.Bind(&request); err != nil {
 		if err != io.EOF {
-			context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			context.JSON(http.StatusBadRequest, &dto.ErrorResponse{Message: errortype.ErrInvalidInput.Error()})
 
 			return
 		}

@@ -6,13 +6,15 @@ import (
 )
 
 type Controllers struct {
-	DormController controller.DormController
-	RoomController controller.RoomController
-	AuthController controller.AuthController
+	DormController    controller.DormController
+	RoomController    controller.RoomController
+	AuthController    controller.AuthController
+	StudentController controller.StudentController
 }
 
 func InitRoutes(router *gin.Engine, controllers Controllers) {
 	SetDormRoutes(router, controllers.DormController)
 	SetRoomRoutes(router, controllers.RoomController)
 	SetAuthRoutes(router, controllers.AuthController)
+	SetStudentRoutes(router, controllers.StudentController)
 }
