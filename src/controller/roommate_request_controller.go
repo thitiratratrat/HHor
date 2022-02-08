@@ -24,16 +24,18 @@ type RoommateRequestController interface {
 	CreateRoommateRequestWithRegisteredDorm(context *gin.Context)
 }
 
-func RoommateRequestControllerHandler(roommateRequestService service.RoommateRequestService, dormSerivce service.DormService) RoommateRequestController {
+func RoommateRequestControllerHandler(roommateRequestService service.RoommateRequestService, dormService service.DormService, roomService service.RoomService) RoommateRequestController {
 	return &roommateRequestController{
 		roommateRequestService: roommateRequestService,
-		dormService:            dormSerivce,
+		dormService:            dormService,
+		roomService:            roomService,
 	}
 }
 
 type roommateRequestController struct {
 	roommateRequestService service.RoommateRequestService
 	dormService            service.DormService
+	roomService            service.RoomService
 }
 
 // @Summary create roommate request with no room
@@ -143,19 +145,8 @@ func (roommateRequestController *roommateRequestController) CreateRoommateReques
 }
 
 func (roommateRequestController *roommateRequestController) roomBelongsToDorm(roomID string, dormID string) bool {
-	dorm, err := roommateRequestController.dormService.GetDorm(dormID)
+	room := roommateRequestController.roomService.GetRoom(roomID)
+	convertedDormID, _ := strconv.Atoi(dormID)
 
-	if err != nil {
-		panic(err)
-	}
-
-	convertedRoomID, _ := strconv.Atoi(roomID)
-
-	for _, room := range dorm.Rooms {
-		if room.ID == uint(convertedRoomID) {
-			return true
-		}
-	}
-
-	return false
+	return room.DormID == uint(convertedDormID)
 }

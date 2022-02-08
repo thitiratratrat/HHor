@@ -9,6 +9,7 @@ import (
 )
 
 type DormService interface {
+	//TODO: should panic and not return error
 	GetDorms(dormFilterDTO dto.DormFilterDTO) []dto.DormDTO
 	GetDorm(dormID string) (model.Dorm, error)
 	GetDormSuggestions(firstLetter string) []dto.DormSuggestionDTO
