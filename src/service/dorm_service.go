@@ -16,19 +16,14 @@ type DormService interface {
 	GetDormZones() []string
 }
 
-func DormServiceHandler(dormRepository repository.DormRepository, dormFacilityRepository repository.DormFacilityRepository,
-	dormZoneRepository repository.DormZoneRepository) DormService {
+func DormServiceHandler(dormRepository repository.DormRepository) DormService {
 	return &dormService{
-		dormRepository:         dormRepository,
-		dormFacilityRepository: dormFacilityRepository,
-		dormZoneRepository:     dormZoneRepository,
+		dormRepository: dormRepository,
 	}
 }
 
 type dormService struct {
-	dormRepository         repository.DormRepository
-	dormFacilityRepository repository.DormFacilityRepository
-	dormZoneRepository     repository.DormZoneRepository
+	dormRepository repository.DormRepository
 }
 
 func (dormService *dormService) GetDorms(dormFilterDTO dto.DormFilterDTO) []dto.DormDTO {
@@ -69,13 +64,13 @@ func (dormService *dormService) GetDormSuggestions(firstLetter string) []dto.Dor
 }
 
 func (dormService *dormService) GetAllDormFacilities() []string {
-	dormFacilities := dormService.dormFacilityRepository.FindAllDormFacilities()
+	dormFacilities := dormService.dormRepository.FindAllDormFacilities()
 
 	return dormFacilities
 }
 
 func (dormService *dormService) GetDormZones() []string {
-	dormZones := dormService.dormZoneRepository.FindDormZones()
+	dormZones := dormService.dormRepository.FindDormZones()
 
 	return dormZones
 }

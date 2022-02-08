@@ -38,6 +38,103 @@ definitions:
     - email
     - password
     type: object
+  dto.PersonalHabit:
+    properties:
+      pet_habit_id:
+        type: string
+      room_care_habit_id:
+        type: string
+      sleep_habit_id:
+        type: string
+      smoke_habit_id:
+        type: string
+      study_habit_id:
+        type: string
+    type: object
+  dto.RegisterStudentDTO:
+    properties:
+      email:
+        type: string
+      enrollment_year:
+        type: integer
+      faculty:
+        type: string
+      firstname:
+        type: string
+      gender:
+        type: string
+      lastname:
+        type: string
+      password:
+        type: string
+      student_id:
+        type: string
+    required:
+    - email
+    - enrollment_year
+    - faculty
+    - firstname
+    - gender
+    - lastname
+    - password
+    - student_id
+    type: object
+  dto.RoommatePreference:
+    properties:
+      other_preference:
+        type: string
+      preferred_gender:
+        type: string
+      preferred_pet_habit_id:
+        type: string
+      preferred_room_care_habit_id:
+        type: string
+      preferred_sleep_habit_id:
+        type: string
+      preferred_smoke_habit_id:
+        type: string
+      preferred_study_habit_id:
+        type: string
+    type: object
+  dto.RoommateRequestWithNoRoomDTO:
+    properties:
+      budget:
+        type: integer
+      student_id:
+        type: string
+      zones:
+        items:
+          type: string
+        type: array
+    required:
+    - budget
+    - student_id
+    - zones
+    type: object
+  dto.SocialMedia:
+    properties:
+      facebook_url:
+        type: string
+      instagram_url:
+        type: string
+      linkedin_url:
+        type: string
+      twitter_url:
+        type: string
+    type: object
+  dto.StudentUpdateDTO:
+    properties:
+      biography:
+        type: string
+      enrollment_year:
+        type: integer
+      personal_habit:
+        $ref: '#/definitions/dto.PersonalHabit'
+      roommate_preference:
+        $ref: '#/definitions/dto.RoommatePreference'
+      social_media:
+        $ref: '#/definitions/dto.SocialMedia'
+    type: object
   model.AllDormFacility:
     properties:
       name:
@@ -121,6 +218,26 @@ definitions:
       location:
         $ref: '#/definitions/model.Location'
     type: object
+  model.PersonalHabit:
+    properties:
+      pet_habit:
+        $ref: '#/definitions/model.PetHabit'
+      room_care_habit:
+        $ref: '#/definitions/model.RoomCareHabit'
+      sleep_habit:
+        $ref: '#/definitions/model.SleepHabit'
+      smoke_habit:
+        $ref: '#/definitions/model.SmokeHabit'
+      study_habit:
+        $ref: '#/definitions/model.StudyHabit'
+    type: object
+  model.PetHabit:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
   model.PetPicture:
     properties:
       picture_url:
@@ -151,9 +268,58 @@ definitions:
       size:
         type: number
     type: object
+  model.RoomCareHabit:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
   model.RoomPicture:
     properties:
       picture_url:
+        type: string
+    type: object
+  model.RoommatePreference:
+    properties:
+      other_preference:
+        type: string
+      preferred_gender:
+        type: string
+      preferred_pet_habit:
+        $ref: '#/definitions/model.PetHabit'
+      preferred_room_care_habit:
+        $ref: '#/definitions/model.RoomCareHabit'
+      preferred_sleep_habit:
+        $ref: '#/definitions/model.SleepHabit'
+      preferred_smoke_habit:
+        $ref: '#/definitions/model.SmokeHabit'
+      preferred_study_habit:
+        $ref: '#/definitions/model.StudyHabit'
+    type: object
+  model.SleepHabit:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  model.SmokeHabit:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  model.SocialMedia:
+    properties:
+      facebook_url:
+        type: string
+      instagram_url:
+        type: string
+      linkedin_url:
+        type: string
+      twitter_url:
         type: string
     type: object
   model.Student:
@@ -162,44 +328,37 @@ definitions:
         type: string
       email:
         type: string
-      facebook_url:
-        type: string
+      enrollment_year:
+        type: integer
       faculty:
         type: string
       firstname:
         type: string
       gender:
         type: string
-      instagram_url:
+      id:
         type: string
       lastname:
         type: string
-      linkedin_url:
-        type: string
-      pet_habit:
-        type: string
+      personal_habit:
+        $ref: '#/definitions/model.PersonalHabit'
       pet_pictures:
         items:
           $ref: '#/definitions/model.PetPicture'
         type: array
       picture_url:
         type: string
-      preferred_gender:
-        type: string
-      room_care_habit:
-        type: string
-      sleeping_habit:
-        type: string
-      smoke_habit:
-        type: string
-      student_id:
-        type: string
-      study_habit:
-        type: string
-      twitter_url:
-        type: string
-      year_of_study:
+      roommate_preference:
+        $ref: '#/definitions/model.RoommatePreference'
+      social_media:
+        $ref: '#/definitions/model.SocialMedia'
+    type: object
+  model.StudyHabit:
+    properties:
+      id:
         type: integer
+      name:
+        type: string
     type: object
 info:
   contact: {}
@@ -244,46 +403,14 @@ paths:
       - auth
   /auth/student/register:
     post:
-      consumes:
-      - multipart/form-data
       description: register student account
       parameters:
-      - in: formData
-        name: email
+      - description: student registration
+        in: body
+        name: data
         required: true
-        type: string
-      - in: formData
-        name: faculty
-        required: true
-        type: string
-      - in: formData
-        name: firstname
-        required: true
-        type: string
-      - in: formData
-        name: gender
-        required: true
-        type: string
-      - in: formData
-        name: lastname
-        required: true
-        type: string
-      - in: formData
-        name: password
-        required: true
-        type: string
-      - in: formData
-        name: student_id
-        required: true
-        type: string
-      - in: formData
-        name: year_of_study
-        required: true
-        type: integer
-      - description: profile picture
-        in: formData
-        name: profile_picture
-        type: file
+        schema:
+          $ref: '#/definitions/dto.RegisterStudentDTO'
       produces:
       - application/json
       responses:
@@ -456,34 +583,57 @@ paths:
       summary: get room facilities
       tags:
       - room
-  /student:
-    patch:
+  /roommate-request/no-room:
+    post:
+      description: create roommate request with no room
+      parameters:
+      - description: no room request
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RoommateRequestWithNoRoomDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+      summary: create roommate request with no room
+      tags:
+      - roommate-request
+  /roommate-request/registered-dorm:
+    post:
       consumes:
       - multipart/form-data
-      description: update student detail
+      description: create roommate request with registered dorm
       parameters:
       - in: formData
-        name: biography
-        type: string
-      - in: formData
-        name: email
+        name: dorm_id
         required: true
         type: string
       - in: formData
-        name: facebookUrl
+        name: number_of_roommates
+        required: true
+        type: integer
+      - in: formData
+        name: room_id
+        required: true
         type: string
       - in: formData
-        name: instagramUrl
-        type: string
+        name: shared_room_price
+        required: true
+        type: integer
       - in: formData
-        name: linkedinUrl
+        name: student_id
+        required: true
         type: string
-      - in: formData
-        name: twitterUrl
-        type: string
-      - description: profile picture
+      - description: upload multiple room pictures,test this out in postman
         in: formData
-        name: profile_picture
+        name: room_pictures
         type: file
       produces:
       - application/json
@@ -494,16 +644,16 @@ paths:
             items:
               type: string
             type: array
-      summary: update student detail
+      summary: create roommate request with registered dorm
       tags:
-      - student
-  /student/{email}:
+      - roommate-request
+  /student/{id}:
     get:
       description: returns student profile
       parameters:
-      - description: Student Email
+      - description: Student ID
         in: path
-        name: email
+        name: id
         required: true
         type: string
       produces:
@@ -526,6 +676,70 @@ paths:
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
       summary: get student profile
+      tags:
+      - student
+    patch:
+      description: update student detail
+      parameters:
+      - description: Student ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: student update
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/dto.StudentUpdateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Student'
+      summary: update student detail
+      tags:
+      - student
+  /student/picture/{id}:
+    post:
+      consumes:
+      - multipart/form-data
+      description: upload profile picture
+      parameters:
+      - description: Student ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: profile picture
+        in: formData
+        name: profile_picture
+        type: file
+      - description: upload multiple pet pictures,test this out in postman
+        in: formData
+        name: pet_pictures
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Student'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: upload profile picture
       tags:
       - student
 swagger: "2.0"

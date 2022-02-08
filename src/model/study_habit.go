@@ -1,5 +1,6 @@
 package model
 
 type StudyHabit struct {
-	Name string `gorm:"primaryKey" json:"name"`
+	ID   uint   `gorm:"primaryKey" json:"id"`
+	Name string `json:"name"`
 }

@@ -11,7 +11,7 @@ import (
 	"google.golang.org/appengine"
 )
 
-func UploadPicture(file multipart.File, foldername string, filename string, request *http.Request) (string, error) {
+func UploadPicture(file multipart.File, foldername string, filename string, request *http.Request) string {
 	bucket := "hhor_pictures"
 
 	var err error
@@ -21,7 +21,7 @@ func UploadPicture(file multipart.File, foldername string, filename string, requ
 	storageClient, err := storage.NewClient(ctx, option.WithCredentialsFile("keys.json"))
 
 	if err != nil {
-		return "", err
+		panic(err)
 	}
 
 	defer file.Close()
@@ -29,18 +29,18 @@ func UploadPicture(file multipart.File, foldername string, filename string, requ
 	storageWriter := storageClient.Bucket(bucket).Object(foldername + filename).NewWriter(ctx)
 
 	if _, err := io.Copy(storageWriter, file); err != nil {
-		return "", err
+		panic(err)
 	}
 
 	if err := storageWriter.Close(); err != nil {
-		return "", err
+		panic(err)
 	}
 
 	uploaded, err := url.Parse("/" + bucket + "/" + storageWriter.Attrs().Name)
 
 	if err != nil {
-		return "", err
+		panic(err)
 	}
 
-	return "https://storage.googleapis.com" + uploaded.Path, nil
+	return "https://storage.googleapis.com" + uploaded.Path
 }

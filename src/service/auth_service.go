@@ -10,31 +10,29 @@ import (
 
 type AuthService interface {
 	GetFaculties() []string
-	RegisterStudent(dto.RegisterStudentDTO) error
+	RegisterStudent(dto.RegisterStudentDTO) (model.Student, error)
 	LoginStudent(dto.LoginCredentialsDTO) error
 }
 
-func AuthServiceHandler(facultyRepository repository.FacultyRepository, studentRepository repository.StudentRepository, dormOwnerRepository repository.DormOwnerRepository) AuthService {
+func AuthServiceHandler(studentRepository repository.StudentRepository, dormOwnerRepository repository.DormOwnerRepository) AuthService {
 	return &authService{
-		facultyRepository:   facultyRepository,
 		studentRepository:   studentRepository,
 		dormOwnerRepository: dormOwnerRepository,
 	}
 }
 
 type authService struct {
-	facultyRepository   repository.FacultyRepository
 	studentRepository   repository.StudentRepository
 	dormOwnerRepository repository.DormOwnerRepository
 }
 
 func (authService *authService) GetFaculties() []string {
-	faculties := authService.facultyRepository.GetFaculties()
+	faculties := authService.studentRepository.GetFaculties()
 
 	return faculties
 }
 
-func (authService *authService) RegisterStudent(registerStudentDTO dto.RegisterStudentDTO) error {
+func (authService *authService) RegisterStudent(registerStudentDTO dto.RegisterStudentDTO) (model.Student, error) {
 	hashedPassword, hashErr := bcrypt.GenerateFromPassword([]byte(registerStudentDTO.Password), bcrypt.DefaultCost)
 
 	if hashErr != nil {
@@ -42,21 +40,21 @@ func (authService *authService) RegisterStudent(registerStudentDTO dto.RegisterS
 	}
 
 	student := model.Student{
-		Firstname:   registerStudentDTO.Firstname,
-		Lastname:    registerStudentDTO.Lastname,
-		StudentID:   registerStudentDTO.StudentID,
-		Email:       registerStudentDTO.Email,
-		Password:    string(hashedPassword),
-		YearOfStudy: registerStudentDTO.YearOfStudy,
-		GenderName:  registerStudentDTO.Gender,
-		FacultyName: registerStudentDTO.Faculty,
+		Firstname:      registerStudentDTO.Firstname,
+		Lastname:       registerStudentDTO.Lastname,
+		ID:             registerStudentDTO.StudentID,
+		Email:          registerStudentDTO.Email,
+		Password:       string(hashedPassword),
+		EnrollmentYear: registerStudentDTO.EnrollmentYear,
+		GenderName:     registerStudentDTO.Gender,
+		FacultyName:    registerStudentDTO.Faculty,
 	}
 
 	return authService.studentRepository.CreateStudent(student)
 }
 
 func (authService *authService) LoginStudent(loginCredentialsDTO dto.LoginCredentialsDTO) error {
-	student, getStudentError := authService.studentRepository.GetStudent(loginCredentialsDTO.Email)
+	student, getStudentError := authService.studentRepository.GetStudentByEmail(loginCredentialsDTO.Email)
 
 	if getStudentError == nil {
 		if comparePassword(loginCredentialsDTO.Password, student.Password) {

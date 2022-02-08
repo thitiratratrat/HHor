@@ -10,6 +10,7 @@ import (
 const studentBasePath = "student"
 
 func SetStudentRoutes(router *gin.Engine, studentController controller.StudentController) {
-	router.GET(fmt.Sprintf("%s/:email", studentBasePath), studentController.GetStudent)
-	router.PATCH(fmt.Sprintf("%s", studentBasePath), studentController.UpdateStudent)
+	router.GET(fmt.Sprintf("%s/:id", studentBasePath), studentController.GetStudent)
+	router.PATCH(fmt.Sprintf("%s/:id", studentBasePath), studentController.UpdateStudent)
+	router.POST(fmt.Sprintf("%s/picture/:id", studentBasePath), studentController.UploadPicture)
 }

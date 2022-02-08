@@ -65,9 +65,6 @@
         "/auth/student/register": {
             "post": {
                 "description": "register student account",
-                "consumes": [
-                    "multipart/form-data"
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -77,58 +74,13 @@
                 "summary": "register student account",
                 "parameters": [
                     {
-                        "type": "string",
-                        "name": "email",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "name": "faculty",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "name": "firstname",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "name": "gender",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "name": "lastname",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "name": "password",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "name": "student_id",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "name": "year_of_study",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "file",
-                        "description": "profile picture",
-                        "name": "profile_picture",
-                        "in": "formData"
+                        "description": "student registration",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RegisterStudentDTO"
+                        }
                     }
                 ],
                 "responses": {
@@ -391,9 +343,43 @@
                 }
             }
         },
-        "/student": {
-            "patch": {
-                "description": "update student detail",
+        "/roommate-request/no-room": {
+            "post": {
+                "description": "create roommate request with no room",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "roommate-request"
+                ],
+                "summary": "create roommate request with no room",
+                "parameters": [
+                    {
+                        "description": "no room request",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RoommateRequestWithNoRoomDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/roommate-request/registered-dorm": {
+            "post": {
+                "description": "create roommate request with registered dorm",
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -401,45 +387,44 @@
                     "application/json"
                 ],
                 "tags": [
-                    "student"
+                    "roommate-request"
                 ],
-                "summary": "update student detail",
+                "summary": "create roommate request with registered dorm",
                 "parameters": [
                     {
                         "type": "string",
-                        "name": "biography",
-                        "in": "formData"
+                        "name": "dorm_id",
+                        "in": "formData",
+                        "required": true
                     },
                     {
-                        "type": "string",
-                        "name": "email",
+                        "type": "integer",
+                        "name": "number_of_roommates",
                         "in": "formData",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "name": "facebookUrl",
-                        "in": "formData"
+                        "name": "room_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "name": "shared_room_price",
+                        "in": "formData",
+                        "required": true
                     },
                     {
                         "type": "string",
-                        "name": "instagramUrl",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "name": "linkedinUrl",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "name": "twitterUrl",
-                        "in": "formData"
+                        "name": "student_id",
+                        "in": "formData",
+                        "required": true
                     },
                     {
                         "type": "file",
-                        "description": "profile picture",
-                        "name": "profile_picture",
+                        "description": "upload multiple room pictures,test this out in postman",
+                        "name": "room_pictures",
                         "in": "formData"
                     }
                 ],
@@ -456,7 +441,69 @@
                 }
             }
         },
-        "/student/{email}": {
+        "/student/picture/{id}": {
+            "post": {
+                "description": "upload profile picture",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "student"
+                ],
+                "summary": "upload profile picture",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Student ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "profile picture",
+                        "name": "profile_picture",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "upload multiple pet pictures,test this out in postman",
+                        "name": "pet_pictures",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Student"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/student/{id}": {
             "get": {
                 "description": "returns student profile",
                 "produces": [
@@ -469,8 +516,8 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Student Email",
-                        "name": "email",
+                        "description": "Student ID",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     }
@@ -498,6 +545,41 @@
                         "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "update student detail",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "student"
+                ],
+                "summary": "update student detail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Student ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "student update",
+                        "name": "data",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/dto.StudentUpdateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Student"
                         }
                     }
                 }
@@ -562,6 +644,150 @@
                 },
                 "password": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.PersonalHabit": {
+            "type": "object",
+            "properties": {
+                "pet_habit_id": {
+                    "type": "string"
+                },
+                "room_care_habit_id": {
+                    "type": "string"
+                },
+                "sleep_habit_id": {
+                    "type": "string"
+                },
+                "smoke_habit_id": {
+                    "type": "string"
+                },
+                "study_habit_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.RegisterStudentDTO": {
+            "type": "object",
+            "required": [
+                "email",
+                "enrollment_year",
+                "faculty",
+                "firstname",
+                "gender",
+                "lastname",
+                "password",
+                "student_id"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "enrollment_year": {
+                    "type": "integer"
+                },
+                "faculty": {
+                    "type": "string"
+                },
+                "firstname": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "string"
+                },
+                "lastname": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "student_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.RoommatePreference": {
+            "type": "object",
+            "properties": {
+                "other_preference": {
+                    "type": "string"
+                },
+                "preferred_gender": {
+                    "type": "string"
+                },
+                "preferred_pet_habit_id": {
+                    "type": "string"
+                },
+                "preferred_room_care_habit_id": {
+                    "type": "string"
+                },
+                "preferred_sleep_habit_id": {
+                    "type": "string"
+                },
+                "preferred_smoke_habit_id": {
+                    "type": "string"
+                },
+                "preferred_study_habit_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.RoommateRequestWithNoRoomDTO": {
+            "type": "object",
+            "required": [
+                "budget",
+                "student_id",
+                "zones"
+            ],
+            "properties": {
+                "budget": {
+                    "type": "integer"
+                },
+                "student_id": {
+                    "type": "string"
+                },
+                "zones": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "dto.SocialMedia": {
+            "type": "object",
+            "properties": {
+                "facebook_url": {
+                    "type": "string"
+                },
+                "instagram_url": {
+                    "type": "string"
+                },
+                "linkedin_url": {
+                    "type": "string"
+                },
+                "twitter_url": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.StudentUpdateDTO": {
+            "type": "object",
+            "properties": {
+                "biography": {
+                    "type": "string"
+                },
+                "enrollment_year": {
+                    "type": "integer"
+                },
+                "personal_habit": {
+                    "$ref": "#/definitions/dto.PersonalHabit"
+                },
+                "roommate_preference": {
+                    "$ref": "#/definitions/dto.RoommatePreference"
+                },
+                "social_media": {
+                    "$ref": "#/definitions/dto.SocialMedia"
                 }
             }
         },
@@ -693,6 +919,37 @@
                 }
             }
         },
+        "model.PersonalHabit": {
+            "type": "object",
+            "properties": {
+                "pet_habit": {
+                    "$ref": "#/definitions/model.PetHabit"
+                },
+                "room_care_habit": {
+                    "$ref": "#/definitions/model.RoomCareHabit"
+                },
+                "sleep_habit": {
+                    "$ref": "#/definitions/model.SleepHabit"
+                },
+                "smoke_habit": {
+                    "$ref": "#/definitions/model.SmokeHabit"
+                },
+                "study_habit": {
+                    "$ref": "#/definitions/model.StudyHabit"
+                }
+            }
+        },
+        "model.PetHabit": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "model.PetPicture": {
             "type": "object",
             "properties": {
@@ -739,10 +996,86 @@
                 }
             }
         },
+        "model.RoomCareHabit": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "model.RoomPicture": {
             "type": "object",
             "properties": {
                 "picture_url": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.RoommatePreference": {
+            "type": "object",
+            "properties": {
+                "other_preference": {
+                    "type": "string"
+                },
+                "preferred_gender": {
+                    "type": "string"
+                },
+                "preferred_pet_habit": {
+                    "$ref": "#/definitions/model.PetHabit"
+                },
+                "preferred_room_care_habit": {
+                    "$ref": "#/definitions/model.RoomCareHabit"
+                },
+                "preferred_sleep_habit": {
+                    "$ref": "#/definitions/model.SleepHabit"
+                },
+                "preferred_smoke_habit": {
+                    "$ref": "#/definitions/model.SmokeHabit"
+                },
+                "preferred_study_habit": {
+                    "$ref": "#/definitions/model.StudyHabit"
+                }
+            }
+        },
+        "model.SleepHabit": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.SmokeHabit": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.SocialMedia": {
+            "type": "object",
+            "properties": {
+                "facebook_url": {
+                    "type": "string"
+                },
+                "instagram_url": {
+                    "type": "string"
+                },
+                "linkedin_url": {
+                    "type": "string"
+                },
+                "twitter_url": {
                     "type": "string"
                 }
             }
@@ -756,8 +1089,8 @@
                 "email": {
                     "type": "string"
                 },
-                "facebook_url": {
-                    "type": "string"
+                "enrollment_year": {
+                    "type": "integer"
                 },
                 "faculty": {
                     "type": "string"
@@ -768,17 +1101,14 @@
                 "gender": {
                     "type": "string"
                 },
-                "instagram_url": {
+                "id": {
                     "type": "string"
                 },
                 "lastname": {
                     "type": "string"
                 },
-                "linkedin_url": {
-                    "type": "string"
-                },
-                "pet_habit": {
-                    "type": "string"
+                "personal_habit": {
+                    "$ref": "#/definitions/model.PersonalHabit"
                 },
                 "pet_pictures": {
                     "type": "array",
@@ -789,29 +1119,22 @@
                 "picture_url": {
                     "type": "string"
                 },
-                "preferred_gender": {
-                    "type": "string"
+                "roommate_preference": {
+                    "$ref": "#/definitions/model.RoommatePreference"
                 },
-                "room_care_habit": {
-                    "type": "string"
-                },
-                "sleeping_habit": {
-                    "type": "string"
-                },
-                "smoke_habit": {
-                    "type": "string"
-                },
-                "student_id": {
-                    "type": "string"
-                },
-                "study_habit": {
-                    "type": "string"
-                },
-                "twitter_url": {
-                    "type": "string"
-                },
-                "year_of_study": {
+                "social_media": {
+                    "$ref": "#/definitions/model.SocialMedia"
+                }
+            }
+        },
+        "model.StudyHabit": {
+            "type": "object",
+            "properties": {
+                "id": {
                     "type": "integer"
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         }

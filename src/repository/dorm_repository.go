@@ -14,6 +14,8 @@ type DormRepository interface {
 	FindDorms(dormFilterDTO dto.DormFilterDTO) []model.Dorm
 	FindDorm(dormID string) (model.Dorm, error)
 	FindDormNames(firstLetter string) []dto.DormSuggestionDTO
+	FindAllDormFacilities() []string
+	FindDormZones() []string
 }
 
 func DormRepositoryHandler(db *gorm.DB) DormRepository {
@@ -25,8 +27,6 @@ func DormRepositoryHandler(db *gorm.DB) DormRepository {
 type dormRepository struct {
 	db *gorm.DB
 }
-
-const distance = 5 //km
 
 func (repository *dormRepository) FindDorms(dormFilterDTO dto.DormFilterDTO) []model.Dorm {
 	var dorms []model.Dorm
@@ -99,6 +99,7 @@ func getLatLongCondition(lat float64, long float64) string {
 		return ""
 	}
 
+	const distance = 5 //km
 	minLat, _ := utils.GetLatLongFromDistance(lat, long, distance, 180)
 	maxLat, _ := utils.GetLatLongFromDistance(lat, long, distance, 0)
 	_, minLong := utils.GetLatLongFromDistance(lat, long, distance, 270)
@@ -133,4 +134,20 @@ func getDormFacilitiesCondition(dormFacilities []string) string {
 	formattedDormFacilities := "'" + strings.Join(dormFacilities, "', '") + "'"
 
 	return fmt.Sprintf("AND %d = (select count(*) from dorm_facility where dorms.id = dorm_facility.dorm_id and all_dorm_facility_name IN (%s))", len(dormFacilities), formattedDormFacilities)
+}
+
+func (repository *dormRepository) FindAllDormFacilities() []string {
+	var facilities []string
+
+	repository.db.Model(&model.AllDormFacility{}).Pluck("name", &facilities)
+
+	return facilities
+}
+
+func (repository *dormRepository) FindDormZones() []string {
+	var zones []string
+
+	repository.db.Model(&model.DormZone{}).Pluck("name", &zones)
+
+	return zones
 }
