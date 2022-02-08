@@ -31,7 +31,7 @@ func (repository *studentRepository) CreateStudent(student model.Student) (model
 		return model.Student{}, err
 	}
 
-	return repository.GetStudent(student.Email)
+	return repository.GetStudent(student.ID)
 }
 
 func (repository *studentRepository) GetStudent(id string) (model.Student, error) {
