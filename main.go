@@ -33,7 +33,7 @@ func setRoutes() {
 }
 
 func migrateDatabase() {
-	dbConnector.GetDB().AutoMigrate(&model.AllDormFacility{}, &model.DormOwner{}, &model.AllRoomFacility{}, &model.DormZone{}, &model.Location{}, &model.Dorm{}, &model.NearbyLocation{}, &model.Room{}, &model.RoomPicture{}, &model.DormPicture{}, &model.PetHabit{}, &model.SmokeHabit{}, &model.StudyHabit{}, &model.RoomCareHabit{}, &model.Gender{}, &model.Faculty{}, &model.Student{})
+	dbConnector.GetDB().AutoMigrate(&model.AllDormFacility{}, &model.DormOwner{}, &model.AllRoomFacility{}, &model.DormZone{}, &model.Location{}, &model.Dorm{}, &model.NearbyLocation{}, &model.Room{}, &model.RoomPicture{}, &model.DormPicture{}, &model.PetHabit{}, &model.SmokeHabit{}, &model.StudyHabit{}, &model.RoomCareHabit{}, &model.Gender{}, &model.Faculty{}, &model.Student{}, &model.PetPicture{}, &model.RoommateRequestWithNoRoom{}, &model.RoommateRequestWithRegisteredDorm{}, &model.RoommateRequestRegisteredDormPicture{})
 }
 
 func init() {
@@ -52,28 +52,29 @@ func init() {
 	dbConnector.Open()
 
 	dormRepository := repository.DormRepositoryHandler(dbConnector.GetDB())
-	dormFacilityRepository := repository.DormFacilityRepositoryHandler(dbConnector.GetDB())
-	dormZoneRepository := repository.DormZoneRepositoryHandler(dbConnector.GetDB())
 	roomFacilityRepository := repository.RoomFacilityRepositoryHandler(dbConnector.GetDB())
-	facultyRepository := repository.FacultyRepositoryHandler(dbConnector.GetDB())
 	dormOwnerRepository := repository.DormOwnerRepositoryHandler(dbConnector.GetDB())
 	studentRepository := repository.StudentRepositoryHandler(dbConnector.GetDB())
+	roommateRequestRpository := repository.RoommateRequestRepositoryHandler(dbConnector.GetDB())
 
-	dormService := service.DormServiceHandler(dormRepository, dormFacilityRepository, dormZoneRepository)
+	dormService := service.DormServiceHandler(dormRepository)
 	roomService := service.RoomServiceHandler(roomFacilityRepository)
-	authService := service.AuthServiceHandler(facultyRepository, studentRepository, dormOwnerRepository)
+	authService := service.AuthServiceHandler(studentRepository, dormOwnerRepository)
 	studentService := service.StudentServiceHandler(studentRepository)
+	roommateRequestService := service.RoommateRequestServiceHandler(roommateRequestRpository, studentService)
 
 	dormController := controller.DormControllerHandler(dormService)
 	roomController := controller.RoomControllerHandler(roomService)
-	authController := controller.AuthControllerHandler(authService, studentService)
+	authController := controller.AuthControllerHandler(authService)
 	studentController := controller.StudentControllerHandler(studentService)
+	roommateRequestController := controller.RoommateRequestControllerHandler(roommateRequestService, dormService)
 
 	controllers = router.Controllers{
-		DormController:    dormController,
-		RoomController:    roomController,
-		AuthController:    authController,
-		StudentController: studentController,
+		DormController:            dormController,
+		RoomController:            roomController,
+		AuthController:            authController,
+		StudentController:         studentController,
+		RoommateRequestController: roommateRequestController,
 	}
 }
 

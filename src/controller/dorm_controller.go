@@ -31,6 +31,7 @@ type dormController struct {
 	dormService service.DormService
 }
 
+//TODO: filter by match score, cosine similarity, similarity measures
 // @Summary get list of dorms
 // @Description returns list of dorms filter by dorm type, zone,capacity, location, dorm and room facilities
 // @Tags dorm
