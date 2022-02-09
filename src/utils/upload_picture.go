@@ -18,7 +18,7 @@ func UploadPicture(file multipart.File, foldername string, filename string, requ
 
 	ctx := appengine.NewContext(request)
 
-	storageClient, err := storage.NewClient(ctx, option.WithCredentialsFile("keys.json"))
+	storageClient, err := storage.NewClient(ctx, option.WithCredentialsFile("credentials/keys.json"))
 
 	if err != nil {
 		panic(err)
