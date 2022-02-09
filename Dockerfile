@@ -17,12 +17,12 @@ RUN go build -o /hhor
 ##
 FROM gcr.io/distroless/base-debian10
 
-WORKDIR /
+WORKDIR /app
 
-COPY --from=build /hhor /hhor
+COPY --from=build /hhor /app/hhor
 
 EXPOSE $PORT
 
 USER nonroot:nonroot
 
-ENTRYPOINT ["/hhor"]
+ENTRYPOINT ["/app/hhor"]
