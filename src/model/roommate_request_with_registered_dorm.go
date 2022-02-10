@@ -1,7 +1,7 @@
 package model
 
 type RoommateRequestWithRegisteredDorm struct {
-	StudentID         string                                 `gorm:"primaryKey" json:"-"`
+	StudentID         string                                 `gorm:"primaryKey" json:"student_id"`
 	Student           Student                                `json:"-"`
 	SharedRoomPrice   int                                    `json:"shared_room_price"`
 	NumberOfRoommates int                                    `json:"number_of_roommates"`

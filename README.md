@@ -13,14 +13,9 @@ https://hhor-fydi7fajxq-uc.a.run.app/swagger/index.html
 - Docker
 
 ### Run
-1. Build docker image
+Build and run docker image
 ```
-docker build -t hhor:latest .
-```
-
-2. Run docker image
-```
-docker run -e PORT={VALID_PORT_NUMBER} -p {VALID_PORT_NUMBER}:{VALID_PORT_NUMBER} hhor:latest
+docker compose up --build
 ```
 
 <br/>
@@ -43,7 +38,7 @@ docker run -p 5432:5432 hhor-db
 
 3. Set environment variables
 ```
-export PORT={VALID_PORT_NUMBER}
+export PORT=8081
 export INSTANCE_CONNECTION_NAME=localhost
 export DB_USER=postgres
 export DB_PASS=postgres

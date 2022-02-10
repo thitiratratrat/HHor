@@ -106,10 +106,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/model.Student"
                         }
                     },
                     "400": {
@@ -362,6 +359,35 @@ var doc = `{
                 }
             }
         },
+        "/room/{id}": {
+            "get": {
+                "description": "return room detail",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "room"
+                ],
+                "summary": "get room by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Room ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Room"
+                        }
+                    }
+                }
+            }
+        },
         "/roommate-request/no-room": {
             "post": {
                 "description": "create roommate request with no room",
@@ -387,10 +413,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/model.RoommateRequestWithNoRoom"
                         }
                     }
                 }
@@ -451,10 +474,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/model.RoommateRequestWithRegisteredDorm"
                         }
                     }
                 }
@@ -910,6 +930,14 @@ var doc = `{
                 }
             }
         },
+        "model.DormZone": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Location": {
             "type": "object",
             "properties": {
@@ -1057,6 +1085,57 @@ var doc = `{
                 },
                 "preferred_study_habit": {
                     "$ref": "#/definitions/model.StudyHabit"
+                }
+            }
+        },
+        "model.RoommateRequestRegisteredDormPicture": {
+            "type": "object",
+            "properties": {
+                "picture_url": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.RoommateRequestWithNoRoom": {
+            "type": "object",
+            "properties": {
+                "budget": {
+                    "type": "integer"
+                },
+                "student_id": {
+                    "type": "string"
+                },
+                "zones": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.DormZone"
+                    }
+                }
+            }
+        },
+        "model.RoommateRequestWithRegisteredDorm": {
+            "type": "object",
+            "properties": {
+                "dorm_id": {
+                    "type": "integer"
+                },
+                "number_of_roommates": {
+                    "type": "integer"
+                },
+                "room_id": {
+                    "type": "integer"
+                },
+                "room_pictures": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.RoommateRequestRegisteredDormPicture"
+                    }
+                },
+                "shared_room_price": {
+                    "type": "integer"
+                },
+                "student_id": {
+                    "type": "string"
                 }
             }
         },

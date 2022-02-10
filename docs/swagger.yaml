@@ -200,6 +200,11 @@ definitions:
       picture_url:
         type: string
     type: object
+  model.DormZone:
+    properties:
+      name:
+        type: string
+    type: object
   model.Location:
     properties:
       id:
@@ -296,6 +301,39 @@ definitions:
         $ref: '#/definitions/model.SmokeHabit'
       preferred_study_habit:
         $ref: '#/definitions/model.StudyHabit'
+    type: object
+  model.RoommateRequestRegisteredDormPicture:
+    properties:
+      picture_url:
+        type: string
+    type: object
+  model.RoommateRequestWithNoRoom:
+    properties:
+      budget:
+        type: integer
+      student_id:
+        type: string
+      zones:
+        items:
+          $ref: '#/definitions/model.DormZone'
+        type: array
+    type: object
+  model.RoommateRequestWithRegisteredDorm:
+    properties:
+      dorm_id:
+        type: integer
+      number_of_roommates:
+        type: integer
+      room_id:
+        type: integer
+      room_pictures:
+        items:
+          $ref: '#/definitions/model.RoommateRequestRegisteredDormPicture'
+        type: array
+      shared_room_price:
+        type: integer
+      student_id:
+        type: string
     type: object
   model.SleepHabit:
     properties:
@@ -417,9 +455,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              type: string
-            type: array
+            $ref: '#/definitions/model.Student'
         "400":
           description: Bad Request
           schema:
@@ -568,6 +604,25 @@ paths:
       summary: get dorm zones
       tags:
       - dorm
+  /room/{id}:
+    get:
+      description: return room detail
+      parameters:
+      - description: Room ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Room'
+      summary: get room by id
+      tags:
+      - room
   /room/facility:
     get:
       description: returns list of room facilities
@@ -599,9 +654,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              type: string
-            type: array
+            $ref: '#/definitions/model.RoommateRequestWithNoRoom'
       summary: create roommate request with no room
       tags:
       - roommate-request
@@ -641,9 +694,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              type: string
-            type: array
+            $ref: '#/definitions/model.RoommateRequestWithRegisteredDorm'
       summary: create roommate request with registered dorm
       tags:
       - roommate-request

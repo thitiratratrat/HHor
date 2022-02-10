@@ -5,4 +5,5 @@ CREATE TYPE dorm_type AS ENUM (
     'female',
     'male');
 
+\c hhor
 CREATE EXTENSION citext

@@ -31,7 +31,7 @@ func (roomService *roomService) GetRoom(id string) model.Room {
 	room, err := roomService.roomRepository.FindRoom(id)
 
 	if err != nil {
-		panic(errortype.ErrResourceNotFound.Error())
+		panic(errortype.ErrResourceNotFound)
 	}
 
 	return room

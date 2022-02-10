@@ -32,7 +32,7 @@ type authController struct {
 // @Tags auth
 // @Produce json
 // @Param data body dto.RegisterStudentDTO true "student registration"
-// @Success 200 {array} string "OK"
+// @Success 200 {object} model.Student "OK"
 // @Failure 400,409  {object} dto.ErrorResponse
 // @Router /auth/student/register [post]
 func (authController *authController) RegisterStudent(context *gin.Context) {

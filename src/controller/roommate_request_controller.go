@@ -43,7 +43,7 @@ type roommateRequestController struct {
 // @Tags roommate-request
 // @Produce json
 // @Param data body dto.RoommateRequestWithNoRoomDTO true "no room request"
-// @Success 200 {array} string "OK"
+// @Success 200 {object} model.RoommateRequestWithNoRoom "OK"
 // @Router /roommate-request/no-room [post]
 func (roommateRequestController *roommateRequestController) CreateRoomRequestWithNoRoom(context *gin.Context) {
 	defer utils.RecoverInvalidInput(context)
@@ -94,7 +94,7 @@ func (roommateRequestController *roommateRequestController) CreateRoomRequestWit
 // @Accept  multipart/form-data
 // @Param data formData dto.RoommateRequestWithRegisteredDormDTO true "registered dorm request"
 // @Param room_pictures formData file false "upload multiple room pictures,test this out in postman"
-// @Success 200 {array} string "OK"
+// @Success 200 {object} model.RoommateRequestWithRegisteredDorm "OK"
 // @Router /roommate-request/registered-dorm [post]
 func (roommateRequestController *roommateRequestController) CreateRoommateRequestWithRegisteredDorm(context *gin.Context) {
 	defer utils.RecoverInvalidInput(context)
