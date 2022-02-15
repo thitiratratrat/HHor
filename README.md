@@ -38,7 +38,7 @@ docker run -p 5432:5432 hhor-db
 
 3. Set environment variables
 ```
-export PORT=8081
+export PORT=8080
 export INSTANCE_CONNECTION_NAME=localhost
 export DB_USER=postgres
 export DB_PASS=postgres

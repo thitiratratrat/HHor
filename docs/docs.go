@@ -423,7 +423,7 @@ var doc = `{
             "post": {
                 "description": "create roommate request with registered dorm",
                 "consumes": [
-                    "multipart/form-data"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
@@ -434,29 +434,39 @@ var doc = `{
                 "summary": "create roommate request with registered dorm",
                 "parameters": [
                     {
-                        "type": "string",
-                        "name": "dorm_id",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "name": "number_of_roommates",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "name": "room_id",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "name": "shared_room_price",
-                        "in": "formData",
-                        "required": true
-                    },
+                        "description": "registered dorm request",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RoommateRequestWithRegisteredDormDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.RoommateRequestWithRegisteredDorm"
+                        }
+                    }
+                }
+            }
+        },
+        "/roommate-request/registered-dorm/picture": {
+            "put": {
+                "description": "update roommate request with reg dorm pictures",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "roommate-request"
+                ],
+                "summary": "update roommate request with reg dorm pictures",
+                "parameters": [
                     {
                         "type": "string",
                         "name": "student_id",
@@ -474,7 +484,78 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.RoommateRequestWithRegisteredDorm"
+                            "$ref": "#/definitions/model.RoommateRequestWithUnregisteredDorm"
+                        }
+                    }
+                }
+            }
+        },
+        "/roommate-request/unregistered-dorm": {
+            "post": {
+                "description": "create roommate request with unregistered dorm",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "roommate-request"
+                ],
+                "summary": "create roommate request with unregistered dorm",
+                "parameters": [
+                    {
+                        "description": "unregistered dorm request",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RoommateRequestWithUnregisteredDormDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.RoommateRequestWithUnregisteredDorm"
+                        }
+                    }
+                }
+            }
+        },
+        "/roommate-request/unregistered-dorm/picture": {
+            "put": {
+                "description": "update roommate request with reg dorm pictures",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "roommate-request"
+                ],
+                "summary": "update roommate request with unreg dorm pictures",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "student_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "upload multiple room pictures,test this out in postman",
+                        "name": "room_pictures",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.RoommateRequestWithUnregisteredDorm"
                         }
                     }
                 }
@@ -793,6 +874,79 @@ var doc = `{
                 }
             }
         },
+        "dto.RoommateRequestWithRegisteredDormDTO": {
+            "type": "object",
+            "required": [
+                "dorm_id",
+                "number_of_roommates",
+                "room_id",
+                "shared_room_price",
+                "student_id"
+            ],
+            "properties": {
+                "dorm_id": {
+                    "type": "string"
+                },
+                "number_of_roommates": {
+                    "type": "integer"
+                },
+                "room_id": {
+                    "type": "string"
+                },
+                "shared_room_price": {
+                    "type": "integer"
+                },
+                "student_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.RoommateRequestWithUnregisteredDormDTO": {
+            "type": "object",
+            "required": [
+                "dorm_name",
+                "number_of_roommates",
+                "room_description",
+                "room_facilities",
+                "room_price",
+                "room_size",
+                "shared_room_price",
+                "student_id",
+                "zone"
+            ],
+            "properties": {
+                "dorm_name": {
+                    "type": "string"
+                },
+                "number_of_roommates": {
+                    "type": "integer"
+                },
+                "room_description": {
+                    "type": "string"
+                },
+                "room_facilities": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "room_price": {
+                    "type": "integer"
+                },
+                "room_size": {
+                    "type": "number"
+                },
+                "shared_room_price": {
+                    "type": "integer"
+                },
+                "student_id": {
+                    "type": "string"
+                },
+                "zone": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.SocialMedia": {
             "type": "object",
             "properties": {
@@ -1009,6 +1163,7 @@ var doc = `{
             "type": "object",
             "properties": {
                 "available": {
+                    "description": "TODO: change to available from? keep as date",
                     "type": "boolean"
                 },
                 "capacity": {
@@ -1096,6 +1251,14 @@ var doc = `{
                 }
             }
         },
+        "model.RoommateRequestUnregisteredDormPicture": {
+            "type": "object",
+            "properties": {
+                "picture_url": {
+                    "type": "string"
+                }
+            }
+        },
         "model.RoommateRequestWithNoRoom": {
             "type": "object",
             "properties": {
@@ -1135,6 +1298,47 @@ var doc = `{
                     "type": "integer"
                 },
                 "student_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.RoommateRequestWithUnregisteredDorm": {
+            "type": "object",
+            "properties": {
+                "dorm_name": {
+                    "type": "string"
+                },
+                "facilities": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.AllRoomFacility"
+                    }
+                },
+                "number_of_roommates": {
+                    "type": "integer"
+                },
+                "room_description": {
+                    "type": "string"
+                },
+                "room_pictures": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.RoommateRequestUnregisteredDormPicture"
+                    }
+                },
+                "room_price": {
+                    "type": "integer"
+                },
+                "shared_room_price": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "number"
+                },
+                "student_id": {
+                    "type": "string"
+                },
+                "zone": {
                     "type": "string"
                 }
             }

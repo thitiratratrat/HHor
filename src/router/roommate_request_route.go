@@ -12,4 +12,7 @@ const roommateRequestRoute = "roommate-request"
 func SetRoommateRequestRoutes(router *gin.Engine, roommateRequestController controller.RoommateRequestController) {
 	router.POST(fmt.Sprintf("%s/no-room", roommateRequestRoute), roommateRequestController.CreateRoomRequestWithNoRoom)
 	router.POST(fmt.Sprintf("%s/registered-dorm", roommateRequestRoute), roommateRequestController.CreateRoommateRequestWithRegisteredDorm)
+	router.POST(fmt.Sprintf("%s/unregistered-dorm", roommateRequestRoute), roommateRequestController.CreateRoommateRequestWithUnregisteredDorm)
+	router.PUT(fmt.Sprintf("%s/unregistered-dorm/picture", roommateRequestRoute), roommateRequestController.UpdateRoommateRequestWithUnregisteredDormPictures)
+	router.PUT(fmt.Sprintf("%s/registered-dorm/picture", roommateRequestRoute), roommateRequestController.UpdateRoommateRequestWithRegisteredDormPictures)
 }

@@ -8,7 +8,9 @@ import (
 type RoommateRequestRepository interface {
 	CreateRoommateRequestWithNoRoom(roommateRequestWithNoRoom model.RoommateRequestWithNoRoom) (model.RoommateRequestWithNoRoom, error)
 	CreateRoommateRequestWithRegisteredDorm(roommateRequestWithRegisteredDorm model.RoommateRequestWithRegisteredDorm) (model.RoommateRequestWithRegisteredDorm, error)
+	CreateRoommateRequestWithUnregisteredDorm(roommateRequestWithUnregisteredDorm model.RoommateRequestWithUnregisteredDorm) (model.RoommateRequestWithUnregisteredDorm, error)
 	UpdateRoommateRequestWithRegisteredDormPictures(id string, pictureUrls []string) (model.RoommateRequestWithRegisteredDorm, error)
+	UpdateRoommateRequestWithUnregisteredDormPictures(id string, pictureUrls []string) (model.RoommateRequestWithUnregisteredDorm, error)
 }
 
 func RoommateRequestRepositoryHandler(db *gorm.DB) RoommateRequestRepository {
@@ -33,6 +35,12 @@ func (repository *roommateRequestRepository) CreateRoommateRequestWithRegistered
 	return roommateRequestWithRegisteredDorm, err
 }
 
+func (repository *roommateRequestRepository) CreateRoommateRequestWithUnregisteredDorm(roommateRequestWithUnregisteredDorm model.RoommateRequestWithUnregisteredDorm) (model.RoommateRequestWithUnregisteredDorm, error) {
+	err := repository.db.Create(&roommateRequestWithUnregisteredDorm).Error
+
+	return roommateRequestWithUnregisteredDorm, err
+}
+
 func (repository *roommateRequestRepository) UpdateRoommateRequestWithRegisteredDormPictures(id string, pictureUrls []string) (model.RoommateRequestWithRegisteredDorm, error) {
 	var roomPictures []model.RoommateRequestRegisteredDormPicture
 	var roommateRequestWithRegisteredDorm model.RoommateRequestWithRegisteredDorm
@@ -50,4 +58,23 @@ func (repository *roommateRequestRepository) UpdateRoommateRequestWithRegistered
 	err := repository.db.Preload("RoomPictures").Where("student_id = ?", id).First(&roommateRequestWithRegisteredDorm).Error
 
 	return roommateRequestWithRegisteredDorm, err
+}
+
+func (repository *roommateRequestRepository) UpdateRoommateRequestWithUnregisteredDormPictures(id string, pictureUrls []string) (model.RoommateRequestWithUnregisteredDorm, error) {
+	var roomPictures []model.RoommateRequestUnregisteredDormPicture
+	var roommateRequestWithUnregisteredDorm model.RoommateRequestWithUnregisteredDorm
+
+	for _, pictureUrl := range pictureUrls {
+		roomPictures = append(roomPictures, model.RoommateRequestUnregisteredDormPicture{PictureUrl: pictureUrl,
+			RoommateRequestWithUnregisteredDormStudentID: id,
+		})
+	}
+
+	repository.db.Table("roommate_request_unregistered_dorm_pictures").Where("roommate_request_with_unregistered_dorm_student_id = ?", id).Delete(model.RoommateRequestUnregisteredDormPicture{})
+
+	repository.db.Create(&roomPictures)
+
+	err := repository.db.Preload("RoomPictures").Preload("RoomFacilities").Where("student_id = ?", id).First(&roommateRequestWithUnregisteredDorm).Error
+
+	return roommateRequestWithUnregisteredDorm, err
 }

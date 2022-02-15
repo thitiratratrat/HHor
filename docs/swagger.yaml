@@ -111,6 +111,58 @@ definitions:
     - student_id
     - zones
     type: object
+  dto.RoommateRequestWithRegisteredDormDTO:
+    properties:
+      dorm_id:
+        type: string
+      number_of_roommates:
+        type: integer
+      room_id:
+        type: string
+      shared_room_price:
+        type: integer
+      student_id:
+        type: string
+    required:
+    - dorm_id
+    - number_of_roommates
+    - room_id
+    - shared_room_price
+    - student_id
+    type: object
+  dto.RoommateRequestWithUnregisteredDormDTO:
+    properties:
+      dorm_name:
+        type: string
+      number_of_roommates:
+        type: integer
+      room_description:
+        type: string
+      room_facilities:
+        items:
+          type: string
+        type: array
+      room_price:
+        type: integer
+      room_size:
+        type: number
+      shared_room_price:
+        type: integer
+      student_id:
+        type: string
+      zone:
+        type: string
+    required:
+    - dorm_name
+    - number_of_roommates
+    - room_description
+    - room_facilities
+    - room_price
+    - room_size
+    - shared_room_price
+    - student_id
+    - zone
+    type: object
   dto.SocialMedia:
     properties:
       facebook_url:
@@ -251,6 +303,7 @@ definitions:
   model.Room:
     properties:
       available:
+        description: 'TODO: change to available from? keep as date'
         type: boolean
       capacity:
         type: integer
@@ -307,6 +360,11 @@ definitions:
       picture_url:
         type: string
     type: object
+  model.RoommateRequestUnregisteredDormPicture:
+    properties:
+      picture_url:
+        type: string
+    type: object
   model.RoommateRequestWithNoRoom:
     properties:
       budget:
@@ -333,6 +391,33 @@ definitions:
       shared_room_price:
         type: integer
       student_id:
+        type: string
+    type: object
+  model.RoommateRequestWithUnregisteredDorm:
+    properties:
+      dorm_name:
+        type: string
+      facilities:
+        items:
+          $ref: '#/definitions/model.AllRoomFacility'
+        type: array
+      number_of_roommates:
+        type: integer
+      room_description:
+        type: string
+      room_pictures:
+        items:
+          $ref: '#/definitions/model.RoommateRequestUnregisteredDormPicture'
+        type: array
+      room_price:
+        type: integer
+      shared_room_price:
+        type: integer
+      size:
+        type: number
+      student_id:
+        type: string
+      zone:
         type: string
     type: object
   model.SleepHabit:
@@ -661,25 +746,31 @@ paths:
   /roommate-request/registered-dorm:
     post:
       consumes:
-      - multipart/form-data
+      - application/json
       description: create roommate request with registered dorm
       parameters:
-      - in: formData
-        name: dorm_id
+      - description: registered dorm request
+        in: body
+        name: data
         required: true
-        type: string
-      - in: formData
-        name: number_of_roommates
-        required: true
-        type: integer
-      - in: formData
-        name: room_id
-        required: true
-        type: string
-      - in: formData
-        name: shared_room_price
-        required: true
-        type: integer
+        schema:
+          $ref: '#/definitions/dto.RoommateRequestWithRegisteredDormDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.RoommateRequestWithRegisteredDorm'
+      summary: create roommate request with registered dorm
+      tags:
+      - roommate-request
+  /roommate-request/registered-dorm/picture:
+    put:
+      consumes:
+      - multipart/form-data
+      description: update roommate request with reg dorm pictures
+      parameters:
       - in: formData
         name: student_id
         required: true
@@ -694,8 +785,54 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.RoommateRequestWithRegisteredDorm'
-      summary: create roommate request with registered dorm
+            $ref: '#/definitions/model.RoommateRequestWithUnregisteredDorm'
+      summary: update roommate request with reg dorm pictures
+      tags:
+      - roommate-request
+  /roommate-request/unregistered-dorm:
+    post:
+      consumes:
+      - application/json
+      description: create roommate request with unregistered dorm
+      parameters:
+      - description: unregistered dorm request
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RoommateRequestWithUnregisteredDormDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.RoommateRequestWithUnregisteredDorm'
+      summary: create roommate request with unregistered dorm
+      tags:
+      - roommate-request
+  /roommate-request/unregistered-dorm/picture:
+    put:
+      consumes:
+      - multipart/form-data
+      description: update roommate request with reg dorm pictures
+      parameters:
+      - in: formData
+        name: student_id
+        required: true
+        type: string
+      - description: upload multiple room pictures,test this out in postman
+        in: formData
+        name: room_pictures
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.RoommateRequestWithUnregisteredDorm'
+      summary: update roommate request with unreg dorm pictures
       tags:
       - roommate-request
   /student/{id}:
