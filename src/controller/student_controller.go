@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 
@@ -10,14 +9,13 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/thitiratratrat/hhor/src/constant"
 	"github.com/thitiratratrat/hhor/src/dto"
-	"github.com/thitiratratrat/hhor/src/errortype"
 	"github.com/thitiratratrat/hhor/src/model"
 	"github.com/thitiratratrat/hhor/src/service"
 	"github.com/thitiratratrat/hhor/src/utils"
-	"gorm.io/gorm"
 )
 
 type StudentController interface {
+	GetFaculties(context *gin.Context)
 	GetStudent(context *gin.Context)
 	UpdateStudent(context *gin.Context)
 	UploadPicture(context *gin.Context)
@@ -46,13 +44,11 @@ type studentController struct {
 // @Success 200 {object} model.Student "OK"
 // @Router /student/{id} [patch]
 func (studentController *studentController) UpdateStudent(context *gin.Context) {
-	id := context.Param("id")
-
 	defer utils.RecoverInvalidInput(context)
 
-	validate := validator.New()
+	id := context.Param("id")
 	var studentUpdateDTO dto.StudentUpdateDTO
-
+	validate := validator.New()
 	bindErr := context.ShouldBind(&studentUpdateDTO)
 
 	if bindErr != nil {
@@ -66,11 +62,7 @@ func (studentController *studentController) UpdateStudent(context *gin.Context) 
 	}
 
 	studentUpdateMap := structs.Map(studentUpdateDTO)
-	updatedStudent, updateError := studentController.studentService.UpdateStudent(id, studentUpdateMap)
-
-	if updateError != nil {
-		panic(updateError)
-	}
+	updatedStudent := studentController.studentService.UpdateStudent(id, studentUpdateMap)
 
 	context.IndentedJSON(http.StatusOK, updatedStudent)
 }
@@ -88,14 +80,11 @@ func (studentController *studentController) UpdateStudent(context *gin.Context) 
 // @Failure 400,404,500 {object} dto.ErrorResponse
 // @Router /student/picture/{id} [post]
 func (studentController *studentController) UploadPicture(context *gin.Context) {
-	id := context.Param("id")
-
 	defer utils.RecoverInvalidInput(context)
 
-	validate := validator.New()
-
+	id := context.Param("id")
 	var studentPictureDTO dto.StudentPictureDTO
-
+	validate := validator.New()
 	bindErr := context.ShouldBind(&studentPictureDTO)
 
 	if bindErr != nil {
@@ -108,20 +97,7 @@ func (studentController *studentController) UploadPicture(context *gin.Context) 
 		panic(validateError)
 	}
 
-	student, err := studentController.studentService.GetStudent(id)
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		context.IndentedJSON(http.StatusNotFound, dto.ErrorResponse{
-			Message: errortype.ErrResourceNotFound.Error(),
-		})
-
-		return
-	} else if err != nil {
-		context.IndentedJSON(http.StatusInternalServerError, dto.ErrorResponse{
-			Message: err.Error(),
-		})
-
-		return
-	}
+	student := studentController.studentService.GetStudent(id)
 
 	var updatedStudent model.Student
 
@@ -134,11 +110,7 @@ func (studentController *studentController) UploadPicture(context *gin.Context) 
 		}
 
 		pictureUrl := utils.UploadPicture(file, constant.StudentProfilePictureFolder, filename, context.Request)
-		updatedStudent, err = studentController.studentService.UpdateStudent(id, map[string]interface{}{"picture_url": pictureUrl})
-
-		if err != nil {
-			panic(err)
-		}
+		updatedStudent = studentController.studentService.UpdateStudent(id, map[string]interface{}{"picture_url": pictureUrl})
 	}
 
 	//TODO: delete old files from bucket storage too
@@ -157,17 +129,13 @@ func (studentController *studentController) UploadPicture(context *gin.Context) 
 			petPictureUrls = append(petPictureUrls, petPictureUrl)
 		}
 
-		updatedStudent, err = studentController.studentService.UpdateStudentPetPictures(id, petPictureUrls)
-
-		if err != nil {
-			panic(err)
-		}
+		updatedStudent = studentController.studentService.UpdateStudentPetPictures(id, petPictureUrls)
 	}
 
 	context.IndentedJSON(http.StatusOK, updatedStudent)
 }
 
-//TODO: get student's roommate request
+//TODO: get roommate request?
 
 // @Summary get student profile
 // @Description returns student profile
@@ -178,23 +146,23 @@ func (studentController *studentController) UploadPicture(context *gin.Context) 
 // @Param id path string true "Student ID"
 // @Router /student/{id} [get]
 func (studentController *studentController) GetStudent(context *gin.Context) {
+	defer utils.RecoverInvalidInput(context)
+
 	id := context.Param("id")
-
-	student, err := studentController.studentService.GetStudent(id)
-
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		context.IndentedJSON(http.StatusNotFound, dto.ErrorResponse{
-			Message: errortype.ErrResourceNotFound.Error(),
-		})
-
-		return
-	} else if err != nil {
-		context.IndentedJSON(http.StatusInternalServerError, dto.ErrorResponse{
-			Message: err.Error(),
-		})
-
-		return
-	}
+	student := studentController.studentService.GetStudent(id)
 
 	context.IndentedJSON(http.StatusOK, student)
+}
+
+// @Summary get faculties
+// @Description returns list of faculties
+// @Tags student
+// @Produce json
+// @Success 200 {array} string "OK"
+// @Failure 400,404,500 {object} dto.ErrorResponse
+// @Router /student/faculty [get]
+func (studentController *studentController) GetFaculties(context *gin.Context) {
+	faculties := studentController.studentService.GetFaculties()
+
+	context.IndentedJSON(http.StatusOK, faculties)
 }

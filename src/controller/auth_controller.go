@@ -1,13 +1,12 @@
 package controller
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/thitiratratrat/hhor/src/dto"
-	"github.com/thitiratratrat/hhor/src/errortype"
+	"github.com/thitiratratrat/hhor/src/fieldvalidator"
 	"github.com/thitiratratrat/hhor/src/service"
 	"github.com/thitiratratrat/hhor/src/utils"
 )
@@ -17,14 +16,16 @@ type AuthController interface {
 	LoginStudent(context *gin.Context)
 }
 
-func AuthControllerHandler(authService service.AuthService) AuthController {
+func AuthControllerHandler(authService service.AuthService, fieldValidator fieldvalidator.FieldValidator) AuthController {
 	return &authController{
-		authService: authService,
+		authService:    authService,
+		fieldValidator: fieldValidator,
 	}
 }
 
 type authController struct {
-	authService service.AuthService
+	authService    service.AuthService
+	fieldValidator fieldvalidator.FieldValidator
 }
 
 // @Summary register student account
@@ -41,15 +42,7 @@ func (authController *authController) RegisterStudent(context *gin.Context) {
 	validate := validator.New()
 
 	_ = validate.RegisterValidation("faculty", func(fl validator.FieldLevel) bool {
-		faculties := authController.authService.GetFaculties()
-
-		for _, faculty := range faculties {
-			if faculty == fl.Field().String() {
-				return true
-			}
-		}
-
-		return false
+		return authController.fieldValidator.ValidFaculty([]string{fl.Field().String()})
 	})
 
 	var registerStudentDTO dto.RegisterStudentDTO
@@ -66,11 +59,7 @@ func (authController *authController) RegisterStudent(context *gin.Context) {
 		panic(validateError)
 	}
 
-	createdStudent, createError := authController.authService.RegisterStudent(registerStudentDTO)
-
-	if createError != nil {
-		panic(createError)
-	}
+	createdStudent := authController.authService.RegisterStudent(registerStudentDTO)
 
 	context.IndentedJSON(http.StatusOK, createdStudent)
 }
@@ -101,28 +90,7 @@ func (authController *authController) LoginStudent(context *gin.Context) {
 		panic(validateError)
 	}
 
-	loginError := authController.authService.LoginStudent(loginCredentialsDTO)
-
-	if errors.Is(loginError, errortype.ErrUnauthorized) {
-		context.IndentedJSON(http.StatusUnauthorized, dto.ErrorResponse{
-			Message: loginError.Error(),
-		})
-
-		return
-
-	} else if errors.Is(loginError, errortype.ErrUserNotFound) {
-		context.IndentedJSON(http.StatusNotFound, dto.ErrorResponse{
-			Message: loginError.Error(),
-		})
-
-		return
-	} else if loginError != nil {
-		context.IndentedJSON(http.StatusInternalServerError, dto.ErrorResponse{
-			Message: loginError.Error(),
-		})
-
-		return
-	}
+	authController.authService.LoginStudent(loginCredentialsDTO)
 
 	context.IndentedJSON(http.StatusOK, "")
 }

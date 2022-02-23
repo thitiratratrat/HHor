@@ -2,33 +2,37 @@ package controller
 
 import (
 	"errors"
-	"io"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"github.com/thitiratratrat/hhor/src/dto"
 	"github.com/thitiratratrat/hhor/src/errortype"
+	"github.com/thitiratratrat/hhor/src/fieldvalidator"
 	"github.com/thitiratratrat/hhor/src/service"
+	"github.com/thitiratratrat/hhor/src/utils"
 	"gorm.io/gorm"
 )
 
 type DormController interface {
 	GetDorms(context *gin.Context)
-	GetDormDetail(context *gin.Context)
+	GetDorm(context *gin.Context)
 	GetDormSuggestions(context *gin.Context)
 	GetAllDormFacilities(context *gin.Context)
 	GetDormZones(context *gin.Context)
 }
 
-func DormControllerHandler(dormService service.DormService) DormController {
+func DormControllerHandler(dormService service.DormService, fieldValidator fieldvalidator.FieldValidator) DormController {
 	return &dormController{
-		dormService: dormService,
+		dormService:    dormService,
+		fieldValidator: fieldValidator,
 	}
 }
 
 type dormController struct {
-	dormService service.DormService
+	dormService    service.DormService
+	fieldValidator fieldvalidator.FieldValidator
 }
 
 //TODO: filter by match score, cosine similarity, similarity measures
@@ -41,17 +45,33 @@ type dormController struct {
 // @Param dorm_filter query dto.DormFilterDTO false "Dorm Filter"
 // @Router /dorm [get]
 func (dormController *dormController) GetDorms(context *gin.Context) {
-	var request dto.DormFilterDTO
+	defer utils.RecoverInvalidInput(context)
 
-	if err := context.Bind(&request); err != nil {
-		if err != io.EOF {
-			context.JSON(http.StatusBadRequest, &dto.ErrorResponse{Message: errortype.ErrInvalidInput.Error()})
+	var dormFilterDTO dto.DormFilterDTO
+	validate := validator.New()
+	_ = validate.RegisterValidation("dormzone", func(fl validator.FieldLevel) bool {
+		return dormController.fieldValidator.ValidDormZone([]string{fl.Field().String()})
+	})
+	_ = validate.RegisterValidation("roomfacilities", func(fl validator.FieldLevel) bool {
+		return dormController.fieldValidator.ValidRoomFacility(fl.Field().Interface().([]string))
+	})
+	_ = validate.RegisterValidation("dormfacilities", func(fl validator.FieldLevel) bool {
+		return dormController.fieldValidator.ValidDormFacility(fl.Field().Interface().([]string))
+	})
 
-			return
-		}
+	bindErr := context.ShouldBind(&dormFilterDTO)
+
+	if bindErr != nil {
+		panic(bindErr)
 	}
 
-	dormDTOs := dormController.dormService.GetDorms(request)
+	validateError := validate.Struct(dormFilterDTO)
+
+	if validateError != nil {
+		panic(validateError)
+	}
+
+	dormDTOs := dormController.dormService.GetDorms(dormFilterDTO)
 
 	context.IndentedJSON(http.StatusOK, dormDTOs)
 }
@@ -64,7 +84,7 @@ func (dormController *dormController) GetDorms(context *gin.Context) {
 // @Failure 400,404,500 {object} dto.ErrorResponse
 // @Param id path int true "Dorm ID"
 // @Router /dorm/{id} [get]
-func (dormController *dormController) GetDormDetail(context *gin.Context) {
+func (dormController *dormController) GetDorm(context *gin.Context) {
 	dormID := context.Param("id")
 
 	if _, err := strconv.Atoi(dormID); err != nil {

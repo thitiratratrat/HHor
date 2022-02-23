@@ -130,6 +130,19 @@ definitions:
     - shared_room_price
     - student_id
     type: object
+  dto.RoommateRequestWithRoomDTO:
+    properties:
+      dorm_name:
+        type: string
+      id:
+        type: string
+      picture:
+        type: string
+      shared_room_price:
+        type: integer
+      student:
+        $ref: '#/definitions/model.Student'
+    type: object
   dto.RoommateRequestWithUnregisteredDormDTO:
     properties:
       dorm_name:
@@ -789,6 +802,28 @@ paths:
       summary: update roommate request with reg dorm pictures
       tags:
       - roommate-request
+  /roommate-request/room:
+    get:
+      description: get roommate requests with room
+      parameters:
+      - in: query
+        name: dorm_name
+        type: string
+      - in: query
+        name: zone
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.RoommateRequestWithRoomDTO'
+            type: array
+      summary: get roommate requests
+      tags:
+      - roommate-request
   /roommate-request/unregistered-dorm:
     post:
       consumes:
@@ -887,6 +922,33 @@ paths:
           schema:
             $ref: '#/definitions/model.Student'
       summary: update student detail
+      tags:
+      - student
+  /student/faculty:
+    get:
+      description: returns list of faculties
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: get faculties
       tags:
       - student
   /student/picture/{id}:

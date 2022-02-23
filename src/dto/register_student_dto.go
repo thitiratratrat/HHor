@@ -7,6 +7,6 @@ type RegisterStudentDTO struct {
 	Email          string `json:"email"  validate:"required,email"`
 	Password       string `json:"password" validate:"required,min=4"`
 	EnrollmentYear int    `json:"enrollment_year" validate:"required,gte=2014"`
-	Gender         string `json:"gender"  validate:"required,oneof=male female lgbtq"`
+	Gender         string `json:"gender"  validate:"required,oneof=male female lgbtq+"`
 	Faculty        string `json:"faculty"  validate:"required,faculty"`
 }

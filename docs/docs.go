@@ -490,6 +490,41 @@ var doc = `{
                 }
             }
         },
+        "/roommate-request/room": {
+            "get": {
+                "description": "get roommate requests with room",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "roommate-request"
+                ],
+                "summary": "get roommate requests",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "dorm_name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "zone",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.RoommateRequestWithRoomDTO"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/roommate-request/unregistered-dorm": {
             "post": {
                 "description": "create roommate request with unregistered dorm",
@@ -556,6 +591,47 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/model.RoommateRequestWithUnregisteredDorm"
+                        }
+                    }
+                }
+            }
+        },
+        "/student/faculty": {
+            "get": {
+                "description": "returns list of faculties",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "student"
+                ],
+                "summary": "get faculties",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
                         }
                     }
                 }
@@ -898,6 +974,26 @@ var doc = `{
                 },
                 "student_id": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.RoommateRequestWithRoomDTO": {
+            "type": "object",
+            "properties": {
+                "dorm_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "picture": {
+                    "type": "string"
+                },
+                "shared_room_price": {
+                    "type": "integer"
+                },
+                "student": {
+                    "$ref": "#/definitions/model.Student"
                 }
             }
         },

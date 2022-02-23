@@ -31,7 +31,7 @@ type dormRepository struct {
 func (repository *dormRepository) FindDorms(dormFilterDTO dto.DormFilterDTO) []model.Dorm {
 	var dorms []model.Dorm
 
-	nameCondition := "name LIKE '%" + dormFilterDTO.Name + "%'"
+	nameCondition := getNameCondition(dormFilterDTO.Name)
 	typeCondition := getTypeCondition(dormFilterDTO.Type)
 	zoneCondition := getZoneCondition(dormFilterDTO.Zone)
 	capacityCondition := getCapacityCondition(dormFilterDTO.Capacity)
@@ -68,6 +68,14 @@ func (repository *dormRepository) FindDormNames(firstLetter string) []dto.DormSu
 	return dormNames
 }
 
+func getNameCondition(name *string) string {
+	if name == nil {
+		return "name LIKE '%%'"
+	}
+
+	return "name LIKE '%" + *name + "%'"
+}
+
 func getTypeCondition(typeFilter []string) string {
 	if len(typeFilter) == 0 {
 		return ""
@@ -78,42 +86,42 @@ func getTypeCondition(typeFilter []string) string {
 	return fmt.Sprintf("AND type in (%s)", formattedTypeFilter)
 }
 
-func getZoneCondition(zone string) string {
-	if len(zone) == 0 {
+func getZoneCondition(zone *string) string {
+	if zone == nil {
 		return ""
 	}
 
-	return fmt.Sprintf("AND dorm_zone_name = '%s'", zone)
+	return fmt.Sprintf("AND dorm_zone_name = '%s'", *zone)
 }
 
-func getCapacityCondition(capacity int) string {
-	if capacity == 0 {
+func getCapacityCondition(capacity *int) string {
+	if capacity == nil {
 		return ""
 	}
 
-	return fmt.Sprintf("AND capacity >= %d", capacity)
+	return fmt.Sprintf("AND capacity >= %d", *capacity)
 }
 
-func getLatLongCondition(lat float64, long float64) string {
-	if lat == 0 || long == 0 {
+func getLatLongCondition(lat *float64, long *float64) string {
+	if lat == nil || long == nil {
 		return ""
 	}
 
 	const distance = 5 //km
-	minLat, _ := utils.GetLatLongFromDistance(lat, long, distance, 180)
-	maxLat, _ := utils.GetLatLongFromDistance(lat, long, distance, 0)
-	_, minLong := utils.GetLatLongFromDistance(lat, long, distance, 270)
-	_, maxLong := utils.GetLatLongFromDistance(lat, long, distance, 90)
+	minLat, _ := utils.GetLatLongFromDistance(*lat, *long, distance, 180)
+	maxLat, _ := utils.GetLatLongFromDistance(*lat, *long, distance, 0)
+	_, minLong := utils.GetLatLongFromDistance(*lat, *long, distance, 270)
+	_, maxLong := utils.GetLatLongFromDistance(*lat, *long, distance, 90)
 
 	return fmt.Sprintf("AND latitude BETWEEN %f AND %f AND longitude BETWEEN %f AND %f", minLat, maxLat, minLong, maxLong)
 }
 
-func getPriceCondition(lowerPrice int, upperPrice int) string {
-	if lowerPrice == 0 || upperPrice == 0 || upperPrice < lowerPrice {
+func getPriceCondition(lowerPrice *int, upperPrice *int) string {
+	if lowerPrice == nil || upperPrice == nil || *upperPrice < *lowerPrice {
 		return ""
 	}
 
-	return fmt.Sprintf("AND price BETWEEN %d AND %d", lowerPrice, upperPrice)
+	return fmt.Sprintf("AND price BETWEEN %d AND %d", *lowerPrice, *upperPrice)
 }
 
 func getRoomFacilitiesCondition(roomFacilities []string) string {

@@ -1,11 +1,16 @@
 package repository
 
 import (
+	"fmt"
+
+	"github.com/thitiratratrat/hhor/src/dto"
 	"github.com/thitiratratrat/hhor/src/model"
 	"gorm.io/gorm"
 )
 
 type RoommateRequestRepository interface {
+	FindRoommateRequestWithRegisteredDorm(roommateRequestFilterDTO dto.RoommateRequestFilterDTO) []model.RoommateRequestWithRegisteredDorm
+	FindRoommateRequestWithUnregisteredDorm(roommateRequestFilterDTO dto.RoommateRequestFilterDTO) []model.RoommateRequestWithUnregisteredDorm
 	CreateRoommateRequestWithNoRoom(roommateRequestWithNoRoom model.RoommateRequestWithNoRoom) (model.RoommateRequestWithNoRoom, error)
 	CreateRoommateRequestWithRegisteredDorm(roommateRequestWithRegisteredDorm model.RoommateRequestWithRegisteredDorm) (model.RoommateRequestWithRegisteredDorm, error)
 	CreateRoommateRequestWithUnregisteredDorm(roommateRequestWithUnregisteredDorm model.RoommateRequestWithUnregisteredDorm) (model.RoommateRequestWithUnregisteredDorm, error)
@@ -21,6 +26,28 @@ func RoommateRequestRepositoryHandler(db *gorm.DB) RoommateRequestRepository {
 
 type roommateRequestRepository struct {
 	db *gorm.DB
+}
+
+func (repository *roommateRequestRepository) FindRoommateRequestWithRegisteredDorm(roommateRequestFilterDTO dto.RoommateRequestFilterDTO) []model.RoommateRequestWithRegisteredDorm {
+	var roommateRequests []model.RoommateRequestWithRegisteredDorm
+	dormNameCondition := `"Dorm".name` + " LIKE '%" + roommateRequestFilterDTO.DormName + "%'"
+
+	condition := dormNameCondition + repository.getCondition(roommateRequestFilterDTO)
+
+	repository.db.Preload("RoomPictures").Joins("Dorm").Joins("Room").Joins("Student").Where(condition).Find(&roommateRequests)
+
+	return roommateRequests
+}
+
+func (repository *roommateRequestRepository) FindRoommateRequestWithUnregisteredDorm(roommateRequestFilterDTO dto.RoommateRequestFilterDTO) []model.RoommateRequestWithUnregisteredDorm {
+	var roommateRequests []model.RoommateRequestWithUnregisteredDorm
+	dormNameCondition := "dorm_name LIKE '%" + roommateRequestFilterDTO.DormName + "%'"
+
+	condition := dormNameCondition + repository.getCondition(roommateRequestFilterDTO)
+
+	repository.db.Preload("RoomPictures").Preload("RoomFacilities").Joins("Student").Where(condition).Find(&roommateRequests)
+
+	return roommateRequests
 }
 
 func (repository *roommateRequestRepository) CreateRoommateRequestWithNoRoom(roommateRequestWithNoRoom model.RoommateRequestWithNoRoom) (model.RoommateRequestWithNoRoom, error) {
@@ -77,4 +104,19 @@ func (repository *roommateRequestRepository) UpdateRoommateRequestWithUnregister
 	err := repository.db.Preload("RoomPictures").Preload("RoomFacilities").Where("student_id = ?", id).First(&roommateRequestWithUnregisteredDorm).Error
 
 	return roommateRequestWithUnregisteredDorm, err
+}
+
+func (repository *roommateRequestRepository) getCondition(roommateRequestFilterDTO dto.RoommateRequestFilterDTO) string {
+	zoneCondition := repository.getZoneCondition(roommateRequestFilterDTO.Zone)
+	condition := fmt.Sprintf("%s", zoneCondition)
+
+	return condition
+}
+
+func (repository *roommateRequestRepository) getZoneCondition(zone string) string {
+	if len(zone) == 0 {
+		return ""
+	}
+
+	return fmt.Sprintf("AND dorm_zone_name = '%s'", zone)
 }

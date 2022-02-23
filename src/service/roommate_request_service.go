@@ -1,14 +1,12 @@
 package service
 
 import (
-	"errors"
 	"strconv"
 
 	"github.com/thitiratratrat/hhor/src/dto"
 	"github.com/thitiratratrat/hhor/src/errortype"
 	"github.com/thitiratratrat/hhor/src/model"
 	"github.com/thitiratratrat/hhor/src/repository"
-	"gorm.io/gorm"
 )
 
 const (
@@ -18,6 +16,7 @@ const (
 )
 
 type RoommateRequestService interface {
+	GetRoommateRequestsWithRoom(dto.RoommateRequestFilterDTO) []dto.RoommateRequestWithRoomDTO
 	CreateRoommateRequestWithNoRoom(dto.RoommateRequestWithNoRoomDTO) model.RoommateRequestWithNoRoom
 	CreateRoommateRequestWithRegisteredDorm(dto.RoommateRequestWithRegisteredDormDTO) model.RoommateRequestWithRegisteredDorm
 	CreateRoommateRequestWithUnregisteredDorm(dto.RoommateRequestWithUnregisteredDormDTO) model.RoommateRequestWithUnregisteredDorm
@@ -38,19 +37,48 @@ type roommateRequestService struct {
 	studentService            StudentService
 }
 
+func (roommateRequestService *roommateRequestService) GetRoommateRequestsWithRoom(roommateRequestFilterDTO dto.RoommateRequestFilterDTO) []dto.RoommateRequestWithRoomDTO {
+	roommateRequestsWithRoom := []dto.RoommateRequestWithRoomDTO{}
+	roommateRequestsWithRegisteredDorm := roommateRequestService.roommateRequestRepository.FindRoommateRequestWithRegisteredDorm(roommateRequestFilterDTO)
+	roommateRequestWithUnregisteredDorm := roommateRequestService.roommateRequestRepository.FindRoommateRequestWithUnregisteredDorm(roommateRequestFilterDTO)
+
+	//TODO: if no room pictures, use the dorm owner's room picture
+	for _, roommateRequest := range roommateRequestsWithRegisteredDorm {
+		student := roommateRequestService.studentService.GetStudent(roommateRequest.Student.ID)
+		roommateRequestsWithRoom = append(roommateRequestsWithRoom, dto.RoommateRequestWithRoomDTO{
+			ID:              roommateRequest.StudentID,
+			RoomPicture:     roommateRequest.RoomPictures[0].PictureUrl,
+			DormName:        roommateRequest.Dorm.Name,
+			Student:         student,
+			SharedRoomPrice: roommateRequest.SharedRoomPrice,
+		})
+	}
+
+	for _, roommateRequest := range roommateRequestWithUnregisteredDorm {
+		student := roommateRequestService.studentService.GetStudent(roommateRequest.Student.ID)
+		roommateRequestsWithRoom = append(roommateRequestsWithRoom, dto.RoommateRequestWithRoomDTO{
+			ID:              roommateRequest.StudentID,
+			RoomPicture:     roommateRequest.RoomPictures[0].PictureUrl,
+			DormName:        roommateRequest.DormName,
+			Student:         student,
+			SharedRoomPrice: roommateRequest.SharedRoomPrice,
+		})
+	}
+
+	return roommateRequestsWithRoom
+}
+
 func (roommateRequestService *roommateRequestService) CreateRoommateRequestWithNoRoom(roommateRequestWithNoRoomDTO dto.RoommateRequestWithNoRoomDTO) model.RoommateRequestWithNoRoom {
 	if !roommateRequestService.canCreateRoommateRequest(roommateRequestWithNoRoomDTO.StudentID) {
-		panic(errors.New("student already has an open roommate request"))
+		panic(errortype.ErrOpenRoommateRequest)
 	}
 
 	dormZones := []model.DormZone{}
 
 	for _, inputDormZone := range roommateRequestWithNoRoomDTO.Zone {
-		dormZone := model.DormZone{
+		dormZones = append(dormZones, model.DormZone{
 			Name: inputDormZone,
-		}
-
-		dormZones = append(dormZones, dormZone)
+		})
 	}
 
 	roommateRequestWithNoRoom := &model.RoommateRequestWithNoRoom{
@@ -72,7 +100,7 @@ func (roommateRequestService *roommateRequestService) CreateRoommateRequestWithN
 
 func (roommateRequestService *roommateRequestService) CreateRoommateRequestWithRegisteredDorm(roommateRequestWithRegisteredDormDTO dto.RoommateRequestWithRegisteredDormDTO) model.RoommateRequestWithRegisteredDorm {
 	if !roommateRequestService.canCreateRoommateRequest(roommateRequestWithRegisteredDormDTO.StudentID) {
-		panic(errors.New("student already has an open roommate request"))
+		panic(errortype.ErrOpenRoommateRequest)
 	}
 
 	roomID, _ := strconv.Atoi(roommateRequestWithRegisteredDormDTO.RoomID)
@@ -99,7 +127,7 @@ func (roommateRequestService *roommateRequestService) CreateRoommateRequestWithR
 
 func (roommateRequestService *roommateRequestService) CreateRoommateRequestWithUnregisteredDorm(roommateRequestWithUnregisteredDormDTO dto.RoommateRequestWithUnregisteredDormDTO) model.RoommateRequestWithUnregisteredDorm {
 	if !roommateRequestService.canCreateRoommateRequest(roommateRequestWithUnregisteredDormDTO.StudentID) {
-		panic(errors.New("student already has an open roommate request"))
+		panic(errortype.ErrOpenRoommateRequest)
 	}
 
 	roomFacilities := []model.AllRoomFacility{}
@@ -156,25 +184,13 @@ func (roommateRequestService *roommateRequestService) UpdateRoommateRequestWithU
 }
 
 func (roommateRequestService *roommateRequestService) CanUpdateRoommateRequestPicture(studentID string, requestType string) bool {
-	student, err := roommateRequestService.studentService.GetStudent(studentID)
-
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		panic(errortype.ErrResourceNotFound)
-	} else if err != nil {
-		panic(err)
-	}
+	student := roommateRequestService.studentService.GetStudent(studentID)
 
 	return *student.RoommateRequest == requestType
 }
 
 func (roommateRequestService *roommateRequestService) canCreateRoommateRequest(studentID string) bool {
-	student, err := roommateRequestService.studentService.GetStudent(studentID)
-
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		panic(errortype.ErrResourceNotFound)
-	} else if err != nil {
-		panic(err)
-	}
+	student := roommateRequestService.studentService.GetStudent(studentID)
 
 	return student.RoommateRequest == nil
 }

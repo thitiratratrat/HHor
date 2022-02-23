@@ -7,11 +7,11 @@ import (
 
 type StudentRepository interface {
 	CreateStudent(model.Student) (model.Student, error)
-	GetStudent(id string) (model.Student, error)
-	GetStudentByEmail(email string) (model.Student, error)
+	FindStudent(id string) (model.Student, error)
+	FindStudentByEmail(email string) (model.Student, error)
 	UpdateStudent(id string, studentUpdate map[string]interface{}) (model.Student, error)
 	UpdateStudentPetPictures(id string, pictureUrls []string) (model.Student, error)
-	GetFaculties() []string
+	FindFaculties() []string
 }
 
 func StudentRepositoryHandler(db *gorm.DB) StudentRepository {
@@ -31,10 +31,10 @@ func (repository *studentRepository) CreateStudent(student model.Student) (model
 		return model.Student{}, err
 	}
 
-	return repository.GetStudent(student.ID)
+	return repository.FindStudent(student.ID)
 }
 
-func (repository *studentRepository) GetStudent(id string) (model.Student, error) {
+func (repository *studentRepository) FindStudent(id string) (model.Student, error) {
 	var student model.Student
 
 	err := repository.db.Preload("SmokeHabit").Preload("StudyHabit").Preload("RoomCareHabit").Preload("PetHabit").Preload("SleepHabit").Preload("PreferredSmokeHabit").Preload("PreferredStudyHabit").Preload("PreferredRoomCareHabit").Preload("PreferredPetHabit").Preload("PreferredSleepHabit").Preload("PetPictures").Where("id = ?", id).First(&student).Error
@@ -42,7 +42,7 @@ func (repository *studentRepository) GetStudent(id string) (model.Student, error
 	return student, err
 }
 
-func (repository *studentRepository) GetStudentByEmail(email string) (model.Student, error) {
+func (repository *studentRepository) FindStudentByEmail(email string) (model.Student, error) {
 	var student model.Student
 
 	err := repository.db.Preload("SmokeHabit").Preload("StudyHabit").Preload("RoomCareHabit").Preload("PetHabit").Preload("SleepHabit").Preload("PreferredSmokeHabit").Preload("PreferredStudyHabit").Preload("PreferredRoomCareHabit").Preload("PreferredPetHabit").Preload("PreferredSleepHabit").Preload("PetPictures").Where("email = ?", email).First(&student).Error
@@ -57,7 +57,7 @@ func (repository *studentRepository) UpdateStudent(id string, studentUpdate map[
 		return model.Student{}, err
 	}
 
-	return repository.GetStudent(id)
+	return repository.FindStudent(id)
 }
 
 func (repository *studentRepository) UpdateStudentPetPictures(id string, pictureUrls []string) (model.Student, error) {
@@ -70,12 +70,12 @@ func (repository *studentRepository) UpdateStudentPetPictures(id string, picture
 	repository.db.Table("pet_pictures").Where("student_email = ?", id).Delete(model.PetPicture{})
 	repository.db.Create(&petPictures)
 
-	student, err := repository.GetStudent(id)
+	student, err := repository.FindStudent(id)
 
 	return student, err
 }
 
-func (repository *studentRepository) GetFaculties() []string {
+func (repository *studentRepository) FindFaculties() []string {
 	var faculties []string
 
 	repository.db.Model(&model.Faculty{}).Pluck("name", &faculties)

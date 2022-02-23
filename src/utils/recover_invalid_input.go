@@ -1,28 +1,27 @@
 package utils
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/thitiratratrat/hhor/src/dto"
+	"github.com/thitiratratrat/hhor/src/errortype"
 )
 
-//TODO: add status code as input?
 func RecoverInvalidInput(context *gin.Context) {
 	if err := recover(); err != nil {
 		switch errType := err.(type) {
-
-		case error:
-			context.IndentedJSON(http.StatusBadRequest, dto.ErrorResponse{
+		case errortype.ErrorMessage:
+			context.IndentedJSON(errType.StatusCode, dto.ErrorResponse{
 				Message: errType.Error(),
 			})
 
 		default:
-			context.IndentedJSON(http.StatusInternalServerError, dto.ErrorResponse{
-				Message: "bad request",
+			context.IndentedJSON(http.StatusBadRequest, dto.ErrorResponse{
+				Message: fmt.Sprintf("%v", errType),
 			})
 
 		}
-		return
 	}
 }

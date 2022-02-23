@@ -9,9 +9,8 @@ import (
 )
 
 type AuthService interface {
-	GetFaculties() []string
-	RegisterStudent(dto.RegisterStudentDTO) (model.Student, error)
-	LoginStudent(dto.LoginCredentialsDTO) error
+	RegisterStudent(dto.RegisterStudentDTO) model.Student
+	LoginStudent(dto.LoginCredentialsDTO)
 }
 
 func AuthServiceHandler(studentRepository repository.StudentRepository, dormOwnerRepository repository.DormOwnerRepository) AuthService {
@@ -26,13 +25,7 @@ type authService struct {
 	dormOwnerRepository repository.DormOwnerRepository
 }
 
-func (authService *authService) GetFaculties() []string {
-	faculties := authService.studentRepository.GetFaculties()
-
-	return faculties
-}
-
-func (authService *authService) RegisterStudent(registerStudentDTO dto.RegisterStudentDTO) (model.Student, error) {
+func (authService *authService) RegisterStudent(registerStudentDTO dto.RegisterStudentDTO) model.Student {
 	hashedPassword, hashErr := bcrypt.GenerateFromPassword([]byte(registerStudentDTO.Password), bcrypt.DefaultCost)
 
 	if hashErr != nil {
@@ -50,21 +43,27 @@ func (authService *authService) RegisterStudent(registerStudentDTO dto.RegisterS
 		FacultyName:    registerStudentDTO.Faculty,
 	}
 
-	return authService.studentRepository.CreateStudent(student)
+	student, err := authService.studentRepository.CreateStudent(student)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return student
 }
 
-func (authService *authService) LoginStudent(loginCredentialsDTO dto.LoginCredentialsDTO) error {
-	student, getStudentError := authService.studentRepository.GetStudentByEmail(loginCredentialsDTO.Email)
+func (authService *authService) LoginStudent(loginCredentialsDTO dto.LoginCredentialsDTO) {
+	student, getStudentError := authService.studentRepository.FindStudentByEmail(loginCredentialsDTO.Email)
 
 	if getStudentError == nil {
 		if comparePassword(loginCredentialsDTO.Password, student.Password) {
-			return nil
+			return
 		}
 
-		return errortype.ErrUnauthorized
+		panic(errortype.ErrUnauthorized)
 	}
 
-	return errortype.ErrUserNotFound
+	panic(errortype.ErrUserNotFound)
 }
 
 func comparePassword(password string, hashedPassword string) bool {

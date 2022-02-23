@@ -9,6 +9,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 	docs "github.com/thitiratratrat/hhor/docs"
 	"github.com/thitiratratrat/hhor/src/controller"
+	"github.com/thitiratratrat/hhor/src/fieldvalidator"
 	"github.com/thitiratratrat/hhor/src/model"
 	"github.com/thitiratratrat/hhor/src/repository"
 	"github.com/thitiratratrat/hhor/src/router"
@@ -64,11 +65,13 @@ func init() {
 	studentService := service.StudentServiceHandler(studentRepository)
 	roommateRequestService := service.RoommateRequestServiceHandler(roommateRequestRpository, studentService)
 
-	dormController := controller.DormControllerHandler(dormService)
+	fieldValidator := fieldvalidator.FieldValidatorHandler(dormService, roomService, studentService)
+
+	dormController := controller.DormControllerHandler(dormService, fieldValidator)
 	roomController := controller.RoomControllerHandler(roomService)
-	authController := controller.AuthControllerHandler(authService)
+	authController := controller.AuthControllerHandler(authService, fieldValidator)
 	studentController := controller.StudentControllerHandler(studentService)
-	roommateRequestController := controller.RoommateRequestControllerHandler(roommateRequestService, dormService, roomService)
+	roommateRequestController := controller.RoommateRequestControllerHandler(roommateRequestService, dormService, roomService, fieldValidator)
 
 	controllers = router.Controllers{
 		DormController:            dormController,
@@ -77,6 +80,7 @@ func init() {
 		StudentController:         studentController,
 		RoommateRequestController: roommateRequestController,
 	}
+
 }
 
 func main() {

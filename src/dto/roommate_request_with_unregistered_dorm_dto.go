@@ -7,7 +7,7 @@ type RoommateRequestWithUnregisteredDormDTO struct {
 	RoomDescription   string   `json:"room_description" validate:"required"`
 	RoomPrice         int      `json:"room_price" validate:"required,gt=0"`
 	RoomSize          float32  `json:"room_size" validate:"required,gt=0"`
-	RoomFacilities    []string `json:"room_facilities" validate:"required"`
+	RoomFacilities    []string `json:"room_facilities" validate:"required,roomfacilities"`
 	NumberOfRoommates int      `json:"number_of_roommates" validate:"required,gt=0"`
 	SharedRoomPrice   int      `json:"shared_room_price" validate:"required,gt=0"`
 }
