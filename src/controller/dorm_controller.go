@@ -1,18 +1,15 @@
 package controller
 
 import (
-	"errors"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/thitiratratrat/hhor/src/dto"
-	"github.com/thitiratratrat/hhor/src/errortype"
 	"github.com/thitiratratrat/hhor/src/fieldvalidator"
 	"github.com/thitiratratrat/hhor/src/service"
 	"github.com/thitiratratrat/hhor/src/utils"
-	"gorm.io/gorm"
 )
 
 type DormController interface {
@@ -85,6 +82,8 @@ func (dormController *dormController) GetDorms(context *gin.Context) {
 // @Param id path int true "Dorm ID"
 // @Router /dorm/{id} [get]
 func (dormController *dormController) GetDorm(context *gin.Context) {
+	defer utils.RecoverInvalidInput(context)
+
 	dormID := context.Param("id")
 
 	if _, err := strconv.Atoi(dormID); err != nil {
@@ -93,17 +92,7 @@ func (dormController *dormController) GetDorm(context *gin.Context) {
 		return
 	}
 
-	dorm, err := dormController.dormService.GetDorm(dormID)
-
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		context.IndentedJSON(http.StatusNotFound, &dto.ErrorResponse{Message: errortype.ErrResourceNotFound.Error()})
-
-		return
-	} else if err != nil {
-		context.IndentedJSON(http.StatusInternalServerError, &dto.ErrorResponse{Message: err.Error()})
-
-		return
-	}
+	dorm := dormController.dormService.GetDorm(dormID)
 
 	context.IndentedJSON(http.StatusOK, dorm)
 }

@@ -4,14 +4,14 @@ import (
 	"fmt"
 
 	"github.com/thitiratratrat/hhor/src/dto"
+	"github.com/thitiratratrat/hhor/src/errortype"
 	"github.com/thitiratratrat/hhor/src/model"
 	"github.com/thitiratratrat/hhor/src/repository"
 )
 
 type DormService interface {
-	//TODO: should panic and not return error
 	GetDorms(dormFilterDTO dto.DormFilterDTO) []dto.DormDTO
-	GetDorm(dormID string) (model.Dorm, error)
+	GetDorm(dormID string) model.Dorm
 	GetDormSuggestions(firstLetter string) []dto.DormSuggestionDTO
 	GetAllDormFacilities() []string
 	GetDormZones() []string
@@ -52,10 +52,14 @@ func (dormService *dormService) GetDorms(dormFilterDTO dto.DormFilterDTO) []dto.
 	return dormDTOs
 }
 
-func (dormService *dormService) GetDorm(dormID string) (model.Dorm, error) {
+func (dormService *dormService) GetDorm(dormID string) model.Dorm {
 	dorm, err := dormService.dormRepository.FindDorm(dormID)
 
-	return dorm, err
+	if err != nil {
+		panic(errortype.ErrResourceNotFound)
+	}
+
+	return dorm
 }
 
 func (dormService *dormService) GetDormSuggestions(firstLetter string) []dto.DormSuggestionDTO {
