@@ -9,10 +9,12 @@ import (
 	"github.com/thitiratratrat/hhor/src/repository"
 )
 
+type RoommateRequestType string
+
 const (
-	RoommateRequestWithNoRoom           string = "NO_ROOM"
-	RoommateRequestWithRegisteredDorm   string = "REGISTERED_DORM"
-	RoommateRequestWithUnregisteredDorm string = "UNREGISTERED_DORM"
+	RoommateRequestWithNoRoom           RoommateRequestType = "NO_ROOM"
+	RoommateRequestWithRegisteredDorm   RoommateRequestType = "REGISTERED_DORM"
+	RoommateRequestWithUnregisteredDorm RoommateRequestType = "UNREGISTERED_DORM"
 )
 
 type RoommateRequestService interface {
@@ -22,7 +24,7 @@ type RoommateRequestService interface {
 	CreateRoommateRequestWithUnregisteredDorm(dto.RoommateRequestWithUnregisteredDormDTO) model.RoommateRequestWithUnregisteredDorm
 	UpdateRoommateRequestWithRegisteredDormPictures(id string, pictureUrls []string) model.RoommateRequestWithRegisteredDorm
 	UpdateRoommateRequestWithUnregisteredDormPictures(id string, pictureUrls []string) model.RoommateRequestWithUnregisteredDorm
-	CanUpdateRoommateRequestPicture(studentID string, requestType string) bool
+	CanUpdateRoommateRequestPicture(studentID string, requestType RoommateRequestType) bool
 }
 
 func RoommateRequestServiceHandler(roommateRequestRepository repository.RoommateRequestRepository, studentSerivce StudentService) RoommateRequestService {
@@ -183,10 +185,10 @@ func (roommateRequestService *roommateRequestService) UpdateRoommateRequestWithU
 	return updatedRoommateRequestWithUnregisteredDorm
 }
 
-func (roommateRequestService *roommateRequestService) CanUpdateRoommateRequestPicture(studentID string, requestType string) bool {
+func (roommateRequestService *roommateRequestService) CanUpdateRoommateRequestPicture(studentID string, requestType RoommateRequestType) bool {
 	student := roommateRequestService.studentService.GetStudent(studentID)
 
-	return *student.RoommateRequest == requestType
+	return *student.RoommateRequest == string(requestType)
 }
 
 func (roommateRequestService *roommateRequestService) canCreateRoommateRequest(studentID string) bool {

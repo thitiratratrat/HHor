@@ -144,14 +144,6 @@ var doc = `{
                         "in": "query"
                     },
                     {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "name": "dorm_facilities",
-                        "in": "query"
-                    },
-                    {
                         "type": "number",
                         "name": "lat",
                         "in": "query"
@@ -172,22 +164,6 @@ var doc = `{
                         "in": "query"
                     },
                     {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "name": "room_facilities",
-                        "in": "query"
-                    },
-                    {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "name": "type",
-                        "in": "query"
-                    },
-                    {
                         "type": "integer",
                         "name": "upper_price",
                         "in": "query"
@@ -195,6 +171,36 @@ var doc = `{
                     {
                         "type": "string",
                         "name": "zone",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
+                        "description": "type",
+                        "name": "type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
+                        "description": "dorm facility",
+                        "name": "dorm_facilities",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
+                        "description": "room facility",
+                        "name": "room_facilities",
                         "in": "query"
                     }
                 ],
@@ -499,7 +505,7 @@ var doc = `{
                 "tags": [
                     "roommate-request"
                 ],
-                "summary": "get roommate requests",
+                "summary": "get roommate requests with room",
                 "parameters": [
                     {
                         "type": "string",
@@ -507,8 +513,58 @@ var doc = `{
                         "in": "query"
                     },
                     {
+                        "type": "integer",
+                        "name": "lower_price",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "upper_price",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "name": "zone",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
+                        "description": "gender",
+                        "name": "gender",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
+                        "description": "faculty",
+                        "name": "faculty",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
+                        "description": "year of study",
+                        "name": "year_of_study",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
+                        "description": "number of roommates",
+                        "name": "number_of_roommates",
                         "in": "query"
                     }
                 ],

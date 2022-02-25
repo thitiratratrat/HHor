@@ -1,6 +1,8 @@
 package fieldvalidator
 
-import "github.com/thitiratratrat/hhor/src/service"
+import (
+	"github.com/thitiratratrat/hhor/src/service"
+)
 
 type FieldValidator interface {
 	ValidFaculty(inputFaculty []string) bool

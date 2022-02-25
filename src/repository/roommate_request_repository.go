@@ -2,6 +2,9 @@ package repository
 
 import (
 	"fmt"
+	"sort"
+	"strings"
+	"time"
 
 	"github.com/thitiratratrat/hhor/src/dto"
 	"github.com/thitiratratrat/hhor/src/model"
@@ -30,7 +33,13 @@ type roommateRequestRepository struct {
 
 func (repository *roommateRequestRepository) FindRoommateRequestWithRegisteredDorm(roommateRequestFilterDTO dto.RoommateRequestFilterDTO) []model.RoommateRequestWithRegisteredDorm {
 	var roommateRequests []model.RoommateRequestWithRegisteredDorm
-	dormNameCondition := `"Dorm".name` + " LIKE '%" + roommateRequestFilterDTO.DormName + "%'"
+	var dormNameCondition string
+
+	if roommateRequestFilterDTO.DormName == nil {
+		dormNameCondition = `"Dorm".name` + " LIKE '%%'"
+	} else {
+		dormNameCondition = `"Dorm".name` + " LIKE '%" + *roommateRequestFilterDTO.DormName + "%'"
+	}
 
 	condition := dormNameCondition + repository.getCondition(roommateRequestFilterDTO)
 
@@ -41,7 +50,13 @@ func (repository *roommateRequestRepository) FindRoommateRequestWithRegisteredDo
 
 func (repository *roommateRequestRepository) FindRoommateRequestWithUnregisteredDorm(roommateRequestFilterDTO dto.RoommateRequestFilterDTO) []model.RoommateRequestWithUnregisteredDorm {
 	var roommateRequests []model.RoommateRequestWithUnregisteredDorm
-	dormNameCondition := "dorm_name LIKE '%" + roommateRequestFilterDTO.DormName + "%'"
+	var dormNameCondition string
+
+	if roommateRequestFilterDTO.DormName == nil {
+		dormNameCondition = "dorm_name LIKE '%%'"
+	} else {
+		dormNameCondition = "dorm_name LIKE '%" + *roommateRequestFilterDTO.DormName + "%'"
+	}
 
 	condition := dormNameCondition + repository.getCondition(roommateRequestFilterDTO)
 
@@ -108,15 +123,85 @@ func (repository *roommateRequestRepository) UpdateRoommateRequestWithUnregister
 
 func (repository *roommateRequestRepository) getCondition(roommateRequestFilterDTO dto.RoommateRequestFilterDTO) string {
 	zoneCondition := repository.getZoneCondition(roommateRequestFilterDTO.Zone)
-	condition := fmt.Sprintf("%s", zoneCondition)
+	genderCondition := repository.getGenderCondition(roommateRequestFilterDTO.Gender)
+	facultyCondition := repository.getFacultyCondition(roommateRequestFilterDTO.Faculty)
+	yearOfStudyCondition := repository.getYearOfStudyCondition(roommateRequestFilterDTO.YearOfStudy)
+	budgetCondition := repository.getBudgetCondition(roommateRequestFilterDTO.LowerPrice, roommateRequestFilterDTO.UpperPrice)
+	roommateCondition := repository.getNumberOfRoommatesCondition(roommateRequestFilterDTO.NumberOfRoommates)
+	condition := fmt.Sprintf("%s %s %s %s %s %s", zoneCondition, genderCondition, facultyCondition, yearOfStudyCondition, budgetCondition, roommateCondition)
+
+	fmt.Println(condition)
 
 	return condition
 }
 
-func (repository *roommateRequestRepository) getZoneCondition(zone string) string {
-	if len(zone) == 0 {
+func (repository *roommateRequestRepository) getZoneCondition(zone *string) string {
+	if zone == nil {
 		return ""
 	}
 
-	return fmt.Sprintf("AND dorm_zone_name = '%s'", zone)
+	return fmt.Sprintf("AND dorm_zone_name = '%s'", *zone)
+}
+
+func (repository *roommateRequestRepository) getGenderCondition(gender []string) string {
+	if len(gender) == 0 {
+		return ""
+	}
+
+	formattedGender := "'" + strings.Join(gender, "', '") + "'"
+
+	return fmt.Sprintf("AND gender_name IN (%s)", formattedGender)
+}
+
+func (repository *roommateRequestRepository) getFacultyCondition(faculty []string) string {
+	if len(faculty) == 0 {
+		return ""
+	}
+
+	formattedFaculty := "'" + strings.Join(faculty, "', '") + "'"
+
+	return fmt.Sprintf("AND faculty_name IN (%s)", formattedFaculty)
+}
+
+func (repository *roommateRequestRepository) getYearOfStudyCondition(yearOfStudy []int) string {
+	if len(yearOfStudy) == 0 {
+		return ""
+	}
+
+	sort.Ints(yearOfStudy)
+	highestYear := yearOfStudy[len(yearOfStudy)-1]
+	highCondition := ""
+	currentYear := time.Now().Year()
+	formattedYearofStudy := strings.Trim(strings.Join(strings.Fields(fmt.Sprint(yearOfStudy)), ","), "[]")
+
+	if highestYear >= 4 {
+		highCondition = fmt.Sprintf("OR %d - enrollment_year >= %d", currentYear, highestYear)
+	}
+
+	return fmt.Sprintf("AND (%d - enrollment_year IN (%s) %s)", currentYear, formattedYearofStudy, highCondition)
+}
+
+func (repository *roommateRequestRepository) getBudgetCondition(lowerPrice *int, upperPrice *int) string {
+	if lowerPrice == nil || upperPrice == nil || *upperPrice < *lowerPrice {
+		return ""
+	}
+
+	return fmt.Sprintf("AND shared_room_price BETWEEN %d AND %d", *lowerPrice, *upperPrice)
+}
+
+func (repository *roommateRequestRepository) getNumberOfRoommatesCondition(numberOfRoomates []int) string {
+	if len(numberOfRoomates) == 0 {
+		return ""
+	}
+
+	sort.Ints(numberOfRoomates)
+	highestRoommate := numberOfRoomates[len(numberOfRoomates)-1]
+	highCondition := ""
+	formattedRoommates := strings.Trim(strings.Join(strings.Fields(fmt.Sprint(numberOfRoomates)), ","), "[]")
+
+	if highestRoommate >= 4 {
+		highCondition = fmt.Sprintf("OR number_of_roommates >= %d", highestRoommate)
+	}
+
+	return fmt.Sprintf("AND (number_of_roommates IN (%s) %s)", formattedRoommates, highCondition)
 }

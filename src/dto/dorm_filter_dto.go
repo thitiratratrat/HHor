@@ -1,10 +1,10 @@
 package dto
 
 type DormFilterDTO struct {
-	Type           []string `form:"type" json:"type,omitempty"`
+	Type           []string `form:"type" json:"type,omitempty" validate:"omitempty,dive,oneof=male female mixed" swaggerignore:"true"`
 	Capacity       *int     `form:"capacity" json:"capacity,omitempty" validate:"omitempty,gte=1"`
-	DormFacilities []string `form:"dorm_facilities" json:"dorm_facilities,omitempty" validate:"omitempty,dormfacilities"`
-	RoomFacilities []string `form:"room_facilities" json:"room_facilities,omitempty" validate:"omitempty,roomfacilities"`
+	DormFacilities []string `form:"dorm_facilities" json:"dorm_facilities,omitempty" validate:"omitempty,dormfacilities" swaggerignore:"true"`
+	RoomFacilities []string `form:"room_facilities" json:"room_facilities,omitempty" validate:"omitempty,roomfacilities" swaggerignore:"true"`
 	Zone           *string  `form:"zone" json:"zone,omitempty" validate:"omitempty,dormzone"`
 	Name           *string  `form:"name" json:"name,omitempty" validate:"omitempty,min=1"`
 	Lat            *float64 `form:"lat" json:"lat,omitempty" validate:"required_with=Long,omitempty,latitude"`

@@ -40,11 +40,15 @@ type roommateRequestController struct {
 	fieldValidator         fieldvalidator.FieldValidator
 }
 
-// @Summary get roommate requests
+// @Summary get roommate requests with room
 // @Description get roommate requests with room
 // @Tags roommate-request
 // @Produce json
 // @Param data query dto.RoommateRequestFilterDTO true "room request filter"
+// @Param gender query []string false "gender" collectionFormat(multi)
+// @Param faculty query []string false "faculty" collectionFormat(multi)
+// @Param year_of_study query []string false "year of study" collectionFormat(multi)
+// @Param number_of_roommates query []string false "number of roommates" collectionFormat(multi)
 // @Success 200 {array} dto.RoommateRequestWithRoomDTO "OK"
 // @Router /roommate-request/room [get]
 func (roommateRequestController *roommateRequestController) GetRoommateRequestsWithRoom(context *gin.Context) {
@@ -55,9 +59,11 @@ func (roommateRequestController *roommateRequestController) GetRoommateRequestsW
 	_ = validate.RegisterValidation("dormzone", func(fl validator.FieldLevel) bool {
 		return roommateRequestController.fieldValidator.ValidDormZone([]string{fl.Field().String()})
 	})
+	_ = validate.RegisterValidation("faculty", func(fl validator.FieldLevel) bool {
+		return roommateRequestController.fieldValidator.ValidFaculty(fl.Field().Interface().([]string))
+	})
 
 	var roommateRquestFilterDTO dto.RoommateRequestFilterDTO
-
 	bindErr := context.ShouldBind(&roommateRquestFilterDTO)
 
 	if bindErr != nil {
@@ -92,7 +98,6 @@ func (roommateRequestController *roommateRequestController) CreateRoommateReques
 	})
 
 	var createRoommateRequestWithNoRoomDTO dto.RoommateRequestWithNoRoomDTO
-
 	bindErr := context.ShouldBind(&createRoommateRequestWithNoRoomDTO)
 
 	if bindErr != nil {

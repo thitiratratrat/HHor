@@ -576,11 +576,6 @@ paths:
         name: capacity
         type: integer
       - in: query
-        items:
-          type: string
-        name: dorm_facilities
-        type: array
-      - in: query
         name: lat
         type: number
       - in: query
@@ -593,21 +588,32 @@ paths:
         name: name
         type: string
       - in: query
-        items:
-          type: string
-        name: room_facilities
-        type: array
-      - in: query
-        items:
-          type: string
-        name: type
-        type: array
-      - in: query
         name: upper_price
         type: integer
       - in: query
         name: zone
         type: string
+      - collectionFormat: multi
+        description: type
+        in: query
+        items:
+          type: string
+        name: type
+        type: array
+      - collectionFormat: multi
+        description: dorm facility
+        in: query
+        items:
+          type: string
+        name: dorm_facilities
+        type: array
+      - collectionFormat: multi
+        description: room facility
+        in: query
+        items:
+          type: string
+        name: room_facilities
+        type: array
       produces:
       - application/json
       responses:
@@ -810,8 +816,42 @@ paths:
         name: dorm_name
         type: string
       - in: query
+        name: lower_price
+        type: integer
+      - in: query
+        name: upper_price
+        type: integer
+      - in: query
         name: zone
         type: string
+      - collectionFormat: multi
+        description: gender
+        in: query
+        items:
+          type: string
+        name: gender
+        type: array
+      - collectionFormat: multi
+        description: faculty
+        in: query
+        items:
+          type: string
+        name: faculty
+        type: array
+      - collectionFormat: multi
+        description: year of study
+        in: query
+        items:
+          type: string
+        name: year_of_study
+        type: array
+      - collectionFormat: multi
+        description: number of roommates
+        in: query
+        items:
+          type: string
+        name: number_of_roommates
+        type: array
       produces:
       - application/json
       responses:
@@ -821,7 +861,7 @@ paths:
             items:
               $ref: '#/definitions/dto.RoommateRequestWithRoomDTO'
             type: array
-      summary: get roommate requests
+      summary: get roommate requests with room
       tags:
       - roommate-request
   /roommate-request/unregistered-dorm:

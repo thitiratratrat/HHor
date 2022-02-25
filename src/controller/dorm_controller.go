@@ -40,6 +40,9 @@ type dormController struct {
 // @Accept json
 // @Success 200 {array} dto.DormDTO "OK"
 // @Param dorm_filter query dto.DormFilterDTO false "Dorm Filter"
+// @Param type query []string false "type" collectionFormat(multi)
+// @Param dorm_facilities query []string false "dorm facility" collectionFormat(multi)
+// @Param room_facilities query []string false "room facility" collectionFormat(multi)
 // @Router /dorm [get]
 func (dormController *dormController) GetDorms(context *gin.Context) {
 	defer utils.RecoverInvalidInput(context)
