@@ -376,6 +376,99 @@
             }
         },
         "/roommate-request/no-room": {
+            "get": {
+                "description": "get roommate requests with no room",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "roommate-request"
+                ],
+                "summary": "get roommate requests with no room",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "name": "lower_price",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "pet_habit_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "room_care_habit_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "sleep_habit_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "smoke_habit_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "study_habit_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "upper_price",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "zone",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
+                        "description": "gender",
+                        "name": "gender",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
+                        "description": "faculty",
+                        "name": "faculties",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
+                        "description": "year of study",
+                        "name": "year_of_study",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.RoommateRequestWithRoomDTO"
+                            }
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "create roommate request with no room",
                 "produces": [

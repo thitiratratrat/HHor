@@ -11,7 +11,8 @@ import (
 )
 
 type RoommateRequestService interface {
-	GetRoommateRequestsWithRoom(dto.RoommateRequestFilterDTO) []dto.RoommateRequestWithRoomDTO
+	GetRoommateRequestsWithRoom(dto.RoommateRequestRoomFilterDTO) []dto.RoommateRequestWithRoomDTO
+	GetRoommateRequestsWithNoRoom(dto.RoommateRequestFilterDTO) []model.RoommateRequestWithNoRoom
 	CreateRoommateRequestWithNoRoom(dto.RoommateRequestWithNoRoomDTO) model.RoommateRequestWithNoRoom
 	CreateRoommateRequestWithRegisteredDorm(dto.RoommateRequestWithRegisteredDormDTO) model.RoommateRequestWithRegisteredDorm
 	CreateRoommateRequestWithUnregisteredDorm(dto.RoommateRequestWithUnregisteredDormDTO) model.RoommateRequestWithUnregisteredDorm
@@ -32,10 +33,10 @@ type roommateRequestService struct {
 	studentService            StudentService
 }
 
-func (roommateRequestService *roommateRequestService) GetRoommateRequestsWithRoom(roommateRequestFilterDTO dto.RoommateRequestFilterDTO) []dto.RoommateRequestWithRoomDTO {
+func (roommateRequestService *roommateRequestService) GetRoommateRequestsWithRoom(roommateRequestRoomFilterDTO dto.RoommateRequestRoomFilterDTO) []dto.RoommateRequestWithRoomDTO {
 	roommateRequestsWithRoom := []dto.RoommateRequestWithRoomDTO{}
-	roommateRequestsWithRegisteredDorm := roommateRequestService.roommateRequestRepository.FindRoommateRequestWithRegisteredDorm(roommateRequestFilterDTO)
-	roommateRequestWithUnregisteredDorm := roommateRequestService.roommateRequestRepository.FindRoommateRequestWithUnregisteredDorm(roommateRequestFilterDTO)
+	roommateRequestsWithRegisteredDorm := roommateRequestService.roommateRequestRepository.FindRoommateRequestWithRegisteredDorms(roommateRequestRoomFilterDTO)
+	roommateRequestWithUnregisteredDorm := roommateRequestService.roommateRequestRepository.FindRoommateRequestWithUnregisteredDorms(roommateRequestRoomFilterDTO)
 
 	//TODO: if no room pictures, use the dorm owner's room picture
 	for _, roommateRequest := range roommateRequestsWithRegisteredDorm {
@@ -61,6 +62,20 @@ func (roommateRequestService *roommateRequestService) GetRoommateRequestsWithRoo
 	}
 
 	return roommateRequestsWithRoom
+}
+
+func (roommateRequestService *roommateRequestService) GetRoommateRequestsWithNoRoom(roommateRequestFilterDTO dto.RoommateRequestFilterDTO) []model.RoommateRequestWithNoRoom {
+	roommateRequests := roommateRequestService.roommateRequestRepository.FindRoommateRequestWithNoRoom(roommateRequestFilterDTO)
+	result := make([]model.RoommateRequestWithNoRoom, len(roommateRequests))
+
+	for index, roommateRequest := range roommateRequests {
+		student := roommateRequestService.studentService.GetStudent(roommateRequest.Student.ID)
+		roommateRequest.Student = student
+		result[index] = roommateRequest
+		result[index].Student = student
+	}
+
+	return result
 }
 
 func (roommateRequestService *roommateRequestService) CreateRoommateRequestWithNoRoom(roommateRequestWithNoRoomDTO dto.RoommateRequestWithNoRoomDTO) model.RoommateRequestWithNoRoom {

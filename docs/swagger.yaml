@@ -753,6 +753,66 @@ paths:
       tags:
       - room
   /roommate-request/no-room:
+    get:
+      description: get roommate requests with no room
+      parameters:
+      - in: query
+        name: lower_price
+        type: integer
+      - in: query
+        name: pet_habit_id
+        type: string
+      - in: query
+        name: room_care_habit_id
+        type: string
+      - in: query
+        name: sleep_habit_id
+        type: string
+      - in: query
+        name: smoke_habit_id
+        type: string
+      - in: query
+        name: study_habit_id
+        type: string
+      - in: query
+        name: upper_price
+        type: integer
+      - in: query
+        name: zone
+        type: string
+      - collectionFormat: multi
+        description: gender
+        in: query
+        items:
+          type: string
+        name: gender
+        type: array
+      - collectionFormat: multi
+        description: faculty
+        in: query
+        items:
+          type: string
+        name: faculties
+        type: array
+      - collectionFormat: multi
+        description: year of study
+        in: query
+        items:
+          type: string
+        name: year_of_study
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.RoommateRequestWithRoomDTO'
+            type: array
+      summary: get roommate requests with no room
+      tags:
+      - roommate-request
     post:
       description: create roommate request with no room
       parameters:

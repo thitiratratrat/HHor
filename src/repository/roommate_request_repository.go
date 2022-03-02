@@ -13,8 +13,9 @@ import (
 )
 
 type RoommateRequestRepository interface {
-	FindRoommateRequestWithRegisteredDorm(roommateRequestFilterDTO dto.RoommateRequestFilterDTO) []model.RoommateRequestWithRegisteredDorm
-	FindRoommateRequestWithUnregisteredDorm(roommateRequestFilterDTO dto.RoommateRequestFilterDTO) []model.RoommateRequestWithUnregisteredDorm
+	FindRoommateRequestWithRegisteredDorms(roommateRequestRoomFilterDTO dto.RoommateRequestRoomFilterDTO) []model.RoommateRequestWithRegisteredDorm
+	FindRoommateRequestWithUnregisteredDorms(roommateRequestRoomFilterDTO dto.RoommateRequestRoomFilterDTO) []model.RoommateRequestWithUnregisteredDorm
+	FindRoommateRequestWithNoRoom(roommateRequestFilterDTO dto.RoommateRequestFilterDTO) []model.RoommateRequestWithNoRoom
 	CreateRoommateRequestWithNoRoom(roommateRequestWithNoRoom model.RoommateRequestWithNoRoom) (model.RoommateRequestWithNoRoom, error)
 	CreateRoommateRequestWithRegisteredDorm(roommateRequestWithRegisteredDorm model.RoommateRequestWithRegisteredDorm) (model.RoommateRequestWithRegisteredDorm, error)
 	CreateRoommateRequestWithUnregisteredDorm(roommateRequestWithUnregisteredDorm model.RoommateRequestWithUnregisteredDorm) (model.RoommateRequestWithUnregisteredDorm, error)
@@ -32,20 +33,29 @@ type roommateRequestRepository struct {
 	db *gorm.DB
 }
 
-func (repository *roommateRequestRepository) FindRoommateRequestWithRegisteredDorm(roommateRequestFilterDTO dto.RoommateRequestFilterDTO) []model.RoommateRequestWithRegisteredDorm {
+func (repository *roommateRequestRepository) FindRoommateRequestWithRegisteredDorms(roommateRequestRoomFilterDTO dto.RoommateRequestRoomFilterDTO) []model.RoommateRequestWithRegisteredDorm {
 	var roommateRequests []model.RoommateRequestWithRegisteredDorm
-	condition := repository.getCondition(roommateRequestFilterDTO, constant.RoommateRequestWithRegisteredDorm)
+	condition := repository.getRoomCondition(roommateRequestRoomFilterDTO, constant.RoommateRequestWithRegisteredDorm)
 
 	repository.db.Preload("RoomPictures").Joins("Dorm").Joins("Room").Joins("Student").Where(condition).Find(&roommateRequests)
 
 	return roommateRequests
 }
 
-func (repository *roommateRequestRepository) FindRoommateRequestWithUnregisteredDorm(roommateRequestFilterDTO dto.RoommateRequestFilterDTO) []model.RoommateRequestWithUnregisteredDorm {
+func (repository *roommateRequestRepository) FindRoommateRequestWithUnregisteredDorms(roommateRequestRoomFilterDTO dto.RoommateRequestRoomFilterDTO) []model.RoommateRequestWithUnregisteredDorm {
 	var roommateRequests []model.RoommateRequestWithUnregisteredDorm
-	condition := repository.getCondition(roommateRequestFilterDTO, constant.RoommateRequestWithUnregisteredDorm)
+	condition := repository.getRoomCondition(roommateRequestRoomFilterDTO, constant.RoommateRequestWithUnregisteredDorm)
 
 	repository.db.Preload("RoomPictures").Preload("RoomFacilities").Joins("Student").Where(condition).Find(&roommateRequests)
+
+	return roommateRequests
+}
+
+func (repository *roommateRequestRepository) FindRoommateRequestWithNoRoom(roommateRequestFilterDTO dto.RoommateRequestFilterDTO) []model.RoommateRequestWithNoRoom {
+	var roommateRequests []model.RoommateRequestWithNoRoom
+	condition := repository.getCondition(roommateRequestFilterDTO, constant.RoommateRequestWithNoRoom)
+
+	repository.db.Preload("Zones").Joins("Student").Where(condition).Find(&roommateRequests)
 
 	return roommateRequests
 }
@@ -106,17 +116,25 @@ func (repository *roommateRequestRepository) UpdateRoommateRequestWithUnregister
 	return roommateRequestWithUnregisteredDorm, err
 }
 
-func (repository *roommateRequestRepository) getCondition(roommateRequestFilterDTO dto.RoommateRequestFilterDTO, requestType constant.RoommateRequestType) string {
+func (repository *roommateRequestRepository) getRoomCondition(roommateRequestFilterDTO dto.RoommateRequestRoomFilterDTO, requestType constant.RoommateRequestType) string {
 	nameCondition := repository.getNameCondition(roommateRequestFilterDTO.DormName, requestType)
-	zoneCondition := repository.getZoneCondition(roommateRequestFilterDTO.Zone)
+	roommateCondition := repository.getNumberOfRoommatesCondition(roommateRequestFilterDTO.NumberOfRoommates)
+	roommFacilityCondition := repository.getRoomFacilityCondition(roommateRequestFilterDTO.RoomFacilities, requestType)
+	noRoomCondition := repository.getCondition(roommateRequestFilterDTO.RoommateRequestFilterDTO, requestType)
+
+	condition := fmt.Sprintf("%s %s %s AND %s", nameCondition, roommateCondition, roommFacilityCondition, noRoomCondition)
+
+	return condition
+}
+
+func (repository *roommateRequestRepository) getCondition(roommateRequestFilterDTO dto.RoommateRequestFilterDTO, requestType constant.RoommateRequestType) string {
+	zoneCondition := repository.getZoneCondition(roommateRequestFilterDTO.Zone, requestType)
 	genderCondition := repository.getGenderCondition(roommateRequestFilterDTO.Gender)
 	facultyCondition := repository.getFacultyCondition(roommateRequestFilterDTO.Faculty)
 	yearOfStudyCondition := repository.getYearOfStudyCondition(roommateRequestFilterDTO.YearOfStudy)
-	budgetCondition := repository.getBudgetCondition(roommateRequestFilterDTO.LowerPrice, roommateRequestFilterDTO.UpperPrice)
-	roommateCondition := repository.getNumberOfRoommatesCondition(roommateRequestFilterDTO.NumberOfRoommates)
-	roommFacilityCondition := repository.getRoomFacilityCondition(roommateRequestFilterDTO.RoomFacilities, requestType)
+	budgetCondition := repository.getBudgetCondition(roommateRequestFilterDTO.LowerPrice, roommateRequestFilterDTO.UpperPrice, requestType)
 	preferenceCondition := repository.getPreferenceCondition(roommateRequestFilterDTO.SmokeHabitID, roommateRequestFilterDTO.RoomCareHabitID, roommateRequestFilterDTO.SleepHabitID, roommateRequestFilterDTO.StudyHabitID, roommateRequestFilterDTO.PetHabitID)
-	condition := fmt.Sprintf("%s %s %s %s %s %s %s %s %s", nameCondition, zoneCondition, genderCondition, facultyCondition, yearOfStudyCondition, budgetCondition, roommateCondition, roommFacilityCondition, preferenceCondition)
+	condition := fmt.Sprintf("true %s %s %s %s %s %s", zoneCondition, genderCondition, facultyCondition, yearOfStudyCondition, budgetCondition, preferenceCondition)
 
 	return condition
 }
@@ -134,12 +152,17 @@ func (repository *roommateRequestRepository) getNameCondition(name *string, requ
 	}
 }
 
-func (repository *roommateRequestRepository) getZoneCondition(zone *string) string {
+func (repository *roommateRequestRepository) getZoneCondition(zone *string, requestType constant.RoommateRequestType) string {
 	if zone == nil {
 		return ""
 	}
 
-	return fmt.Sprintf("AND dorm_zone_name = '%s'", *zone)
+	switch requestType {
+	case constant.RoommateRequestWithNoRoom:
+		return fmt.Sprintf("AND '%s' IN (select dorm_zone_name from roommate_request_no_room_zone where student_id = roommate_request_with_no_room_student_id)", *zone)
+	default:
+		return fmt.Sprintf("AND dorm_zone_name = '%s'", *zone)
+	}
 }
 
 func (repository *roommateRequestRepository) getGenderCondition(gender []string) string {
@@ -180,12 +203,17 @@ func (repository *roommateRequestRepository) getYearOfStudyCondition(yearOfStudy
 	return fmt.Sprintf("AND (%d - enrollment_year IN (%s) %s)", currentYear, formattedYearofStudy, highCondition)
 }
 
-func (repository *roommateRequestRepository) getBudgetCondition(lowerPrice *int, upperPrice *int) string {
+func (repository *roommateRequestRepository) getBudgetCondition(lowerPrice *int, upperPrice *int, requestType constant.RoommateRequestType) string {
 	if lowerPrice == nil || upperPrice == nil || *upperPrice < *lowerPrice {
 		return ""
 	}
 
-	return fmt.Sprintf("AND shared_room_price BETWEEN %d AND %d", *lowerPrice, *upperPrice)
+	switch requestType {
+	case constant.RoommateRequestWithNoRoom:
+		return fmt.Sprintf("AND budget BETWEEN %d AND %d", *lowerPrice, *upperPrice)
+	default:
+		return fmt.Sprintf("AND shared_room_price BETWEEN %d AND %d", *lowerPrice, *upperPrice)
+	}
 }
 
 func (repository *roommateRequestRepository) getNumberOfRoommatesCondition(numberOfRoomates []int) string {
