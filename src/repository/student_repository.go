@@ -1,11 +1,13 @@
 package repository
 
 import (
+	"github.com/thitiratratrat/hhor/src/dto"
 	"github.com/thitiratratrat/hhor/src/model"
 	"gorm.io/gorm"
 )
 
 type StudentRepository interface {
+	FindHabits() dto.HabitDTO
 	CreateStudent(model.Student) (model.Student, error)
 	FindStudent(id string) (model.Student, error)
 	FindStudentByEmail(email string) (model.Student, error)
@@ -81,4 +83,16 @@ func (repository *studentRepository) FindFaculties() []string {
 	repository.db.Model(&model.Faculty{}).Pluck("name", &faculties)
 
 	return faculties
+}
+
+func (repository *studentRepository) FindHabits() dto.HabitDTO {
+	var habitDTO dto.HabitDTO
+
+	repository.db.Find(&habitDTO.PetHabit)
+	repository.db.Find(&habitDTO.SleepHabit)
+	repository.db.Find(&habitDTO.StudyHabit)
+	repository.db.Find(&habitDTO.SmokeHabit)
+	repository.db.Find(&habitDTO.RoomCareHabit)
+
+	return habitDTO
 }

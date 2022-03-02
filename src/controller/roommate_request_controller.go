@@ -46,9 +46,10 @@ type roommateRequestController struct {
 // @Produce json
 // @Param data query dto.RoommateRequestFilterDTO true "room request filter"
 // @Param gender query []string false "gender" collectionFormat(multi)
-// @Param faculty query []string false "faculty" collectionFormat(multi)
+// @Param faculties query []string false "faculty" collectionFormat(multi)
 // @Param year_of_study query []string false "year of study" collectionFormat(multi)
 // @Param number_of_roommates query []string false "number of roommates" collectionFormat(multi)
+// @Param room_facilities query []string false "room facilities" collectionFormat(multi)
 // @Success 200 {array} dto.RoommateRequestWithRoomDTO "OK"
 // @Router /roommate-request/room [get]
 func (roommateRequestController *roommateRequestController) GetRoommateRequestsWithRoom(context *gin.Context) {
@@ -61,6 +62,9 @@ func (roommateRequestController *roommateRequestController) GetRoommateRequestsW
 	})
 	_ = validate.RegisterValidation("faculty", func(fl validator.FieldLevel) bool {
 		return roommateRequestController.fieldValidator.ValidFaculty(fl.Field().Interface().([]string))
+	})
+	_ = validate.RegisterValidation("roomfacility", func(fl validator.FieldLevel) bool {
+		return roommateRequestController.fieldValidator.ValidRoomFacility(fl.Field().Interface().([]string))
 	})
 
 	var roommateRquestFilterDTO dto.RoommateRequestFilterDTO
@@ -226,7 +230,7 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 		return
 	}
 
-	if !roommateRequestController.roommateRequestService.CanUpdateRoommateRequestPicture(roommateRequestPictureDTO.StudentID, service.RoommateRequestWithRegisteredDorm) {
+	if !roommateRequestController.roommateRequestService.CanUpdateRoommateRequestPicture(roommateRequestPictureDTO.StudentID, constant.RoommateRequestWithRegisteredDorm) {
 		panic(errortype.ErrMismatchRoommateRequestType)
 	}
 
@@ -283,7 +287,7 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 		return
 	}
 
-	if !roommateRequestController.roommateRequestService.CanUpdateRoommateRequestPicture(roommateRequestPictureDTO.StudentID, service.RoommateRequestWithUnregisteredDorm) {
+	if !roommateRequestController.roommateRequestService.CanUpdateRoommateRequestPicture(roommateRequestPictureDTO.StudentID, constant.RoommateRequestWithUnregisteredDorm) {
 		panic(errortype.ErrMismatchRoommateRequestType)
 	}
 

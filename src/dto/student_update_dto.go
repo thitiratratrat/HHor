@@ -1,34 +1,45 @@
 package dto
 
+import "github.com/thitiratratrat/hhor/src/customtype"
+
 type StudentUpdateDTO struct {
-	Biography          *string            `structs:",omitempty" json:"biography,omitempty"`
-	EnrollmentYear     int                `structs:",omitempty" json:"enrollment_year" validate:"omitempty,gte=2014"`
-	SocialMedia        SocialMedia        `structs:",omitempty" json:"social_media"`
-	PersonalHabit      PersonalHabit      `structs:",omitempty" json:"personal_habit"`
-	RoommatePreference RoommatePreference `structs:",omitempty" json:"roommate_preference"`
+	Biography                customtype.JSONString `json:"biography"`
+	EnrollmentYear           customtype.JSONInt    `json:"enrollment_year" validate:"required,gte=2014"`
+	FacebookUrl              customtype.JSONString `json:"facebook_url" validate:"omitempty,url,contains=facebook"`
+	TwitterUrl               customtype.JSONString `json:"twitter_url" validate:"omitempty,url,contains=twitter"`
+	LinkedinUrl              customtype.JSONString `json:"linkedin_url" validate:"omitempty,url,contains=linkedin"`
+	InstagramUrl             customtype.JSONString `json:"instagram_url" validate:"omitempty,url,contains=instagram"`
+	SmokeHabitID             customtype.JSONString `json:"smoke_habit_id"`
+	RoomCareHabitID          customtype.JSONString `json:"room_care_habit_id"`
+	SleepHabitID             customtype.JSONString `json:"sleep_habit_id"`
+	StudyHabitID             customtype.JSONString `json:"study_habit_id"`
+	PetHabitID               customtype.JSONString `json:"pet_habit_id" validate:"omitempty,number"`
+	PreferredSmokeHabitID    customtype.JSONString `json:"preferred_smoke_habit_id" validate:"omitempty,number"`
+	PreferredRoomCareHabitID customtype.JSONString `json:"preferred_room_care_habit_id" validate:"omitempty,number"`
+	PreferredSleepHabitID    customtype.JSONString `json:"preferred_sleep_habit_id" validate:"omitempty,number"`
+	PreferredStudyHabitID    customtype.JSONString `json:"preferred_study_habit_id" validate:"omitempty,number"`
+	PreferredPetHabitID      customtype.JSONString `json:"preferred_pet_habit_id"  validate:"omitempty,number"`
+	PreferredGenderName      customtype.JSONString `json:"preferred_gender" validate:"omitempty"`
+	OtherPreference          customtype.JSONString `json:"other_preference"`
 }
 
-type SocialMedia struct {
-	FacebookUrl  *string `structs:",omitempty" json:"facebook_url,omitempty" validate:"omitempty,url,contains=facebook"`
-	TwitterUrl   *string `structs:",omitempty" json:"twitter_url,omitempty" validate:"omitempty,url,contains=twitter"`
-	LinkedinUrl  *string `structs:",omitempty" json:"linkedin_url,omitempty" validate:"omitempty,url,contains=linkedin"`
-	InstagramUrl *string `structs:",omitempty" json:"instagram_url,omitempty" validate:"omitempty,url,contains=instagram"`
-}
-
-type PersonalHabit struct {
-	SmokeHabitID    *string `structs:",omitempty" json:"smoke_habit_id,omitempty"  validate:"omitempty,number"`
-	RoomCareHabitID *string `structs:",omitempty" json:"room_care_habit_id,omitempty"  validate:"omitempty,number"`
-	SleepHabitID    *string `structs:",omitempty" json:"sleep_habit_id,omitempty" validate:"omitempty,number"`
-	StudyHabitID    *string `structs:",omitempty" json:"study_habit_id,omitempty"  validate:"omitempty,number"`
-	PetHabitID      *string `structs:",omitempty" json:"pet_habit_id,omitempty" validate:"omitempty,number"`
-}
-
-type RoommatePreference struct {
-	PreferredSmokeHabitID    *string `structs:",omitempty" json:"preferred_smoke_habit_id,omitempty" validate:"omitempty,number"`
-	PreferredRoomCareHabitID *string `structs:",omitempty" json:"preferred_room_care_habit_id,omitempty" validate:"omitempty,number"`
-	PreferredSleepHabitID    *string `structs:",omitempty" json:"preferred_sleep_habit_id,omitempty" validate:"omitempty,number"`
-	PreferredStudyHabitID    *string `structs:",omitempty" json:"preferred_study_habit_id,omitempty" validate:"omitempty,number"`
-	PreferredPetHabitID      *string `structs:",omitempty" json:"preferred_pet_habit_id,omitempty"  validate:"omitempty,number"`
-	PreferredGenderName      *string `structs:",omitempty" json:"preferred_gender,omitempty" validate:"omitempty"`
-	OtherPreference          *string `structs:",omitempty" json:"other_preference,omitempty"`
+type StudentUpdateSwagDTO struct {
+	Biography                *string `json:"biography"`
+	EnrollmentYear           *int    `json:"enrollment_year" validate:"required,gte=2014"`
+	FacebookUrl              *string `json:"facebook_url" validate:"omitempty,url,contains=facebook"`
+	TwitterUrl               *string `json:"twitter_url" validate:"omitempty,url,contains=twitter"`
+	LinkedinUrl              *string `json:"linkedin_url" validate:"omitempty,url,contains=linkedin"`
+	InstagramUrl             *string `json:"instagram_url" validate:"omitempty,url,contains=instagram"`
+	SmokeHabitID             *string `json:"smoke_habit_id"`
+	RoomCareHabitID          *string `json:"room_care_habit_id"`
+	SleepHabitID             *string `json:"sleep_habit_id"`
+	StudyHabitID             *string `json:"study_habit_id"`
+	PetHabitID               *string `json:"pet_habit_id" validate:"omitempty,number"`
+	PreferredSmokeHabitID    *string `json:"preferred_smoke_habit_id" validate:"omitempty,number"`
+	PreferredRoomCareHabitID *string `json:"preferred_room_care_habit_id" validate:"omitempty,number"`
+	PreferredSleepHabitID    *string `json:"preferred_sleep_habit_id" validate:"omitempty,number"`
+	PreferredStudyHabitID    *string `json:"preferred_study_habit_id" validate:"omitempty,number"`
+	PreferredPetHabitID      *string `json:"preferred_pet_habit_id"  validate:"omitempty,number"`
+	PreferredGenderName      *string `json:"preferred_gender" validate:"omitempty"`
+	OtherPreference          *string `json:"other_preference"`
 }

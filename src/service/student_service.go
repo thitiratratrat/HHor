@@ -1,12 +1,14 @@
 package service
 
 import (
+	"github.com/thitiratratrat/hhor/src/dto"
 	"github.com/thitiratratrat/hhor/src/errortype"
 	"github.com/thitiratratrat/hhor/src/model"
 	"github.com/thitiratratrat/hhor/src/repository"
 )
 
 type StudentService interface {
+	GetHabits() dto.HabitDTO
 	GetFaculties() []string
 	GetStudent(id string) model.Student
 	UpdateStudent(id string, studentUpdate map[string]interface{}) model.Student
@@ -55,4 +57,8 @@ func (studentService *studentService) UpdateStudentPetPictures(id string, pictur
 	}
 
 	return student
+}
+
+func (studentService *studentService) GetHabits() dto.HabitDTO {
+	return studentService.studentRepository.FindHabits()
 }

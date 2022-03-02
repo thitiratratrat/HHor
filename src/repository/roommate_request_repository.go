@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/thitiratratrat/hhor/src/constant"
 	"github.com/thitiratratrat/hhor/src/dto"
 	"github.com/thitiratratrat/hhor/src/model"
 	"gorm.io/gorm"
@@ -33,15 +34,7 @@ type roommateRequestRepository struct {
 
 func (repository *roommateRequestRepository) FindRoommateRequestWithRegisteredDorm(roommateRequestFilterDTO dto.RoommateRequestFilterDTO) []model.RoommateRequestWithRegisteredDorm {
 	var roommateRequests []model.RoommateRequestWithRegisteredDorm
-	var dormNameCondition string
-
-	if roommateRequestFilterDTO.DormName == nil {
-		dormNameCondition = `"Dorm".name` + " LIKE '%%'"
-	} else {
-		dormNameCondition = `"Dorm".name` + " LIKE '%" + *roommateRequestFilterDTO.DormName + "%'"
-	}
-
-	condition := dormNameCondition + repository.getCondition(roommateRequestFilterDTO)
+	condition := repository.getCondition(roommateRequestFilterDTO, constant.RoommateRequestWithRegisteredDorm)
 
 	repository.db.Preload("RoomPictures").Joins("Dorm").Joins("Room").Joins("Student").Where(condition).Find(&roommateRequests)
 
@@ -50,15 +43,7 @@ func (repository *roommateRequestRepository) FindRoommateRequestWithRegisteredDo
 
 func (repository *roommateRequestRepository) FindRoommateRequestWithUnregisteredDorm(roommateRequestFilterDTO dto.RoommateRequestFilterDTO) []model.RoommateRequestWithUnregisteredDorm {
 	var roommateRequests []model.RoommateRequestWithUnregisteredDorm
-	var dormNameCondition string
-
-	if roommateRequestFilterDTO.DormName == nil {
-		dormNameCondition = "dorm_name LIKE '%%'"
-	} else {
-		dormNameCondition = "dorm_name LIKE '%" + *roommateRequestFilterDTO.DormName + "%'"
-	}
-
-	condition := dormNameCondition + repository.getCondition(roommateRequestFilterDTO)
+	condition := repository.getCondition(roommateRequestFilterDTO, constant.RoommateRequestWithUnregisteredDorm)
 
 	repository.db.Preload("RoomPictures").Preload("RoomFacilities").Joins("Student").Where(condition).Find(&roommateRequests)
 
@@ -121,18 +106,32 @@ func (repository *roommateRequestRepository) UpdateRoommateRequestWithUnregister
 	return roommateRequestWithUnregisteredDorm, err
 }
 
-func (repository *roommateRequestRepository) getCondition(roommateRequestFilterDTO dto.RoommateRequestFilterDTO) string {
+func (repository *roommateRequestRepository) getCondition(roommateRequestFilterDTO dto.RoommateRequestFilterDTO, requestType constant.RoommateRequestType) string {
+	nameCondition := repository.getNameCondition(roommateRequestFilterDTO.DormName, requestType)
 	zoneCondition := repository.getZoneCondition(roommateRequestFilterDTO.Zone)
 	genderCondition := repository.getGenderCondition(roommateRequestFilterDTO.Gender)
 	facultyCondition := repository.getFacultyCondition(roommateRequestFilterDTO.Faculty)
 	yearOfStudyCondition := repository.getYearOfStudyCondition(roommateRequestFilterDTO.YearOfStudy)
 	budgetCondition := repository.getBudgetCondition(roommateRequestFilterDTO.LowerPrice, roommateRequestFilterDTO.UpperPrice)
 	roommateCondition := repository.getNumberOfRoommatesCondition(roommateRequestFilterDTO.NumberOfRoommates)
-	condition := fmt.Sprintf("%s %s %s %s %s %s", zoneCondition, genderCondition, facultyCondition, yearOfStudyCondition, budgetCondition, roommateCondition)
-
-	fmt.Println(condition)
+	roommFacilityCondition := repository.getRoomFacilityCondition(roommateRequestFilterDTO.RoomFacilities, requestType)
+	preferenceCondition := repository.getPreferenceCondition(roommateRequestFilterDTO.SmokeHabitID, roommateRequestFilterDTO.RoomCareHabitID, roommateRequestFilterDTO.SleepHabitID, roommateRequestFilterDTO.StudyHabitID, roommateRequestFilterDTO.PetHabitID)
+	condition := fmt.Sprintf("%s %s %s %s %s %s %s %s %s", nameCondition, zoneCondition, genderCondition, facultyCondition, yearOfStudyCondition, budgetCondition, roommateCondition, roommFacilityCondition, preferenceCondition)
 
 	return condition
+}
+
+func (repository *roommateRequestRepository) getNameCondition(name *string, requestType constant.RoommateRequestType) string {
+	switch {
+	case requestType == constant.RoommateRequestWithRegisteredDorm && name == nil:
+		return `"Dorm".name` + " LIKE '%%'"
+	case requestType == constant.RoommateRequestWithRegisteredDorm:
+		return `"Dorm".name` + " LIKE '%" + *name + "%'"
+	case requestType == constant.RoommateRequestWithUnregisteredDorm && name == nil:
+		return "dorm_name LIKE '%%'"
+	default:
+		return "dorm_name LIKE '%" + *name + "%'"
+	}
 }
 
 func (repository *roommateRequestRepository) getZoneCondition(zone *string) string {
@@ -204,4 +203,45 @@ func (repository *roommateRequestRepository) getNumberOfRoommatesCondition(numbe
 	}
 
 	return fmt.Sprintf("AND (number_of_roommates IN (%s) %s)", formattedRoommates, highCondition)
+}
+
+func (repository *roommateRequestRepository) getRoomFacilityCondition(roomFacilities []string, requestType constant.RoommateRequestType) string {
+	if len(roomFacilities) == 0 {
+		return ""
+	}
+
+	formattedRoomFacilities := "'" + strings.Join(roomFacilities, "', '") + "'"
+
+	switch requestType {
+	case constant.RoommateRequestWithRegisteredDorm:
+		return fmt.Sprintf("AND %d = (select count(*) from room_facility where"+`"Room".id `+"= room_facility.room_id and all_room_facility_name IN (%s))", len(roomFacilities), formattedRoomFacilities)
+	default:
+		return fmt.Sprintf("AND %d = (select count(*) from roommate_request_unregistered_dorm_room_facility where student_id = roommate_request_with_unregistered_dorm_student_id and all_room_facility_name IN (%s))", len(roomFacilities), formattedRoomFacilities)
+	}
+}
+
+func (repository *roommateRequestRepository) getPreferenceCondition(smokeHabit *string, roomCareHabit *string, sleepHabit *string, studyHabit *string, petHabit *string) string {
+	var smokeCondition, roomCareCondition, sleepingCondition, studyCondition, petCondition string
+
+	if smokeHabit != nil && len(*smokeHabit) != 0 {
+		smokeCondition = fmt.Sprintf("AND smoke_habit_id = %v", *smokeHabit)
+	}
+
+	if roomCareHabit != nil && len(*roomCareHabit) != 0 {
+		roomCareCondition = fmt.Sprintf("AND room_care_habit_id = %v", *roomCareHabit)
+	}
+
+	if sleepHabit != nil && len(*sleepHabit) != 0 {
+		sleepingCondition = fmt.Sprintf("AND sleep_habit_id = %v", *sleepHabit)
+	}
+
+	if studyHabit != nil && len(*studyHabit) != 0 {
+		studyCondition = fmt.Sprintf("AND study_habit_id = %v", *studyHabit)
+	}
+
+	if petHabit != nil && len(*petHabit) != 0 {
+		petCondition = fmt.Sprintf("AND pet_habit_id = %v", *petHabit)
+	}
+
+	return fmt.Sprintf("%s %s %s %s %s", smokeCondition, roomCareCondition, sleepingCondition, studyCondition, petCondition)
 }

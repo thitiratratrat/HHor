@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/fatih/structs"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/thitiratratrat/hhor/src/constant"
@@ -15,6 +14,7 @@ import (
 )
 
 type StudentController interface {
+	GetHabits(context *gin.Context)
 	GetFaculties(context *gin.Context)
 	GetStudent(context *gin.Context)
 	UpdateStudent(context *gin.Context)
@@ -31,16 +31,14 @@ type studentController struct {
 	studentService service.StudentService
 }
 
-//TODO: make it able to update null values with golang validator in field.
-//form data null is not null. cannot differentiate if passing null value or
-//field not present in json.
+//TODO: able to pass null now but cannot validate
 
 // @Summary update student detail
 // @Description update student detail
 // @Tags student
 // @Produce json
 // @Param id path string true "Student ID"
-// @Param data body dto.StudentUpdateDTO false "student update"
+// @Param data body dto.StudentUpdateSwagDTO false "student update"
 // @Success 200 {object} model.Student "OK"
 // @Router /student/{id} [patch]
 func (studentController *studentController) UpdateStudent(context *gin.Context) {
@@ -61,7 +59,7 @@ func (studentController *studentController) UpdateStudent(context *gin.Context) 
 		panic(validateError)
 	}
 
-	studentUpdateMap := structs.Map(studentUpdateDTO)
+	studentUpdateMap := utils.Map(studentUpdateDTO)
 	updatedStudent := studentController.studentService.UpdateStudent(id, studentUpdateMap)
 
 	context.IndentedJSON(http.StatusOK, updatedStudent)
@@ -165,4 +163,17 @@ func (studentController *studentController) GetFaculties(context *gin.Context) {
 	faculties := studentController.studentService.GetFaculties()
 
 	context.IndentedJSON(http.StatusOK, faculties)
+}
+
+// @Summary get habits
+// @Description returns list of faculties
+// @Tags student
+// @Produce json
+// @Success 200 {object} dto.HabitDTO "OK"
+// @Failure 400,404,500 {object} dto.ErrorResponse
+// @Router /student/habit [get]
+func (studentController *studentController) GetHabits(context *gin.Context) {
+	habits := studentController.studentService.GetHabits()
+
+	context.IndentedJSON(http.StatusOK, habits)
 }

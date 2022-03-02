@@ -28,6 +28,29 @@ definitions:
       message:
         type: string
     type: object
+  dto.HabitDTO:
+    properties:
+      pet_habit:
+        items:
+          $ref: '#/definitions/model.PetHabit'
+        type: array
+      room_care_habit:
+        items:
+          $ref: '#/definitions/model.RoomCareHabit'
+        type: array
+      sleep_habit:
+        items:
+          $ref: '#/definitions/model.SleepHabit'
+        type: array
+      smoke_habit:
+        items:
+          $ref: '#/definitions/model.SmokeHabit'
+        type: array
+      study_habit:
+        items:
+          $ref: '#/definitions/model.StudyHabit'
+        type: array
+    type: object
   dto.LoginCredentialsDTO:
     properties:
       email:
@@ -37,19 +60,6 @@ definitions:
     required:
     - email
     - password
-    type: object
-  dto.PersonalHabit:
-    properties:
-      pet_habit_id:
-        type: string
-      room_care_habit_id:
-        type: string
-      sleep_habit_id:
-        type: string
-      smoke_habit_id:
-        type: string
-      study_habit_id:
-        type: string
     type: object
   dto.RegisterStudentDTO:
     properties:
@@ -78,23 +88,6 @@ definitions:
     - lastname
     - password
     - student_id
-    type: object
-  dto.RoommatePreference:
-    properties:
-      other_preference:
-        type: string
-      preferred_gender:
-        type: string
-      preferred_pet_habit_id:
-        type: string
-      preferred_room_care_habit_id:
-        type: string
-      preferred_sleep_habit_id:
-        type: string
-      preferred_smoke_habit_id:
-        type: string
-      preferred_study_habit_id:
-        type: string
     type: object
   dto.RoommateRequestWithNoRoomDTO:
     properties:
@@ -176,29 +169,46 @@ definitions:
     - student_id
     - zone
     type: object
-  dto.SocialMedia:
+  dto.StudentUpdateSwagDTO:
     properties:
+      biography:
+        type: string
+      enrollment_year:
+        type: integer
       facebook_url:
         type: string
       instagram_url:
         type: string
       linkedin_url:
         type: string
+      other_preference:
+        type: string
+      pet_habit_id:
+        type: string
+      preferred_gender:
+        type: string
+      preferred_pet_habit_id:
+        type: string
+      preferred_room_care_habit_id:
+        type: string
+      preferred_sleep_habit_id:
+        type: string
+      preferred_smoke_habit_id:
+        type: string
+      preferred_study_habit_id:
+        type: string
+      room_care_habit_id:
+        type: string
+      sleep_habit_id:
+        type: string
+      smoke_habit_id:
+        type: string
+      study_habit_id:
+        type: string
       twitter_url:
         type: string
-    type: object
-  dto.StudentUpdateDTO:
-    properties:
-      biography:
-        type: string
-      enrollment_year:
-        type: integer
-      personal_habit:
-        $ref: '#/definitions/dto.PersonalHabit'
-      roommate_preference:
-        $ref: '#/definitions/dto.RoommatePreference'
-      social_media:
-        $ref: '#/definitions/dto.SocialMedia'
+    required:
+    - enrollment_year
     type: object
   model.AllDormFacility:
     properties:
@@ -819,6 +829,21 @@ paths:
         name: lower_price
         type: integer
       - in: query
+        name: pet_habit_id
+        type: string
+      - in: query
+        name: room_care_habit_id
+        type: string
+      - in: query
+        name: sleep_habit_id
+        type: string
+      - in: query
+        name: smoke_habit_id
+        type: string
+      - in: query
+        name: study_habit_id
+        type: string
+      - in: query
         name: upper_price
         type: integer
       - in: query
@@ -836,7 +861,7 @@ paths:
         in: query
         items:
           type: string
-        name: faculty
+        name: faculties
         type: array
       - collectionFormat: multi
         description: year of study
@@ -851,6 +876,13 @@ paths:
         items:
           type: string
         name: number_of_roommates
+        type: array
+      - collectionFormat: multi
+        description: room facilities
+        in: query
+        items:
+          type: string
+        name: room_facilities
         type: array
       produces:
       - application/json
@@ -953,7 +985,7 @@ paths:
         in: body
         name: data
         schema:
-          $ref: '#/definitions/dto.StudentUpdateDTO'
+          $ref: '#/definitions/dto.StudentUpdateSwagDTO'
       produces:
       - application/json
       responses:
@@ -989,6 +1021,31 @@ paths:
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
       summary: get faculties
+      tags:
+      - student
+  /student/habit:
+    get:
+      description: returns list of faculties
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.HabitDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: get habits
       tags:
       - student
   /student/picture/{id}:

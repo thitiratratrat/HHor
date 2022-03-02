@@ -3,18 +3,11 @@ package service
 import (
 	"strconv"
 
+	"github.com/thitiratratrat/hhor/src/constant"
 	"github.com/thitiratratrat/hhor/src/dto"
 	"github.com/thitiratratrat/hhor/src/errortype"
 	"github.com/thitiratratrat/hhor/src/model"
 	"github.com/thitiratratrat/hhor/src/repository"
-)
-
-type RoommateRequestType string
-
-const (
-	RoommateRequestWithNoRoom           RoommateRequestType = "NO_ROOM"
-	RoommateRequestWithRegisteredDorm   RoommateRequestType = "REGISTERED_DORM"
-	RoommateRequestWithUnregisteredDorm RoommateRequestType = "UNREGISTERED_DORM"
 )
 
 type RoommateRequestService interface {
@@ -24,7 +17,7 @@ type RoommateRequestService interface {
 	CreateRoommateRequestWithUnregisteredDorm(dto.RoommateRequestWithUnregisteredDormDTO) model.RoommateRequestWithUnregisteredDorm
 	UpdateRoommateRequestWithRegisteredDormPictures(id string, pictureUrls []string) model.RoommateRequestWithRegisteredDorm
 	UpdateRoommateRequestWithUnregisteredDormPictures(id string, pictureUrls []string) model.RoommateRequestWithUnregisteredDorm
-	CanUpdateRoommateRequestPicture(studentID string, requestType RoommateRequestType) bool
+	CanUpdateRoommateRequestPicture(studentID string, requestType constant.RoommateRequestType) bool
 }
 
 func RoommateRequestServiceHandler(roommateRequestRepository repository.RoommateRequestRepository, studentSerivce StudentService) RoommateRequestService {
@@ -95,7 +88,7 @@ func (roommateRequestService *roommateRequestService) CreateRoommateRequestWithN
 		panic(err)
 	}
 
-	roommateRequestService.studentService.UpdateStudent(roommateRequestWithNoRoomDTO.StudentID, map[string]interface{}{"roommate_request": RoommateRequestWithNoRoom})
+	roommateRequestService.studentService.UpdateStudent(roommateRequestWithNoRoomDTO.StudentID, map[string]interface{}{"roommate_request": constant.RoommateRequestWithNoRoom})
 
 	return createdRoommateRequest
 }
@@ -122,7 +115,7 @@ func (roommateRequestService *roommateRequestService) CreateRoommateRequestWithR
 		panic(err)
 	}
 
-	roommateRequestService.studentService.UpdateStudent(roommateRequestWithRegisteredDormDTO.StudentID, map[string]interface{}{"roommate_request": RoommateRequestWithRegisteredDorm})
+	roommateRequestService.studentService.UpdateStudent(roommateRequestWithRegisteredDormDTO.StudentID, map[string]interface{}{"roommate_request": constant.RoommateRequestWithRegisteredDorm})
 
 	return createdRoommateRequest
 }
@@ -160,7 +153,7 @@ func (roommateRequestService *roommateRequestService) CreateRoommateRequestWithU
 		panic(err)
 	}
 
-	roommateRequestService.studentService.UpdateStudent(roommateRequestWithUnregisteredDorm.StudentID, map[string]interface{}{"roommate_request": RoommateRequestWithUnregisteredDorm})
+	roommateRequestService.studentService.UpdateStudent(roommateRequestWithUnregisteredDorm.StudentID, map[string]interface{}{"roommate_request": constant.RoommateRequestWithUnregisteredDorm})
 
 	return createdRoommateRequest
 }
@@ -185,7 +178,7 @@ func (roommateRequestService *roommateRequestService) UpdateRoommateRequestWithU
 	return updatedRoommateRequestWithUnregisteredDorm
 }
 
-func (roommateRequestService *roommateRequestService) CanUpdateRoommateRequestPicture(studentID string, requestType RoommateRequestType) bool {
+func (roommateRequestService *roommateRequestService) CanUpdateRoommateRequestPicture(studentID string, requestType constant.RoommateRequestType) bool {
 	student := roommateRequestService.studentService.GetStudent(studentID)
 
 	return *student.RoommateRequest == string(requestType)

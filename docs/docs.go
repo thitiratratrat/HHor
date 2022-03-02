@@ -518,6 +518,31 @@ var doc = `{
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "name": "pet_habit_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "room_care_habit_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "sleep_habit_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "smoke_habit_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "study_habit_id",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "name": "upper_price",
                         "in": "query"
@@ -544,7 +569,7 @@ var doc = `{
                         },
                         "collectionFormat": "multi",
                         "description": "faculty",
-                        "name": "faculty",
+                        "name": "faculties",
                         "in": "query"
                     },
                     {
@@ -565,6 +590,16 @@ var doc = `{
                         "collectionFormat": "multi",
                         "description": "number of roommates",
                         "name": "number_of_roommates",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
+                        "description": "room facilities",
+                        "name": "room_facilities",
                         "in": "query"
                     }
                 ],
@@ -670,6 +705,44 @@ var doc = `{
                             "items": {
                                 "type": "string"
                             }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/student/habit": {
+            "get": {
+                "description": "returns list of faculties",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "student"
+                ],
+                "summary": "get habits",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.HabitDTO"
                         }
                     },
                     "400": {
@@ -823,7 +896,7 @@ var doc = `{
                         "name": "data",
                         "in": "body",
                         "schema": {
-                            "$ref": "#/definitions/dto.StudentUpdateDTO"
+                            "$ref": "#/definitions/dto.StudentUpdateSwagDTO"
                         }
                     }
                 ],
@@ -884,6 +957,41 @@ var doc = `{
                 }
             }
         },
+        "dto.HabitDTO": {
+            "type": "object",
+            "properties": {
+                "pet_habit": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.PetHabit"
+                    }
+                },
+                "room_care_habit": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.RoomCareHabit"
+                    }
+                },
+                "sleep_habit": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.SleepHabit"
+                    }
+                },
+                "smoke_habit": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.SmokeHabit"
+                    }
+                },
+                "study_habit": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.StudyHabit"
+                    }
+                }
+            }
+        },
         "dto.LoginCredentialsDTO": {
             "type": "object",
             "required": [
@@ -895,26 +1003,6 @@ var doc = `{
                     "type": "string"
                 },
                 "password": {
-                    "type": "string"
-                }
-            }
-        },
-        "dto.PersonalHabit": {
-            "type": "object",
-            "properties": {
-                "pet_habit_id": {
-                    "type": "string"
-                },
-                "room_care_habit_id": {
-                    "type": "string"
-                },
-                "sleep_habit_id": {
-                    "type": "string"
-                },
-                "smoke_habit_id": {
-                    "type": "string"
-                },
-                "study_habit_id": {
                     "type": "string"
                 }
             }
@@ -954,32 +1042,6 @@ var doc = `{
                     "type": "string"
                 },
                 "student_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "dto.RoommatePreference": {
-            "type": "object",
-            "properties": {
-                "other_preference": {
-                    "type": "string"
-                },
-                "preferred_gender": {
-                    "type": "string"
-                },
-                "preferred_pet_habit_id": {
-                    "type": "string"
-                },
-                "preferred_room_care_habit_id": {
-                    "type": "string"
-                },
-                "preferred_sleep_habit_id": {
-                    "type": "string"
-                },
-                "preferred_smoke_habit_id": {
-                    "type": "string"
-                },
-                "preferred_study_habit_id": {
                     "type": "string"
                 }
             }
@@ -1099,9 +1161,18 @@ var doc = `{
                 }
             }
         },
-        "dto.SocialMedia": {
+        "dto.StudentUpdateSwagDTO": {
             "type": "object",
+            "required": [
+                "enrollment_year"
+            ],
             "properties": {
+                "biography": {
+                    "type": "string"
+                },
+                "enrollment_year": {
+                    "type": "integer"
+                },
                 "facebook_url": {
                     "type": "string"
                 },
@@ -1111,28 +1182,44 @@ var doc = `{
                 "linkedin_url": {
                     "type": "string"
                 },
+                "other_preference": {
+                    "type": "string"
+                },
+                "pet_habit_id": {
+                    "type": "string"
+                },
+                "preferred_gender": {
+                    "type": "string"
+                },
+                "preferred_pet_habit_id": {
+                    "type": "string"
+                },
+                "preferred_room_care_habit_id": {
+                    "type": "string"
+                },
+                "preferred_sleep_habit_id": {
+                    "type": "string"
+                },
+                "preferred_smoke_habit_id": {
+                    "type": "string"
+                },
+                "preferred_study_habit_id": {
+                    "type": "string"
+                },
+                "room_care_habit_id": {
+                    "type": "string"
+                },
+                "sleep_habit_id": {
+                    "type": "string"
+                },
+                "smoke_habit_id": {
+                    "type": "string"
+                },
+                "study_habit_id": {
+                    "type": "string"
+                },
                 "twitter_url": {
                     "type": "string"
-                }
-            }
-        },
-        "dto.StudentUpdateDTO": {
-            "type": "object",
-            "properties": {
-                "biography": {
-                    "type": "string"
-                },
-                "enrollment_year": {
-                    "type": "integer"
-                },
-                "personal_habit": {
-                    "$ref": "#/definitions/dto.PersonalHabit"
-                },
-                "roommate_preference": {
-                    "$ref": "#/definitions/dto.RoommatePreference"
-                },
-                "social_media": {
-                    "$ref": "#/definitions/dto.SocialMedia"
                 }
             }
         },
