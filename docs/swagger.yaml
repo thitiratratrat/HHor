@@ -392,8 +392,8 @@ definitions:
     properties:
       budget:
         type: integer
-      student_id:
-        type: string
+      student:
+        $ref: '#/definitions/model.Student'
       zones:
         items:
           $ref: '#/definitions/model.DormZone'
@@ -808,7 +808,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/dto.RoommateRequestWithRoomDTO'
+              $ref: '#/definitions/model.RoommateRequestWithNoRoom'
             type: array
       summary: get roommate requests with no room
       tags:

@@ -482,7 +482,7 @@ var doc = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/dto.RoommateRequestWithRoomDTO"
+                                "$ref": "#/definitions/model.RoommateRequestWithNoRoom"
                             }
                         }
                     }
@@ -1597,8 +1597,8 @@ var doc = `{
                 "budget": {
                     "type": "integer"
                 },
-                "student_id": {
-                    "type": "string"
+                "student": {
+                    "$ref": "#/definitions/model.Student"
                 },
                 "zones": {
                     "type": "array",

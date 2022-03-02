@@ -94,7 +94,7 @@ func (roommateRequestController *roommateRequestController) GetRoommateRequestsW
 // @Param gender query []string false "gender" collectionFormat(multi)
 // @Param faculties query []string false "faculty" collectionFormat(multi)
 // @Param year_of_study query []string false "year of study" collectionFormat(multi)
-// @Success 200 {array} dto.RoommateRequestWithRoomDTO "OK"
+// @Success 200 {array} model.RoommateRequestWithNoRoom "OK"
 // @Router /roommate-request/no-room [get]
 func (roommateRequestController *roommateRequestController) GetRoommateRequestsWithNoRoom(context *gin.Context) {
 	defer utils.RecoverInvalidInput(context)
