@@ -761,6 +761,37 @@
                 }
             }
         },
+        "/roommate-request/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "roommate-request"
+                ],
+                "summary": "get roommate request",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Roommate request ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.RoommateRequestDTO"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/student/faculty": {
             "get": {
                 "description": "returns list of faculties",
@@ -1116,6 +1147,65 @@
                     "type": "string"
                 },
                 "student_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.RoommateRequestDTO": {
+            "type": "object",
+            "properties": {
+                "budget": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "facilities": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.AllRoomFacility"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "interested_dorm_zones": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.DormZone"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "number_of_roommates": {
+                    "type": "integer"
+                },
+                "picture": {
+                    "type": "string"
+                },
+                "pictures": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.RoomPicture"
+                    }
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "shared_room_price": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "number"
+                },
+                "student": {
+                    "$ref": "#/definitions/model.Student"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "zone": {
                     "type": "string"
                 }
             }

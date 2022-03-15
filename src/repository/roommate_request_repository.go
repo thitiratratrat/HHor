@@ -15,7 +15,10 @@ import (
 type RoommateRequestRepository interface {
 	FindRoommateRequestWithRegisteredDorms(roommateRequestRoomFilterDTO dto.RoommateRequestRoomFilterDTO) []model.RoommateRequestWithRegisteredDorm
 	FindRoommateRequestWithUnregisteredDorms(roommateRequestRoomFilterDTO dto.RoommateRequestRoomFilterDTO) []model.RoommateRequestWithUnregisteredDorm
-	FindRoommateRequestWithNoRoom(roommateRequestFilterDTO dto.RoommateRequestFilterDTO) []model.RoommateRequestWithNoRoom
+	FindRoommateRequestWithNoRooms(roommateRequestFilterDTO dto.RoommateRequestFilterDTO) []model.RoommateRequestWithNoRoom
+	FindRoommateRequestWithNoRoom(id string) (model.RoommateRequestWithNoRoom, error)
+	FindRoommateRequestWithUnregisteredDorm(id string) (model.RoommateRequestWithUnregisteredDorm, error)
+	FindRoommateRequestWithRegisteredDorm(id string) (model.RoommateRequestWithRegisteredDorm, error)
 	CreateRoommateRequestWithNoRoom(roommateRequestWithNoRoom model.RoommateRequestWithNoRoom) (model.RoommateRequestWithNoRoom, error)
 	CreateRoommateRequestWithRegisteredDorm(roommateRequestWithRegisteredDorm model.RoommateRequestWithRegisteredDorm) (model.RoommateRequestWithRegisteredDorm, error)
 	CreateRoommateRequestWithUnregisteredDorm(roommateRequestWithUnregisteredDorm model.RoommateRequestWithUnregisteredDorm) (model.RoommateRequestWithUnregisteredDorm, error)
@@ -51,13 +54,37 @@ func (repository *roommateRequestRepository) FindRoommateRequestWithUnregistered
 	return roommateRequests
 }
 
-func (repository *roommateRequestRepository) FindRoommateRequestWithNoRoom(roommateRequestFilterDTO dto.RoommateRequestFilterDTO) []model.RoommateRequestWithNoRoom {
+func (repository *roommateRequestRepository) FindRoommateRequestWithNoRooms(roommateRequestFilterDTO dto.RoommateRequestFilterDTO) []model.RoommateRequestWithNoRoom {
 	var roommateRequests []model.RoommateRequestWithNoRoom
 	condition := repository.getCondition(roommateRequestFilterDTO, constant.RoommateRequestWithNoRoom)
 
 	repository.db.Preload("Zones").Joins("Student").Where(condition).Find(&roommateRequests)
 
 	return roommateRequests
+}
+
+func (repository *roommateRequestRepository) FindRoommateRequestWithNoRoom(id string) (model.RoommateRequestWithNoRoom, error) {
+	var roommateRequest model.RoommateRequestWithNoRoom
+
+	err := repository.db.Preload("Zones").Joins("Student").First(&roommateRequest, id).Error
+
+	return roommateRequest, err
+}
+
+func (repository *roommateRequestRepository) FindRoommateRequestWithUnregisteredDorm(id string) (model.RoommateRequestWithUnregisteredDorm, error) {
+	var roommateRequest model.RoommateRequestWithUnregisteredDorm
+
+	err := repository.db.Preload("RoomPictures").Preload("RoomFacilities").Joins("Student").First(&roommateRequest, id).Error
+
+	return roommateRequest, err
+}
+
+func (repository *roommateRequestRepository) FindRoommateRequestWithRegisteredDorm(id string) (model.RoommateRequestWithRegisteredDorm, error) {
+	var roommateRequest model.RoommateRequestWithRegisteredDorm
+
+	err := repository.db.Preload("Room.Pictures").Preload("Room.Facilities").Preload("RoomPictures").Joins("Dorm").Joins("Room").Joins("Student").First(&roommateRequest, id).Error
+
+	return roommateRequest, err
 }
 
 func (repository *roommateRequestRepository) CreateRoommateRequestWithNoRoom(roommateRequestWithNoRoom model.RoommateRequestWithNoRoom) (model.RoommateRequestWithNoRoom, error) {

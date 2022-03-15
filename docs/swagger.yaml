@@ -89,6 +89,45 @@ definitions:
     - password
     - student_id
     type: object
+  dto.RoommateRequestDTO:
+    properties:
+      budget:
+        type: integer
+      description:
+        type: string
+      facilities:
+        items:
+          $ref: '#/definitions/model.AllRoomFacility'
+        type: array
+      id:
+        type: integer
+      interested_dorm_zones:
+        items:
+          $ref: '#/definitions/model.DormZone'
+        type: array
+      name:
+        type: string
+      number_of_roommates:
+        type: integer
+      picture:
+        type: string
+      pictures:
+        items:
+          $ref: '#/definitions/model.RoomPicture'
+        type: array
+      price:
+        type: integer
+      shared_room_price:
+        type: integer
+      size:
+        type: number
+      student:
+        $ref: '#/definitions/model.Student'
+      type:
+        type: string
+      zone:
+        type: string
+    type: object
   dto.RoommateRequestWithNoRoomDTO:
     properties:
       budget:
@@ -752,6 +791,26 @@ paths:
       summary: get room facilities
       tags:
       - room
+  /roommate-request/{id}:
+    get:
+      parameters:
+      - description: Roommate request ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.RoommateRequestDTO'
+            type: array
+      summary: get roommate request
+      tags:
+      - roommate-request
   /roommate-request/no-room:
     get:
       description: get roommate requests with no room

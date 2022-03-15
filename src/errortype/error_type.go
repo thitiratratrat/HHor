@@ -52,3 +52,8 @@ var ErrStorageWrite = ErrorMessage{
 	StatusCode: http.StatusBadRequest,
 	Message:    "fail to upload file",
 }
+
+var ErrNoRoommateRequest = ErrorMessage{
+	StatusCode: http.StatusBadRequest,
+	Message:    "student has no  opened roommate request",
+}

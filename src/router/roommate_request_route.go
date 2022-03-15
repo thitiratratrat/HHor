@@ -17,4 +17,5 @@ func SetRoommateRequestRoutes(router *gin.Engine, roommateRequestController cont
 	router.POST(fmt.Sprintf("%s/unregistered-dorm", roommateRequestRoute), roommateRequestController.CreateRoommateRequestWithUnregisteredDorm)
 	router.PUT(fmt.Sprintf("%s/unregistered-dorm/picture", roommateRequestRoute), roommateRequestController.UpdateRoommateRequestWithUnregisteredDormPictures)
 	router.PUT(fmt.Sprintf("%s/registered-dorm/picture", roommateRequestRoute), roommateRequestController.UpdateRoommateRequestWithRegisteredDormPictures)
+	router.GET(fmt.Sprintf("%s/:id", roommateRequestRoute), roommateRequestController.GetRoommateRequest)
 }

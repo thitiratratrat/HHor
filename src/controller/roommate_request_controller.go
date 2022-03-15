@@ -18,6 +18,7 @@ import (
 type RoommateRequestController interface {
 	GetRoommateRequestsWithRoom(context *gin.Context)
 	GetRoommateRequestsWithNoRoom(context *gin.Context)
+	GetRoommateRequest(context *gin.Context)
 	CreateRoommateRequestWithNoRoom(context *gin.Context)
 	CreateRoommateRequestWithRegisteredDorm(context *gin.Context)
 	CreateRoommateRequestWithUnregisteredDorm(context *gin.Context)
@@ -42,7 +43,6 @@ type roommateRequestController struct {
 }
 
 // @Summary get roommate requests with room
-// @Description get roommate requests with room
 // @Tags roommate-request
 // @Produce json
 // @Param data query dto.RoommateRequestRoomFilterDTO true "room request filter"
@@ -87,7 +87,6 @@ func (roommateRequestController *roommateRequestController) GetRoommateRequestsW
 }
 
 // @Summary get roommate requests with no room
-// @Description get roommate requests with no room
 // @Tags roommate-request
 // @Produce json
 // @Param data query dto.RoommateRequestFilterDTO true "room request filter"
@@ -126,8 +125,29 @@ func (roommateRequestController *roommateRequestController) GetRoommateRequestsW
 	context.IndentedJSON(http.StatusOK, roommateRequests)
 }
 
+// @Summary get roommate request
+// @Tags roommate-request
+// @Produce json
+// @Success 200 {array} dto.RoommateRequestDTO "OK"
+// @Param id path int true "Roommate request ID"
+// @Router /roommate-request/{id} [get]
+func (roommateRequestController *roommateRequestController) GetRoommateRequest(context *gin.Context) {
+	defer utils.RecoverInvalidInput(context)
+
+	roommateRequestID := context.Param("id")
+
+	if _, err := strconv.Atoi(roommateRequestID); err != nil {
+		context.IndentedJSON(http.StatusBadRequest, &dto.ErrorResponse{Message: "id is not an integer"})
+
+		return
+	}
+
+	roommateRequests := roommateRequestController.roommateRequestService.GetRoommateRequest(roommateRequestID)
+
+	context.IndentedJSON(http.StatusOK, roommateRequests)
+}
+
 // @Summary create roommate request with no room
-// @Description create roommate request with no room
 // @Tags roommate-request
 // @Produce json
 // @Param data body dto.RoommateRequestWithNoRoomDTO true "no room request"
@@ -161,7 +181,6 @@ func (roommateRequestController *roommateRequestController) CreateRoommateReques
 }
 
 // @Summary create roommate request with registered dorm
-// @Description create roommate request with registered dorm
 // @Tags roommate-request
 // @Produce json
 // @Accept  json
@@ -199,7 +218,6 @@ func (roommateRequestController *roommateRequestController) CreateRoommateReques
 }
 
 // @Summary create roommate request with unregistered dorm
-// @Description create roommate request with unregistered dorm
 // @Tags roommate-request
 // @Produce json
 // @Accept json
@@ -238,7 +256,6 @@ func (roommateRequestController *roommateRequestController) CreateRoommateReques
 }
 
 // @Summary update roommate request with reg dorm pictures
-// @Description update roommate request with reg dorm pictures
 // @Tags roommate-request
 // @Produce json
 // @Accept  multipart/form-data
@@ -295,7 +312,6 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 }
 
 // @Summary update roommate request with unreg dorm pictures
-// @Description update roommate request with reg dorm pictures
 // @Tags roommate-request
 // @Produce json
 // @Accept  multipart/form-data
