@@ -1,6 +1,6 @@
 package dto
 
-type RoommateRequestWithUnregisteredDormDTO struct {
+type RoommateRequestUnregDormDTO struct {
 	StudentID         string   `json:"student_id" validate:"required"`
 	DormName          string   `json:"dorm_name" validate:"required,min=2"`
 	Zone              string   `json:"zone"  validate:"required,dormzone"`

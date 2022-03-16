@@ -17,13 +17,16 @@ import (
 
 type RoommateRequestController interface {
 	GetRoommateRequestsWithRoom(context *gin.Context)
-	GetRoommateRequestsWithNoRoom(context *gin.Context)
+	GetRoommateRequestsNoRoom(context *gin.Context)
 	GetRoommateRequest(context *gin.Context)
-	CreateRoommateRequestWithNoRoom(context *gin.Context)
-	CreateRoommateRequestWithRegisteredDorm(context *gin.Context)
-	CreateRoommateRequestWithUnregisteredDorm(context *gin.Context)
-	UpdateRoommateRequestWithRegisteredDormPictures(context *gin.Context)
-	UpdateRoommateRequestWithUnregisteredDormPictures(context *gin.Context)
+	CreateRoommateRequestNoRoom(context *gin.Context)
+	CreateRoommateRequestRegDorm(context *gin.Context)
+	CreateRoommateRequestUnregDorm(context *gin.Context)
+	UpdateRoommateRequestRegDormPictures(context *gin.Context)
+	UpdateRoommateRequestUnregDormPictures(context *gin.Context)
+	UpdateRoommateRequestRegDorm(context *gin.Context)
+	UpdateRoommateRequestUnregDorm(context *gin.Context)
+	UpdateRoommateRequestNoRoom(context *gin.Context)
 }
 
 func RoommateRequestControllerHandler(roommateRequestService service.RoommateRequestService, dormService service.DormService, roomService service.RoomService, fieldValidator fieldvalidator.FieldValidator) RoommateRequestController {
@@ -95,7 +98,7 @@ func (roommateRequestController *roommateRequestController) GetRoommateRequestsW
 // @Param year_of_study query []string false "year of study" collectionFormat(multi)
 // @Success 200 {array} model.RoommateRequestWithNoRoom "OK"
 // @Router /roommate-request/no-room [get]
-func (roommateRequestController *roommateRequestController) GetRoommateRequestsWithNoRoom(context *gin.Context) {
+func (roommateRequestController *roommateRequestController) GetRoommateRequestsNoRoom(context *gin.Context) {
 	defer utils.RecoverInvalidInput(context)
 
 	validate := validator.New()
@@ -120,7 +123,7 @@ func (roommateRequestController *roommateRequestController) GetRoommateRequestsW
 		panic(validateError)
 	}
 
-	roommateRequests := roommateRequestController.roommateRequestService.GetRoommateRequestsWithNoRoom(roommateRequestFilterDTO)
+	roommateRequests := roommateRequestController.roommateRequestService.GetRoommateRequestsNoRoom(roommateRequestFilterDTO)
 
 	context.IndentedJSON(http.StatusOK, roommateRequests)
 }
@@ -150,10 +153,10 @@ func (roommateRequestController *roommateRequestController) GetRoommateRequest(c
 // @Summary create roommate request with no room
 // @Tags roommate-request
 // @Produce json
-// @Param data body dto.RoommateRequestWithNoRoomDTO true "no room request"
+// @Param data body dto.RoommateRequestNoRoomDTO true "no room request"
 // @Success 200 {object} model.RoommateRequestWithNoRoom "OK"
 // @Router /roommate-request/no-room [post]
-func (roommateRequestController *roommateRequestController) CreateRoommateRequestWithNoRoom(context *gin.Context) {
+func (roommateRequestController *roommateRequestController) CreateRoommateRequestNoRoom(context *gin.Context) {
 	defer utils.RecoverInvalidInput(context)
 
 	validate := validator.New()
@@ -162,69 +165,67 @@ func (roommateRequestController *roommateRequestController) CreateRoommateReques
 		return roommateRequestController.fieldValidator.ValidDormZone(fl.Field().Interface().([]string))
 	})
 
-	var createRoommateRequestWithNoRoomDTO dto.RoommateRequestWithNoRoomDTO
-	bindErr := context.ShouldBind(&createRoommateRequestWithNoRoomDTO)
+	var createRoommateRequestNoRoomDTO dto.RoommateRequestNoRoomDTO
+	bindErr := context.ShouldBind(&createRoommateRequestNoRoomDTO)
 
 	if bindErr != nil {
 		panic(bindErr)
 	}
 
-	validateError := validate.Struct(createRoommateRequestWithNoRoomDTO)
+	validateError := validate.Struct(createRoommateRequestNoRoomDTO)
 
 	if validateError != nil {
 		panic(validateError)
 	}
 
-	createdRoommateRequest := roommateRequestController.roommateRequestService.CreateRoommateRequestWithNoRoom(createRoommateRequestWithNoRoomDTO)
+	createdRoommateRequest := roommateRequestController.roommateRequestService.CreateRoommateRequestNoRoom(createRoommateRequestNoRoomDTO)
 
 	context.IndentedJSON(http.StatusCreated, createdRoommateRequest)
 }
 
-// @Summary create roommate request with registered dorm
+// @Summary create roommate request with reg dorm
 // @Tags roommate-request
 // @Produce json
 // @Accept  json
-// @Param data body dto.RoommateRequestWithRegisteredDormDTO true "registered dorm request"
-// @Success 200 {object} model.RoommateRequestWithRegisteredDorm "OK"
+// @Param data body dto.RoommateRequestRegDormDTO true "reg dorm request"
+// @Success 201 {object} model.RoommateRequestWithRegisteredDorm "OK"
 // @Router /roommate-request/registered-dorm [post]
-func (roommateRequestController *roommateRequestController) CreateRoommateRequestWithRegisteredDorm(context *gin.Context) {
+func (roommateRequestController *roommateRequestController) CreateRoommateRequestRegDorm(context *gin.Context) {
 	defer utils.RecoverInvalidInput(context)
 
 	validate := validator.New()
 
-	var roommateRequestWithRegisteredDormDTO dto.RoommateRequestWithRegisteredDormDTO
+	var roommateRequestRegDormDTO dto.RoommateRequestRegDormDTO
 
-	bindErr := context.ShouldBind(&roommateRequestWithRegisteredDormDTO)
+	bindErr := context.ShouldBind(&roommateRequestRegDormDTO)
 
 	if bindErr != nil {
 		panic(bindErr)
 	}
 
-	validateError := validate.Struct(roommateRequestWithRegisteredDormDTO)
+	validateError := validate.Struct(roommateRequestRegDormDTO)
 
 	if validateError != nil {
 		panic(validateError)
 	}
 
-	if !roommateRequestController.roomBelongsToDorm(roommateRequestWithRegisteredDormDTO.RoomID, roommateRequestWithRegisteredDormDTO.DormID) {
+	if !roommateRequestController.roomBelongsToDorm(roommateRequestRegDormDTO.RoomID, roommateRequestRegDormDTO.DormID) {
 		panic(errortype.ErrRoomDoesNotBelongToDorm)
 	}
 
-	createdRoommateRequest := roommateRequestController.roommateRequestService.CreateRoommateRequestWithRegisteredDorm(roommateRequestWithRegisteredDormDTO)
-
-	//TODO: delete old files from bucket
+	createdRoommateRequest := roommateRequestController.roommateRequestService.CreateRoommateRequestRegDorm(roommateRequestRegDormDTO)
 
 	context.IndentedJSON(http.StatusCreated, createdRoommateRequest)
 }
 
-// @Summary create roommate request with unregistered dorm
+// @Summary create roommate request with unreg dorm
 // @Tags roommate-request
 // @Produce json
 // @Accept json
-// @Param data body dto.RoommateRequestWithUnregisteredDormDTO true "unregistered dorm request"
-// @Success 200 {object} model.RoommateRequestWithUnregisteredDorm "OK"
+// @Param data body dto.RoommateRequestUnregDormDTO true "unreg dorm request"
+// @Success 201 {object} model.RoommateRequestWithUnregisteredDorm "OK"
 // @Router /roommate-request/unregistered-dorm [post]
-func (roommateRequestController *roommateRequestController) CreateRoommateRequestWithUnregisteredDorm(context *gin.Context) {
+func (roommateRequestController *roommateRequestController) CreateRoommateRequestUnregDorm(context *gin.Context) {
 	defer utils.RecoverInvalidInput(context)
 
 	validate := validator.New()
@@ -236,21 +237,21 @@ func (roommateRequestController *roommateRequestController) CreateRoommateReques
 		return roommateRequestController.fieldValidator.ValidRoomFacility(fl.Field().Interface().([]string))
 	})
 
-	var roommateRequestWithUnregisteredDormDTO dto.RoommateRequestWithUnregisteredDormDTO
+	var roommateRequestUnregDormDTO dto.RoommateRequestUnregDormDTO
 
-	bindErr := context.ShouldBind(&roommateRequestWithUnregisteredDormDTO)
+	bindErr := context.ShouldBind(&roommateRequestUnregDormDTO)
 
 	if bindErr != nil {
 		panic(bindErr)
 	}
 
-	validateError := validate.Struct(roommateRequestWithUnregisteredDormDTO)
+	validateError := validate.Struct(roommateRequestUnregDormDTO)
 
 	if validateError != nil {
 		panic(validateError)
 	}
 
-	createdRoommateRequest := roommateRequestController.roommateRequestService.CreateRoommateRequestWithUnregisteredDorm(roommateRequestWithUnregisteredDormDTO)
+	createdRoommateRequest := roommateRequestController.roommateRequestService.CreateRoommateRequestUnregDorm(roommateRequestUnregDormDTO)
 
 	context.IndentedJSON(http.StatusCreated, createdRoommateRequest)
 }
@@ -263,7 +264,7 @@ func (roommateRequestController *roommateRequestController) CreateRoommateReques
 // @Param room_pictures formData file false "upload multiple room pictures,test this out in postman"
 // @Success 200 {object} model.RoommateRequestWithUnregisteredDorm "OK"
 // @Router /roommate-request/registered-dorm/picture [put]
-func (roommateRequestController *roommateRequestController) UpdateRoommateRequestWithRegisteredDormPictures(context *gin.Context) {
+func (roommateRequestController *roommateRequestController) UpdateRoommateRequestRegDormPictures(context *gin.Context) {
 	defer utils.RecoverInvalidInput(context)
 
 	validate := validator.New()
@@ -288,7 +289,7 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 		return
 	}
 
-	if !roommateRequestController.roommateRequestService.CanUpdateRoommateRequestPicture(roommateRequestPictureDTO.StudentID, constant.RoommateRequestWithRegisteredDorm) {
+	if !roommateRequestController.roommateRequestService.CanUpdateRoommateRequest(roommateRequestPictureDTO.StudentID, constant.RoommateRequestRegDorm) {
 		panic(errortype.ErrMismatchRoommateRequestType)
 	}
 
@@ -306,7 +307,7 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 		roomPictureUrls = append(roomPictureUrls, roomPictureUrl)
 	}
 
-	createdRoommateRequest := roommateRequestController.roommateRequestService.UpdateRoommateRequestWithRegisteredDormPictures(roommateRequestPictureDTO.StudentID, roomPictureUrls)
+	createdRoommateRequest := roommateRequestController.roommateRequestService.UpdateRoommateRequestRegDormPictures(roommateRequestPictureDTO.StudentID, roomPictureUrls)
 
 	context.IndentedJSON(http.StatusOK, createdRoommateRequest)
 }
@@ -319,7 +320,7 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 // @Param room_pictures formData file false "upload multiple room pictures,test this out in postman"
 // @Success 200 {object} model.RoommateRequestWithUnregisteredDorm "OK"
 // @Router /roommate-request/unregistered-dorm/picture [put]
-func (roommateRequestController *roommateRequestController) UpdateRoommateRequestWithUnregisteredDormPictures(context *gin.Context) {
+func (roommateRequestController *roommateRequestController) UpdateRoommateRequestUnregDormPictures(context *gin.Context) {
 	defer utils.RecoverInvalidInput(context)
 
 	validate := validator.New()
@@ -344,7 +345,7 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 		return
 	}
 
-	if !roommateRequestController.roommateRequestService.CanUpdateRoommateRequestPicture(roommateRequestPictureDTO.StudentID, constant.RoommateRequestWithUnregisteredDorm) {
+	if !roommateRequestController.roommateRequestService.CanUpdateRoommateRequest(roommateRequestPictureDTO.StudentID, constant.RoommateRequestUnregDorm) {
 		panic(errortype.ErrMismatchRoommateRequestType)
 	}
 
@@ -363,7 +364,120 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 		roomPictureUrls = append(roomPictureUrls, roomPictureUrl)
 	}
 
-	createdRoommateRequest := roommateRequestController.roommateRequestService.UpdateRoommateRequestWithUnregisteredDormPictures(roommateRequestPictureDTO.StudentID, roomPictureUrls)
+	createdRoommateRequest := roommateRequestController.roommateRequestService.UpdateRoommateRequestUnregDormPictures(roommateRequestPictureDTO.StudentID, roomPictureUrls)
+
+	context.IndentedJSON(http.StatusOK, createdRoommateRequest)
+}
+
+// @Summary update roommate request reg dorm
+// @Tags roommate-request
+// @Produce json
+// @Accept  json
+// @Param data body dto.RoommateRequestRegDormDTO true "reg dorm update"
+// @Success 200 {object} model.RoommateRequestWithRegisteredDorm "OK"
+// @Router /roommate-request/registered-dorm [put]
+func (roommateRequestController *roommateRequestController) UpdateRoommateRequestRegDorm(context *gin.Context) {
+	defer utils.RecoverInvalidInput(context)
+
+	validate := validator.New()
+	var roommateRequestRegDormDTO dto.RoommateRequestRegDormDTO
+	bindErr := context.ShouldBind(&roommateRequestRegDormDTO)
+
+	if bindErr != nil {
+		panic(bindErr)
+	}
+
+	validateError := validate.Struct(roommateRequestRegDormDTO)
+
+	if validateError != nil {
+		panic(validateError)
+	}
+
+	if !roommateRequestController.roomBelongsToDorm(roommateRequestRegDormDTO.RoomID, roommateRequestRegDormDTO.DormID) {
+		panic(errortype.ErrRoomDoesNotBelongToDorm)
+	}
+
+	if !roommateRequestController.roommateRequestService.CanUpdateRoommateRequest(roommateRequestRegDormDTO.StudentID, constant.RoommateRequestRegDorm) {
+		panic(errortype.ErrMismatchRoommateRequestType)
+	}
+
+	createdRoommateRequest := roommateRequestController.roommateRequestService.UpdateRoommateRequestRegDorm(roommateRequestRegDormDTO)
+
+	context.IndentedJSON(http.StatusOK, createdRoommateRequest)
+}
+
+// @Summary update roommate request with unreg dorm
+// @Tags roommate-request
+// @Produce json
+// @Accept json
+// @Param data body dto.RoommateRequestUnregDormDTO true "unreg dorm request"
+// @Success 200 {object} model.RoommateRequestWithUnregisteredDorm "OK"
+// @Router /roommate-request/unregistered-dorm [put]
+func (roommateRequestController *roommateRequestController) UpdateRoommateRequestUnregDorm(context *gin.Context) {
+	defer utils.RecoverInvalidInput(context)
+
+	validate := validator.New()
+	_ = validate.RegisterValidation("dormzone", func(fl validator.FieldLevel) bool {
+		return roommateRequestController.fieldValidator.ValidDormZone([]string{fl.Field().String()})
+	})
+	_ = validate.RegisterValidation("roomfacilities", func(fl validator.FieldLevel) bool {
+		return roommateRequestController.fieldValidator.ValidRoomFacility(fl.Field().Interface().([]string))
+	})
+	var roommateRequestUnregDormDTO dto.RoommateRequestUnregDormDTO
+	bindErr := context.ShouldBind(&roommateRequestUnregDormDTO)
+
+	if bindErr != nil {
+		panic(bindErr)
+	}
+
+	validateError := validate.Struct(roommateRequestUnregDormDTO)
+
+	if validateError != nil {
+		panic(validateError)
+	}
+
+	if !roommateRequestController.roommateRequestService.CanUpdateRoommateRequest(roommateRequestUnregDormDTO.StudentID, constant.RoommateRequestUnregDorm) {
+		panic(errortype.ErrMismatchRoommateRequestType)
+	}
+
+	createdRoommateRequest := roommateRequestController.roommateRequestService.UpdateRoommateRequestUnregDorm(roommateRequestUnregDormDTO)
+
+	context.IndentedJSON(http.StatusOK, createdRoommateRequest)
+}
+
+// @Summary create roommate request with no room
+// @Tags roommate-request
+// @Produce json
+// @Param data body dto.RoommateRequestNoRoomDTO true "no room request"
+// @Success 200 {object} model.RoommateRequestWithNoRoom "OK"
+// @Router /roommate-request/no-room [put]
+func (roommateRequestController *roommateRequestController) UpdateRoommateRequestNoRoom(context *gin.Context) {
+	defer utils.RecoverInvalidInput(context)
+
+	validate := validator.New()
+
+	_ = validate.RegisterValidation("dormzone", func(fl validator.FieldLevel) bool {
+		return roommateRequestController.fieldValidator.ValidDormZone(fl.Field().Interface().([]string))
+	})
+
+	var createRoommateRequestNoRoomDTO dto.RoommateRequestNoRoomDTO
+	bindErr := context.ShouldBind(&createRoommateRequestNoRoomDTO)
+
+	if bindErr != nil {
+		panic(bindErr)
+	}
+
+	validateError := validate.Struct(createRoommateRequestNoRoomDTO)
+
+	if validateError != nil {
+		panic(validateError)
+	}
+
+	if !roommateRequestController.roommateRequestService.CanUpdateRoommateRequest(createRoommateRequestNoRoomDTO.StudentID, constant.RoommateRequestNoRoom) {
+		panic(errortype.ErrMismatchRoommateRequestType)
+	}
+
+	createdRoommateRequest := roommateRequestController.roommateRequestService.UpdateRoommateRequestNoRoom(createRoommateRequestNoRoomDTO)
 
 	context.IndentedJSON(http.StatusOK, createdRoommateRequest)
 }

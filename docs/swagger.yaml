@@ -109,11 +109,9 @@ definitions:
         type: string
       number_of_roommates:
         type: integer
-      picture:
-        type: string
       pictures:
         items:
-          $ref: '#/definitions/model.RoomPicture'
+          $ref: '#/definitions/model.Picture'
         type: array
       price:
         type: integer
@@ -128,7 +126,7 @@ definitions:
       zone:
         type: string
     type: object
-  dto.RoommateRequestWithNoRoomDTO:
+  dto.RoommateRequestNoRoomDTO:
     properties:
       budget:
         type: integer
@@ -143,7 +141,7 @@ definitions:
     - student_id
     - zones
     type: object
-  dto.RoommateRequestWithRegisteredDormDTO:
+  dto.RoommateRequestRegDormDTO:
     properties:
       dorm_id:
         type: string
@@ -162,20 +160,7 @@ definitions:
     - shared_room_price
     - student_id
     type: object
-  dto.RoommateRequestWithRoomDTO:
-    properties:
-      dorm_name:
-        type: string
-      id:
-        type: string
-      picture:
-        type: string
-      shared_room_price:
-        type: integer
-      student:
-        $ref: '#/definitions/model.Student'
-    type: object
-  dto.RoommateRequestWithUnregisteredDormDTO:
+  dto.RoommateRequestUnregDormDTO:
     properties:
       dorm_name:
         type: string
@@ -207,6 +192,23 @@ definitions:
     - shared_room_price
     - student_id
     - zone
+    type: object
+  dto.RoommateRequestWithRoomDTO:
+    properties:
+      dorm_name:
+        type: string
+      id:
+        type: string
+      lat:
+        type: number
+      long:
+        type: number
+      picture:
+        type: string
+      shared_room_price:
+        type: integer
+      student:
+        $ref: '#/definitions/model.Student'
     type: object
   dto.StudentUpdateSwagDTO:
     properties:
@@ -358,6 +360,11 @@ definitions:
         type: string
     type: object
   model.PetPicture:
+    properties:
+      picture_url:
+        type: string
+    type: object
+  model.Picture:
     properties:
       picture_url:
         type: string
@@ -813,7 +820,6 @@ paths:
       - roommate-request
   /roommate-request/no-room:
     get:
-      description: get roommate requests with no room
       parameters:
       - in: query
         name: lower_price
@@ -873,14 +879,31 @@ paths:
       tags:
       - roommate-request
     post:
-      description: create roommate request with no room
       parameters:
       - description: no room request
         in: body
         name: data
         required: true
         schema:
-          $ref: '#/definitions/dto.RoommateRequestWithNoRoomDTO'
+          $ref: '#/definitions/dto.RoommateRequestNoRoomDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.RoommateRequestWithNoRoom'
+      summary: create roommate request with no room
+      tags:
+      - roommate-request
+    put:
+      parameters:
+      - description: no room request
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RoommateRequestNoRoomDTO'
       produces:
       - application/json
       responses:
@@ -895,14 +918,33 @@ paths:
     post:
       consumes:
       - application/json
-      description: create roommate request with registered dorm
       parameters:
-      - description: registered dorm request
+      - description: reg dorm request
         in: body
         name: data
         required: true
         schema:
-          $ref: '#/definitions/dto.RoommateRequestWithRegisteredDormDTO'
+          $ref: '#/definitions/dto.RoommateRequestRegDormDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.RoommateRequestWithRegisteredDorm'
+      summary: create roommate request with reg dorm
+      tags:
+      - roommate-request
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: reg dorm update
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RoommateRequestRegDormDTO'
       produces:
       - application/json
       responses:
@@ -910,14 +952,13 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.RoommateRequestWithRegisteredDorm'
-      summary: create roommate request with registered dorm
+      summary: update roommate request reg dorm
       tags:
       - roommate-request
   /roommate-request/registered-dorm/picture:
     put:
       consumes:
       - multipart/form-data
-      description: update roommate request with reg dorm pictures
       parameters:
       - in: formData
         name: student_id
@@ -939,7 +980,6 @@ paths:
       - roommate-request
   /roommate-request/room:
     get:
-      description: get roommate requests with room
       parameters:
       - in: query
         name: dorm_name
@@ -1019,14 +1059,33 @@ paths:
     post:
       consumes:
       - application/json
-      description: create roommate request with unregistered dorm
       parameters:
-      - description: unregistered dorm request
+      - description: unreg dorm request
         in: body
         name: data
         required: true
         schema:
-          $ref: '#/definitions/dto.RoommateRequestWithUnregisteredDormDTO'
+          $ref: '#/definitions/dto.RoommateRequestUnregDormDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.RoommateRequestWithUnregisteredDorm'
+      summary: create roommate request with unreg dorm
+      tags:
+      - roommate-request
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: unreg dorm request
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RoommateRequestUnregDormDTO'
       produces:
       - application/json
       responses:
@@ -1034,14 +1093,13 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.RoommateRequestWithUnregisteredDorm'
-      summary: create roommate request with unregistered dorm
+      summary: update roommate request with unreg dorm
       tags:
       - roommate-request
   /roommate-request/unregistered-dorm/picture:
     put:
       consumes:
       - multipart/form-data
-      description: update roommate request with reg dorm pictures
       parameters:
       - in: formData
         name: student_id

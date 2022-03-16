@@ -7,7 +7,7 @@ const RoommateRequestRoomPictureFolder = "roommate_request_room_pictures/"
 type RoommateRequestType string
 
 const (
-	RoommateRequestWithNoRoom           RoommateRequestType = "NO_ROOM"
-	RoommateRequestWithRegisteredDorm   RoommateRequestType = "REGISTERED_DORM"
-	RoommateRequestWithUnregisteredDorm RoommateRequestType = "UNREGISTERED_DORM"
+	RoommateRequestNoRoom    RoommateRequestType = "NO_ROOM"
+	RoommateRequestRegDorm   RoommateRequestType = "REGISTERED_DORM"
+	RoommateRequestUnregDorm RoommateRequestType = "UNREGISTERED_DORM"
 )

@@ -24,6 +24,9 @@ type RoommateRequestRepository interface {
 	CreateRoommateRequestWithUnregisteredDorm(roommateRequestWithUnregisteredDorm model.RoommateRequestWithUnregisteredDorm) (model.RoommateRequestWithUnregisteredDorm, error)
 	UpdateRoommateRequestWithRegisteredDormPictures(id string, pictureUrls []string) (model.RoommateRequestWithRegisteredDorm, error)
 	UpdateRoommateRequestWithUnregisteredDormPictures(id string, pictureUrls []string) (model.RoommateRequestWithUnregisteredDorm, error)
+	UpdateRoommateRequestRegDorm(id string, req model.RoommateRequestWithRegisteredDorm) (model.RoommateRequestWithRegisteredDorm, error)
+	UpdateRoommateRequestUnregDorm(id string, roommateRequest model.RoommateRequestWithUnregisteredDorm) (model.RoommateRequestWithUnregisteredDorm, error)
+	UpdateRoommateRequestNoRoom(id string, roommateRequest model.RoommateRequestWithNoRoom) (model.RoommateRequestWithNoRoom, error)
 }
 
 func RoommateRequestRepositoryHandler(db *gorm.DB) RoommateRequestRepository {
@@ -38,7 +41,7 @@ type roommateRequestRepository struct {
 
 func (repository *roommateRequestRepository) FindRoommateRequestWithRegisteredDorms(roommateRequestRoomFilterDTO dto.RoommateRequestRoomFilterDTO) []model.RoommateRequestWithRegisteredDorm {
 	var roommateRequests []model.RoommateRequestWithRegisteredDorm
-	condition := repository.getRoomCondition(roommateRequestRoomFilterDTO, constant.RoommateRequestWithRegisteredDorm)
+	condition := repository.getRoomCondition(roommateRequestRoomFilterDTO, constant.RoommateRequestRegDorm)
 
 	repository.db.Preload("RoomPictures").Joins("Dorm").Joins("Room").Joins("Student").Where(condition).Find(&roommateRequests)
 
@@ -47,7 +50,7 @@ func (repository *roommateRequestRepository) FindRoommateRequestWithRegisteredDo
 
 func (repository *roommateRequestRepository) FindRoommateRequestWithUnregisteredDorms(roommateRequestRoomFilterDTO dto.RoommateRequestRoomFilterDTO) []model.RoommateRequestWithUnregisteredDorm {
 	var roommateRequests []model.RoommateRequestWithUnregisteredDorm
-	condition := repository.getRoomCondition(roommateRequestRoomFilterDTO, constant.RoommateRequestWithUnregisteredDorm)
+	condition := repository.getRoomCondition(roommateRequestRoomFilterDTO, constant.RoommateRequestUnregDorm)
 
 	repository.db.Preload("RoomPictures").Preload("RoomFacilities").Joins("Student").Where(condition).Find(&roommateRequests)
 
@@ -56,7 +59,7 @@ func (repository *roommateRequestRepository) FindRoommateRequestWithUnregistered
 
 func (repository *roommateRequestRepository) FindRoommateRequestWithNoRooms(roommateRequestFilterDTO dto.RoommateRequestFilterDTO) []model.RoommateRequestWithNoRoom {
 	var roommateRequests []model.RoommateRequestWithNoRoom
-	condition := repository.getCondition(roommateRequestFilterDTO, constant.RoommateRequestWithNoRoom)
+	condition := repository.getCondition(roommateRequestFilterDTO, constant.RoommateRequestNoRoom)
 
 	repository.db.Preload("Zones").Joins("Student").Where(condition).Find(&roommateRequests)
 
@@ -143,6 +146,42 @@ func (repository *roommateRequestRepository) UpdateRoommateRequestWithUnregister
 	return roommateRequestWithUnregisteredDorm, err
 }
 
+func (repository *roommateRequestRepository) UpdateRoommateRequestRegDorm(id string, roommateRequest model.RoommateRequestWithRegisteredDorm) (model.RoommateRequestWithRegisteredDorm, error) {
+	err := repository.db.Save(&roommateRequest).Error
+
+	if err != nil {
+		return model.RoommateRequestWithRegisteredDorm{}, err
+	}
+
+	return roommateRequest, nil
+}
+
+func (repository *roommateRequestRepository) UpdateRoommateRequestUnregDorm(id string, roommateRequest model.RoommateRequestWithUnregisteredDorm) (model.RoommateRequestWithUnregisteredDorm, error) {
+	err := repository.db.Model(&model.RoommateRequestWithUnregisteredDorm{StudentID: roommateRequest.StudentID}).Omit("RoomFacilities").Updates(roommateRequest).Error
+
+	if err != nil {
+		return model.RoommateRequestWithUnregisteredDorm{}, err
+	}
+
+	repository.db.Table("roommate_request_unregistered_dorm_room_facility").Where("roommate_request_with_unregistered_dorm_student_id = ?", id).Delete(model.AllRoomFacility{})
+	repository.db.Select("RoomFacilities").Save(roommateRequest)
+
+	return roommateRequest, nil
+}
+
+func (repository *roommateRequestRepository) UpdateRoommateRequestNoRoom(id string, roommateRequest model.RoommateRequestWithNoRoom) (model.RoommateRequestWithNoRoom, error) {
+	err := repository.db.Model(&model.RoommateRequestWithNoRoom{StudentID: roommateRequest.StudentID}).Omit("Zones").Updates(roommateRequest).Error
+
+	if err != nil {
+		return model.RoommateRequestWithNoRoom{}, err
+	}
+
+	repository.db.Table("roommate_request_no_room_zone").Where("roommate_request_with_no_room_student_id = ?", id).Delete(model.DormZone{})
+	repository.db.Select("Zones").Save(roommateRequest)
+
+	return roommateRequest, nil
+}
+
 func (repository *roommateRequestRepository) getRoomCondition(roommateRequestFilterDTO dto.RoommateRequestRoomFilterDTO, requestType constant.RoommateRequestType) string {
 	nameCondition := repository.getNameCondition(roommateRequestFilterDTO.DormName, requestType)
 	roommateCondition := repository.getNumberOfRoommatesCondition(roommateRequestFilterDTO.NumberOfRoommates)
@@ -168,11 +207,11 @@ func (repository *roommateRequestRepository) getCondition(roommateRequestFilterD
 
 func (repository *roommateRequestRepository) getNameCondition(name *string, requestType constant.RoommateRequestType) string {
 	switch {
-	case requestType == constant.RoommateRequestWithRegisteredDorm && name == nil:
+	case requestType == constant.RoommateRequestRegDorm && name == nil:
 		return `"Dorm".name` + " LIKE '%%'"
-	case requestType == constant.RoommateRequestWithRegisteredDorm:
+	case requestType == constant.RoommateRequestRegDorm:
 		return `"Dorm".name` + " LIKE '%" + *name + "%'"
-	case requestType == constant.RoommateRequestWithUnregisteredDorm && name == nil:
+	case requestType == constant.RoommateRequestUnregDorm && name == nil:
 		return "dorm_name LIKE '%%'"
 	default:
 		return "dorm_name LIKE '%" + *name + "%'"
@@ -185,7 +224,7 @@ func (repository *roommateRequestRepository) getZoneCondition(zone *string, requ
 	}
 
 	switch requestType {
-	case constant.RoommateRequestWithNoRoom:
+	case constant.RoommateRequestNoRoom:
 		return fmt.Sprintf("AND '%s' IN (select dorm_zone_name from roommate_request_no_room_zone where student_id = roommate_request_with_no_room_student_id)", *zone)
 	default:
 		return fmt.Sprintf("AND dorm_zone_name = '%s'", *zone)
@@ -236,7 +275,7 @@ func (repository *roommateRequestRepository) getBudgetCondition(lowerPrice *int,
 	}
 
 	switch requestType {
-	case constant.RoommateRequestWithNoRoom:
+	case constant.RoommateRequestNoRoom:
 		return fmt.Sprintf("AND budget BETWEEN %d AND %d", *lowerPrice, *upperPrice)
 	default:
 		return fmt.Sprintf("AND shared_room_price BETWEEN %d AND %d", *lowerPrice, *upperPrice)
@@ -268,7 +307,7 @@ func (repository *roommateRequestRepository) getRoomFacilityCondition(roomFacili
 	formattedRoomFacilities := "'" + strings.Join(roomFacilities, "', '") + "'"
 
 	switch requestType {
-	case constant.RoommateRequestWithRegisteredDorm:
+	case constant.RoommateRequestRegDorm:
 		return fmt.Sprintf("AND %d = (select count(*) from room_facility where"+`"Room".id `+"= room_facility.room_id and all_room_facility_name IN (%s))", len(roomFacilities), formattedRoomFacilities)
 	default:
 		return fmt.Sprintf("AND %d = (select count(*) from roommate_request_unregistered_dorm_room_facility where student_id = roommate_request_with_unregistered_dorm_student_id and all_room_facility_name IN (%s))", len(roomFacilities), formattedRoomFacilities)

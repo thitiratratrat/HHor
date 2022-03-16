@@ -396,7 +396,6 @@ var doc = `{
         },
         "/roommate-request/no-room": {
             "get": {
-                "description": "get roommate requests with no room",
                 "produces": [
                     "application/json"
                 ],
@@ -488,8 +487,7 @@ var doc = `{
                     }
                 }
             },
-            "post": {
-                "description": "create roommate request with no room",
+            "put": {
                 "produces": [
                     "application/json"
                 ],
@@ -504,7 +502,35 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.RoommateRequestWithNoRoomDTO"
+                            "$ref": "#/definitions/dto.RoommateRequestNoRoomDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.RoommateRequestWithNoRoom"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "roommate-request"
+                ],
+                "summary": "create roommate request with no room",
+                "parameters": [
+                    {
+                        "description": "no room request",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RoommateRequestNoRoomDTO"
                         }
                     }
                 ],
@@ -519,8 +545,7 @@ var doc = `{
             }
         },
         "/roommate-request/registered-dorm": {
-            "post": {
-                "description": "create roommate request with registered dorm",
+            "put": {
                 "consumes": [
                     "application/json"
                 ],
@@ -530,15 +555,15 @@ var doc = `{
                 "tags": [
                     "roommate-request"
                 ],
-                "summary": "create roommate request with registered dorm",
+                "summary": "update roommate request reg dorm",
                 "parameters": [
                     {
-                        "description": "registered dorm request",
+                        "description": "reg dorm update",
                         "name": "data",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.RoommateRequestWithRegisteredDormDTO"
+                            "$ref": "#/definitions/dto.RoommateRequestRegDormDTO"
                         }
                     }
                 ],
@@ -550,11 +575,41 @@ var doc = `{
                         }
                     }
                 }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "roommate-request"
+                ],
+                "summary": "create roommate request with reg dorm",
+                "parameters": [
+                    {
+                        "description": "reg dorm request",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RoommateRequestRegDormDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.RoommateRequestWithRegisteredDorm"
+                        }
+                    }
+                }
             }
         },
         "/roommate-request/registered-dorm/picture": {
             "put": {
-                "description": "update roommate request with reg dorm pictures",
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -591,7 +646,6 @@ var doc = `{
         },
         "/roommate-request/room": {
             "get": {
-                "description": "get roommate requests with room",
                 "produces": [
                     "application/json"
                 ],
@@ -710,8 +764,7 @@ var doc = `{
             }
         },
         "/roommate-request/unregistered-dorm": {
-            "post": {
-                "description": "create roommate request with unregistered dorm",
+            "put": {
                 "consumes": [
                     "application/json"
                 ],
@@ -721,15 +774,15 @@ var doc = `{
                 "tags": [
                     "roommate-request"
                 ],
-                "summary": "create roommate request with unregistered dorm",
+                "summary": "update roommate request with unreg dorm",
                 "parameters": [
                     {
-                        "description": "unregistered dorm request",
+                        "description": "unreg dorm request",
                         "name": "data",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.RoommateRequestWithUnregisteredDormDTO"
+                            "$ref": "#/definitions/dto.RoommateRequestUnregDormDTO"
                         }
                     }
                 ],
@@ -741,11 +794,41 @@ var doc = `{
                         }
                     }
                 }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "roommate-request"
+                ],
+                "summary": "create roommate request with unreg dorm",
+                "parameters": [
+                    {
+                        "description": "unreg dorm request",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RoommateRequestUnregDormDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.RoommateRequestWithUnregisteredDorm"
+                        }
+                    }
+                }
             }
         },
         "/roommate-request/unregistered-dorm/picture": {
             "put": {
-                "description": "update roommate request with reg dorm pictures",
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -1200,13 +1283,10 @@ var doc = `{
                 "number_of_roommates": {
                     "type": "integer"
                 },
-                "picture": {
-                    "type": "string"
-                },
                 "pictures": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.RoomPicture"
+                        "$ref": "#/definitions/model.Picture"
                     }
                 },
                 "price": {
@@ -1229,7 +1309,7 @@ var doc = `{
                 }
             }
         },
-        "dto.RoommateRequestWithNoRoomDTO": {
+        "dto.RoommateRequestNoRoomDTO": {
             "type": "object",
             "required": [
                 "budget",
@@ -1251,7 +1331,7 @@ var doc = `{
                 }
             }
         },
-        "dto.RoommateRequestWithRegisteredDormDTO": {
+        "dto.RoommateRequestRegDormDTO": {
             "type": "object",
             "required": [
                 "dorm_id",
@@ -1278,27 +1358,7 @@ var doc = `{
                 }
             }
         },
-        "dto.RoommateRequestWithRoomDTO": {
-            "type": "object",
-            "properties": {
-                "dorm_name": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "picture": {
-                    "type": "string"
-                },
-                "shared_room_price": {
-                    "type": "integer"
-                },
-                "student": {
-                    "$ref": "#/definitions/model.Student"
-                }
-            }
-        },
-        "dto.RoommateRequestWithUnregisteredDormDTO": {
+        "dto.RoommateRequestUnregDormDTO": {
             "type": "object",
             "required": [
                 "dorm_name",
@@ -1341,6 +1401,32 @@ var doc = `{
                 },
                 "zone": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.RoommateRequestWithRoomDTO": {
+            "type": "object",
+            "properties": {
+                "dorm_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "lat": {
+                    "type": "number"
+                },
+                "long": {
+                    "type": "number"
+                },
+                "picture": {
+                    "type": "string"
+                },
+                "shared_room_price": {
+                    "type": "integer"
+                },
+                "student": {
+                    "$ref": "#/definitions/model.Student"
                 }
             }
         },
@@ -1574,6 +1660,14 @@ var doc = `{
             }
         },
         "model.PetPicture": {
+            "type": "object",
+            "properties": {
+                "picture_url": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Picture": {
             "type": "object",
             "properties": {
                 "picture_url": {
