@@ -34,7 +34,6 @@ type dormController struct {
 
 //TODO: filter by match score, cosine similarity, similarity measures
 // @Summary get list of dorms
-// @Description returns list of dorms filter by dorm type, zone,capacity, location, dorm and room facilities
 // @Tags dorm
 // @Produce json
 // @Accept json
@@ -77,7 +76,6 @@ func (dormController *dormController) GetDorms(context *gin.Context) {
 }
 
 // @Summary get dorm details from dorm id
-// @Description returns dorm details
 // @Tags dorm
 // @Produce json
 // @Success 200 {object} model.Dorm "OK"
@@ -101,7 +99,6 @@ func (dormController *dormController) GetDorm(context *gin.Context) {
 }
 
 // @Summary get dorm names from first letter
-// @Description returns list of dorm names from first letter
 // @Tags dorm
 // @Produce json
 // @Success 200 {array} dto.DormSuggestionDTO "OK"
@@ -116,7 +113,6 @@ func (dormController *dormController) GetDormSuggestions(context *gin.Context) {
 }
 
 // @Summary get dorm facilities
-// @Description returns list of dorm facilities
 // @Tags dorm
 // @Produce json
 // @Success 200 {array} string "OK"
@@ -128,7 +124,6 @@ func (dormController *dormController) GetAllDormFacilities(context *gin.Context)
 }
 
 // @Summary get dorm zones
-// @Description returns list of dorm zones
 // @Tags dorm
 // @Produce json
 // @Success 200 {array} string "OK"

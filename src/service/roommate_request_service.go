@@ -22,6 +22,7 @@ type RoommateRequestService interface {
 	UpdateRoommateRequestRegDorm(roommateRequest dto.RoommateRequestRegDormDTO) model.RoommateRequestWithRegisteredDorm
 	UpdateRoommateRequestUnregDorm(roommateRequest dto.RoommateRequestUnregDormDTO) model.RoommateRequestWithUnregisteredDorm
 	UpdateRoommateRequestNoRoom(roommateRequest dto.RoommateRequestNoRoomDTO) model.RoommateRequestWithNoRoom
+	DeleteRoommateRequest(id string)
 	CanUpdateRoommateRequest(studentID string, requestType constant.RoommateRequestType) bool
 }
 
@@ -288,6 +289,32 @@ func (roommateRequestService *roommateRequestService) UpdateRoommateRequestNoRoo
 	}
 
 	return updatedRoommateRequest
+}
+
+func (roommateRequestService *roommateRequestService) DeleteRoommateRequest(id string) {
+	student := roommateRequestService.studentService.GetStudent(id)
+	var roommateRequest dto.RoommateRequestDTO
+	var err error
+	roommateRequest.Student = student
+
+	if student.RoommateRequest == nil {
+		panic(errortype.ErrNoRoommateRequest)
+	}
+
+	switch *student.RoommateRequest {
+	case string(constant.RoommateRequestRegDorm):
+		err = roommateRequestService.roommateRequestRepository.DeleteRoommateRequestRegDorm(id)
+	case string(constant.RoommateRequestUnregDorm):
+		err = roommateRequestService.roommateRequestRepository.DeleteRoommateRequestUnregDorm(id)
+	case string(constant.RoommateRequestNoRoom):
+		err = roommateRequestService.roommateRequestRepository.DeleteRoommateRequestNoRoom(id)
+	}
+
+	roommateRequestService.studentService.UpdateStudent(id, map[string]interface{}{"roommate_request": nil})
+
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (roommateRequestService *roommateRequestService) CanUpdateRoommateRequest(studentID string, requestType constant.RoommateRequestType) bool {

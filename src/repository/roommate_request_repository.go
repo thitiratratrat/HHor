@@ -12,6 +12,7 @@ import (
 	"gorm.io/gorm"
 )
 
+//TODO: separate into each request type?
 type RoommateRequestRepository interface {
 	FindRoommateRequestWithRegisteredDorms(roommateRequestRoomFilterDTO dto.RoommateRequestRoomFilterDTO) []model.RoommateRequestWithRegisteredDorm
 	FindRoommateRequestWithUnregisteredDorms(roommateRequestRoomFilterDTO dto.RoommateRequestRoomFilterDTO) []model.RoommateRequestWithUnregisteredDorm
@@ -27,6 +28,9 @@ type RoommateRequestRepository interface {
 	UpdateRoommateRequestRegDorm(id string, req model.RoommateRequestWithRegisteredDorm) (model.RoommateRequestWithRegisteredDorm, error)
 	UpdateRoommateRequestUnregDorm(id string, roommateRequest model.RoommateRequestWithUnregisteredDorm) (model.RoommateRequestWithUnregisteredDorm, error)
 	UpdateRoommateRequestNoRoom(id string, roommateRequest model.RoommateRequestWithNoRoom) (model.RoommateRequestWithNoRoom, error)
+	DeleteRoommateRequestRegDorm(id string) error
+	DeleteRoommateRequestUnregDorm(id string) error
+	DeleteRoommateRequestNoRoom(id string) error
 }
 
 func RoommateRequestRepositoryHandler(db *gorm.DB) RoommateRequestRepository {
@@ -180,6 +184,42 @@ func (repository *roommateRequestRepository) UpdateRoommateRequestNoRoom(id stri
 	repository.db.Select("Zones").Save(roommateRequest)
 
 	return roommateRequest, nil
+}
+
+func (repository *roommateRequestRepository) DeleteRoommateRequestRegDorm(id string) error {
+	repository.db.Table("roommate_request_registered_dorm_pictures").Where("roommate_request_with_registered_dorm_student_id = ?", id).Delete(model.RoommateRequestRegisteredDormPicture{})
+
+	err := repository.db.Delete(&model.RoommateRequestWithRegisteredDorm{}, id).Error
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (repository *roommateRequestRepository) DeleteRoommateRequestUnregDorm(id string) error {
+	repository.db.Table("roommate_request_unregistered_dorm_pictures").Where("roommate_request_with_unregistered_dorm_student_id = ?", id).Delete(model.RoommateRequestUnregisteredDormPicture{})
+	repository.db.Table("roommate_request_unregistered_dorm_room_facility").Where("roommate_request_with_unregistered_dorm_student_id = ?", id).Delete(model.AllRoomFacility{})
+
+	err := repository.db.Delete(&model.RoommateRequestWithUnregisteredDorm{}, id).Error
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (repository *roommateRequestRepository) DeleteRoommateRequestNoRoom(id string) error {
+	repository.db.Table("roommate_request_no_room_zone").Where("roommate_request_with_no_room_student_id = ?", id).Delete(model.DormZone{})
+	err := repository.db.Delete(&model.RoommateRequestWithNoRoom{}, id).Error
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (repository *roommateRequestRepository) getRoomCondition(roommateRequestFilterDTO dto.RoommateRequestRoomFilterDTO, requestType constant.RoommateRequestType) string {

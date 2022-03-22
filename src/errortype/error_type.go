@@ -55,5 +55,5 @@ var ErrStorageWrite = ErrorMessage{
 
 var ErrNoRoommateRequest = ErrorMessage{
 	StatusCode: http.StatusBadRequest,
-	Message:    "student has no  opened roommate request",
+	Message:    "student has no opened roommate request",
 }

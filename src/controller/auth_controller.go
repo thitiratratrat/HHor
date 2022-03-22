@@ -29,7 +29,6 @@ type authController struct {
 }
 
 // @Summary register student account
-// @Description register student account
 // @Tags auth
 // @Produce json
 // @Param data body dto.RegisterStudentDTO true "student registration"
@@ -65,7 +64,6 @@ func (authController *authController) RegisterStudent(context *gin.Context) {
 }
 
 // @Summary login
-// @Description login
 // @Tags auth
 // @Produce json
 // @Param data body dto.LoginCredentialsDTO true "login credentials"

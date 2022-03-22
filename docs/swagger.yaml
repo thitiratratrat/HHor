@@ -557,7 +557,6 @@ info:
 paths:
   /auth/student/login:
     post:
-      description: login
       parameters:
       - description: login credentials
         in: body
@@ -595,7 +594,6 @@ paths:
       - auth
   /auth/student/register:
     post:
-      description: register student account
       parameters:
       - description: student registration
         in: body
@@ -625,8 +623,6 @@ paths:
     get:
       consumes:
       - application/json
-      description: returns list of dorms filter by dorm type, zone,capacity, location,
-        dorm and room facilities
       parameters:
       - in: query
         name: capacity
@@ -684,7 +680,6 @@ paths:
       - dorm
   /dorm/{id}:
     get:
-      description: returns dorm details
       parameters:
       - description: Dorm ID
         in: path
@@ -715,7 +710,6 @@ paths:
       - dorm
   /dorm/facility:
     get:
-      description: returns list of dorm facilities
       produces:
       - application/json
       responses:
@@ -730,7 +724,6 @@ paths:
       - dorm
   /dorm/suggest/{letter}:
     get:
-      description: returns list of dorm names from first letter
       parameters:
       - description: First Letter
         in: path
@@ -751,7 +744,6 @@ paths:
       - dorm
   /dorm/zone:
     get:
-      description: returns list of dorm zones
       produces:
       - application/json
       responses:
@@ -766,7 +758,6 @@ paths:
       - dorm
   /room/{id}:
     get:
-      description: return room detail
       parameters:
       - description: Room ID
         in: path
@@ -785,7 +776,6 @@ paths:
       - room
   /room/facility:
     get:
-      description: returns list of room facilities
       produces:
       - application/json
       responses:
@@ -799,6 +789,21 @@ paths:
       tags:
       - room
   /roommate-request/{id}:
+    delete:
+      parameters:
+      - description: Roommate request ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: delete roommate request
+      tags:
+      - roommate-request
     get:
       parameters:
       - description: Roommate request ID
@@ -1121,7 +1126,6 @@ paths:
       - roommate-request
   /student/{id}:
     get:
-      description: returns student profile
       parameters:
       - description: Student ID
         in: path
@@ -1151,7 +1155,6 @@ paths:
       tags:
       - student
     patch:
-      description: update student detail
       parameters:
       - description: Student ID
         in: path
@@ -1175,7 +1178,6 @@ paths:
       - student
   /student/faculty:
     get:
-      description: returns list of faculties
       produces:
       - application/json
       responses:
@@ -1202,7 +1204,6 @@ paths:
       - student
   /student/habit:
     get:
-      description: returns list of faculties
       produces:
       - application/json
       responses:
@@ -1229,7 +1230,6 @@ paths:
     post:
       consumes:
       - multipart/form-data
-      description: upload profile picture
       parameters:
       - description: Student ID
         in: path

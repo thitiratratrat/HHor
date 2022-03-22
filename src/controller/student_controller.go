@@ -34,7 +34,6 @@ type studentController struct {
 //TODO: able to pass null now but cannot validate
 
 // @Summary update student detail
-// @Description update student detail
 // @Tags student
 // @Produce json
 // @Param id path string true "Student ID"
@@ -66,7 +65,6 @@ func (studentController *studentController) UpdateStudent(context *gin.Context) 
 }
 
 // @Summary upload profile picture
-// @Description upload profile picture
 // @Tags student
 // @Accept  multipart/form-data
 // @Produce json
@@ -133,10 +131,7 @@ func (studentController *studentController) UploadPicture(context *gin.Context) 
 	context.IndentedJSON(http.StatusOK, updatedStudent)
 }
 
-//TODO: get roommate request?
-
 // @Summary get student profile
-// @Description returns student profile
 // @Tags student
 // @Produce json
 // @Success 200 {object} model.Student "OK"
@@ -153,7 +148,6 @@ func (studentController *studentController) GetStudent(context *gin.Context) {
 }
 
 // @Summary get faculties
-// @Description returns list of faculties
 // @Tags student
 // @Produce json
 // @Success 200 {array} string "OK"
@@ -166,7 +160,6 @@ func (studentController *studentController) GetFaculties(context *gin.Context) {
 }
 
 // @Summary get habits
-// @Description returns list of faculties
 // @Tags student
 // @Produce json
 // @Success 200 {object} dto.HabitDTO "OK"

@@ -27,6 +27,7 @@ type RoommateRequestController interface {
 	UpdateRoommateRequestRegDorm(context *gin.Context)
 	UpdateRoommateRequestUnregDorm(context *gin.Context)
 	UpdateRoommateRequestNoRoom(context *gin.Context)
+	DeleteRoommateRequest(context *gin.Context)
 }
 
 func RoommateRequestControllerHandler(roommateRequestService service.RoommateRequestService, dormService service.DormService, roomService service.RoomService, fieldValidator fieldvalidator.FieldValidator) RoommateRequestController {
@@ -480,6 +481,28 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 	createdRoommateRequest := roommateRequestController.roommateRequestService.UpdateRoommateRequestNoRoom(createRoommateRequestNoRoomDTO)
 
 	context.IndentedJSON(http.StatusOK, createdRoommateRequest)
+}
+
+// @Summary delete roommate request
+// @Tags roommate-request
+// @Produce json
+// @Success 200 "OK"
+// @Param id path int true "Roommate request ID"
+// @Router /roommate-request/{id} [delete]
+func (roommateRequestController *roommateRequestController) DeleteRoommateRequest(context *gin.Context) {
+	defer utils.RecoverInvalidInput(context)
+
+	roommateRequestID := context.Param("id")
+
+	if _, err := strconv.Atoi(roommateRequestID); err != nil {
+		context.IndentedJSON(http.StatusBadRequest, &dto.ErrorResponse{Message: "id is not an integer"})
+
+		return
+	}
+
+	roommateRequestController.roommateRequestService.DeleteRoommateRequest(roommateRequestID)
+
+	context.IndentedJSON(http.StatusOK, "")
 }
 
 func (roommateRequestController *roommateRequestController) roomBelongsToDorm(roomID string, dormID string) bool {

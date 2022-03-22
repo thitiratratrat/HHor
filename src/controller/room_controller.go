@@ -24,7 +24,6 @@ type roomController struct {
 }
 
 // @Summary get room facilities
-// @Description returns list of room facilities
 // @Tags room
 // @Produce json
 // @Success 200 {array} string "OK"
@@ -36,7 +35,6 @@ func (roomController *roomController) GetAllRoomFacilities(context *gin.Context)
 }
 
 // @Summary get room by id
-// @Description return room detail
 // @Tags room
 // @Produce json
 // @Success 200 {object} model.Room "OK"

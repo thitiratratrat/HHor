@@ -25,7 +25,6 @@ var doc = `{
     "paths": {
         "/auth/student/login": {
             "post": {
-                "description": "login",
                 "produces": [
                     "application/json"
                 ],
@@ -83,7 +82,6 @@ var doc = `{
         },
         "/auth/student/register": {
             "post": {
-                "description": "register student account",
                 "produces": [
                     "application/json"
                 ],
@@ -126,7 +124,6 @@ var doc = `{
         },
         "/dorm": {
             "get": {
-                "description": "returns list of dorms filter by dorm type, zone,capacity, location, dorm and room facilities",
                 "consumes": [
                     "application/json"
                 ],
@@ -219,7 +216,6 @@ var doc = `{
         },
         "/dorm/facility": {
             "get": {
-                "description": "returns list of dorm facilities",
                 "produces": [
                     "application/json"
                 ],
@@ -242,7 +238,6 @@ var doc = `{
         },
         "/dorm/suggest/{letter}": {
             "get": {
-                "description": "returns list of dorm names from first letter",
                 "produces": [
                     "application/json"
                 ],
@@ -274,7 +269,6 @@ var doc = `{
         },
         "/dorm/zone": {
             "get": {
-                "description": "returns list of dorm zones",
                 "produces": [
                     "application/json"
                 ],
@@ -297,7 +291,6 @@ var doc = `{
         },
         "/dorm/{id}": {
             "get": {
-                "description": "returns dorm details",
                 "produces": [
                     "application/json"
                 ],
@@ -344,7 +337,6 @@ var doc = `{
         },
         "/room/facility": {
             "get": {
-                "description": "returns list of room facilities",
                 "produces": [
                     "application/json"
                 ],
@@ -367,7 +359,6 @@ var doc = `{
         },
         "/room/{id}": {
             "get": {
-                "description": "return room detail",
                 "produces": [
                     "application/json"
                 ],
@@ -892,11 +883,33 @@ var doc = `{
                         }
                     }
                 }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "roommate-request"
+                ],
+                "summary": "delete roommate request",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Roommate request ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
             }
         },
         "/student/faculty": {
             "get": {
-                "description": "returns list of faculties",
                 "produces": [
                     "application/json"
                 ],
@@ -937,7 +950,6 @@ var doc = `{
         },
         "/student/habit": {
             "get": {
-                "description": "returns list of faculties",
                 "produces": [
                     "application/json"
                 ],
@@ -975,7 +987,6 @@ var doc = `{
         },
         "/student/picture/{id}": {
             "post": {
-                "description": "upload profile picture",
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -1037,7 +1048,6 @@ var doc = `{
         },
         "/student/{id}": {
             "get": {
-                "description": "returns student profile",
                 "produces": [
                     "application/json"
                 ],
@@ -1082,7 +1092,6 @@ var doc = `{
                 }
             },
             "patch": {
-                "description": "update student detail",
                 "produces": [
                     "application/json"
                 ],
