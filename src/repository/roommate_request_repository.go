@@ -123,7 +123,6 @@ func (repository *roommateRequestRepository) UpdateRoommateRequestWithRegistered
 	}
 
 	repository.db.Table("roommate_request_registered_dorm_pictures").Where("roommate_request_with_registered_dorm_student_id = ?", id).Delete(model.RoommateRequestRegisteredDormPicture{})
-
 	repository.db.Create(&roomPictures)
 
 	err := repository.db.Preload("RoomPictures").Where("student_id = ?", id).First(&roommateRequestWithRegisteredDorm).Error
@@ -142,7 +141,6 @@ func (repository *roommateRequestRepository) UpdateRoommateRequestWithUnregister
 	}
 
 	repository.db.Table("roommate_request_unregistered_dorm_pictures").Where("roommate_request_with_unregistered_dorm_student_id = ?", id).Delete(model.RoommateRequestUnregisteredDormPicture{})
-
 	repository.db.Create(&roomPictures)
 
 	err := repository.db.Preload("RoomPictures").Preload("RoomFacilities").Where("student_id = ?", id).First(&roommateRequestWithUnregisteredDorm).Error
