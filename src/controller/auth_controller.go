@@ -14,6 +14,8 @@ import (
 type AuthController interface {
 	RegisterStudent(context *gin.Context)
 	LoginStudent(context *gin.Context)
+	RegisterDormOwner(context *gin.Context)
+	LoginDormOwner(context *gin.Context)
 }
 
 func AuthControllerHandler(authService service.AuthService, fieldValidator fieldvalidator.FieldValidator) AuthController {
@@ -63,7 +65,36 @@ func (authController *authController) RegisterStudent(context *gin.Context) {
 	context.IndentedJSON(http.StatusOK, createdStudent)
 }
 
-// @Summary login
+// @Summary register dorm owner account
+// @Tags auth
+// @Produce json
+// @Param data body dto.RegisterDormOwnerDTO true "dorm owner registration"
+// @Success 200 {object} model.DormOwner "OK"
+// @Failure 400,409  {object} dto.ErrorResponse
+// @Router /auth/dorm-owner/register [post]
+func (authController *authController) RegisterDormOwner(context *gin.Context) {
+	defer utils.RecoverInvalidInput(context)
+
+	validate := validator.New()
+	var registerDormOwnerDTO dto.RegisterDormOwnerDTO
+	bindErr := context.ShouldBind(&registerDormOwnerDTO)
+
+	if bindErr != nil {
+		panic(bindErr)
+	}
+
+	validateError := validate.Struct(registerDormOwnerDTO)
+
+	if validateError != nil {
+		panic(validateError)
+	}
+
+	createdDormOwner := authController.authService.RegisterDormOwner(registerDormOwnerDTO)
+
+	context.IndentedJSON(http.StatusOK, createdDormOwner)
+}
+
+// @Summary login student
 // @Tags auth
 // @Produce json
 // @Param data body dto.LoginCredentialsDTO true "login credentials"
@@ -89,6 +120,36 @@ func (authController *authController) LoginStudent(context *gin.Context) {
 	}
 
 	authController.authService.LoginStudent(loginCredentialsDTO)
+
+	context.IndentedJSON(http.StatusOK, "")
+}
+
+// @Summary login dorm owner
+// @Tags auth
+// @Produce json
+// @Param data body dto.LoginCredentialsDTO true "login credentials"
+// @Success 200 {array} string "OK"
+// @Failure 400,404,401,500  {object} dto.ErrorResponse
+// @Router /auth/dorm-owner/login [post]
+func (authController *authController) LoginDormOwner(context *gin.Context) {
+	defer utils.RecoverInvalidInput(context)
+	validate := validator.New()
+
+	var loginCredentialsDTO dto.LoginCredentialsDTO
+
+	bindErr := context.ShouldBind(&loginCredentialsDTO)
+
+	if bindErr != nil {
+		panic(bindErr)
+	}
+
+	validateError := validate.Struct(loginCredentialsDTO)
+
+	if validateError != nil {
+		panic(validateError)
+	}
+
+	authController.authService.LoginDormOwner(loginCredentialsDTO)
 
 	context.IndentedJSON(http.StatusOK, "")
 }

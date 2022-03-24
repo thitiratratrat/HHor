@@ -10,7 +10,9 @@ import (
 
 type AuthService interface {
 	RegisterStudent(dto.RegisterStudentDTO) model.Student
+	RegisterDormOwner(dto.RegisterDormOwnerDTO) model.DormOwner
 	LoginStudent(dto.LoginCredentialsDTO)
+	LoginDormOwner(dto.LoginCredentialsDTO)
 }
 
 func AuthServiceHandler(studentRepository repository.StudentRepository, dormOwnerRepository repository.DormOwnerRepository) AuthService {
@@ -52,11 +54,48 @@ func (authService *authService) RegisterStudent(registerStudentDTO dto.RegisterS
 	return student
 }
 
-func (authService *authService) LoginStudent(loginCredentialsDTO dto.LoginCredentialsDTO) {
-	student, getStudentError := authService.studentRepository.FindStudentByEmail(loginCredentialsDTO.Email)
+func (authService *authService) RegisterDormOwner(registerDormOwnerDTO dto.RegisterDormOwnerDTO) model.DormOwner {
+	hashedPassword, hashErr := bcrypt.GenerateFromPassword([]byte(registerDormOwnerDTO.Password), bcrypt.DefaultCost)
 
-	if getStudentError == nil {
+	if hashErr != nil {
+		panic(hashErr)
+	}
+
+	dormOwner := model.DormOwner{
+		Firstname: registerDormOwnerDTO.Firstname,
+		Lastname:  registerDormOwnerDTO.Lastname,
+		Email:     registerDormOwnerDTO.Email,
+		Password:  string(hashedPassword),
+	}
+
+	createdDormOwner, err := authService.dormOwnerRepository.CreateDormOwner(dormOwner)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return createdDormOwner
+}
+
+func (authService *authService) LoginStudent(loginCredentialsDTO dto.LoginCredentialsDTO) {
+	student, err := authService.studentRepository.FindStudentByEmail(loginCredentialsDTO.Email)
+
+	if err == nil {
 		if comparePassword(loginCredentialsDTO.Password, student.Password) {
+			return
+		}
+
+		panic(errortype.ErrUnauthorized)
+	}
+
+	panic(errortype.ErrUserNotFound)
+}
+
+func (authService *authService) LoginDormOwner(loginCredentialsDTO dto.LoginCredentialsDTO) {
+	dormOwner, err := authService.dormOwnerRepository.FindDormOwnerByEmail(loginCredentialsDTO.Email)
+
+	if err == nil {
+		if comparePassword(loginCredentialsDTO.Password, dormOwner.Password) {
 			return
 		}
 

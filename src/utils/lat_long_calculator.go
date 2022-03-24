@@ -17,8 +17,8 @@ func GetLatLongFromDistance(lat float64, long float64, distance float64, bearing
 	destLongRadian := currentLongRadian + math.Atan2(math.Sin(bearing)*math.Sin(distance/radius)*math.Cos(currentLatRadian),
 		math.Cos(distance/radius)-math.Sin(currentLatRadian)*math.Sin(destLatRadian))
 
-	fianlLat := destLatRadian * (180 / pi)
+	finalLat := destLatRadian * (180 / pi)
 	finalLong := destLongRadian * (180 / pi)
 
-	return fianlLat, finalLong
+	return finalLat, finalLong
 }

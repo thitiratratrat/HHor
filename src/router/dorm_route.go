@@ -11,6 +11,7 @@ const dormBasePath = "dorm"
 
 func SetDormRoutes(router *gin.Engine, dormController controller.DormController) {
 	router.GET(dormBasePath, dormController.GetDorms)
+	router.POST(dormBasePath, dormController.CreateDorm)
 	router.GET(fmt.Sprintf("%s/suggest/:letter", dormBasePath), dormController.GetDormSuggestions)
 	router.GET(fmt.Sprintf("%s/facility", dormBasePath), dormController.GetAllDormFacilities)
 	router.GET(fmt.Sprintf("%s/zone", dormBasePath), dormController.GetDormZones)

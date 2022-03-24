@@ -59,3 +59,8 @@ or
 ```
 go run main.go
 ```
+
+5. Run test
+```
+go test ./test/..
+```

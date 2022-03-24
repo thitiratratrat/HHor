@@ -18,6 +18,7 @@ type DormController interface {
 	GetDormSuggestions(context *gin.Context)
 	GetAllDormFacilities(context *gin.Context)
 	GetDormZones(context *gin.Context)
+	CreateDorm(context *gin.Context)
 }
 
 func DormControllerHandler(dormService service.DormService, fieldValidator fieldvalidator.FieldValidator) DormController {
@@ -132,4 +133,15 @@ func (dormController *dormController) GetDormZones(context *gin.Context) {
 	dormZones := dormController.dormService.GetDormZones()
 
 	context.IndentedJSON(http.StatusOK, dormZones)
+}
+
+// @Summary create dorm
+// @Tags dorm
+// @Produce json
+// @Success 200 {array} string "OK"
+// @Router /dorm [post]
+func (dormController *dormController) CreateDorm(context *gin.Context) {
+	// dormZones := dormController.dormService.GetDormZones()
+
+	// context.IndentedJSON(http.StatusOK, dormZones)
 }

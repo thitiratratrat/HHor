@@ -61,6 +61,22 @@ definitions:
     - email
     - password
     type: object
+  dto.RegisterDormOwnerDTO:
+    properties:
+      email:
+        type: string
+      firstname:
+        type: string
+      lastname:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - firstname
+    - lastname
+    - password
+    type: object
   dto.RegisterStudentDTO:
     properties:
       email:
@@ -555,6 +571,70 @@ definitions:
 info:
   contact: {}
 paths:
+  /auth/dorm-owner/login:
+    post:
+      parameters:
+      - description: login credentials
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginCredentialsDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: login dorm owner
+      tags:
+      - auth
+  /auth/dorm-owner/register:
+    post:
+      parameters:
+      - description: dorm owner registration
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RegisterDormOwnerDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.DormOwner'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: register dorm owner account
+      tags:
+      - auth
   /auth/student/login:
     post:
       parameters:
@@ -589,7 +669,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
-      summary: login
+      summary: login student
       tags:
       - auth
   /auth/student/register:
@@ -676,6 +756,19 @@ paths:
               $ref: '#/definitions/dto.DormDTO'
             type: array
       summary: get list of dorms
+      tags:
+      - dorm
+    post:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+      summary: create dorm
       tags:
       - dorm
   /dorm/{id}:
