@@ -1163,7 +1163,7 @@ paths:
         type: integer
       - description: upload multiple room pictures,test this out in postman
         in: formData
-        name: room_pictures
+        name: pictures
         type: file
       produces:
       - application/json
@@ -1315,7 +1315,7 @@ paths:
         type: integer
       - description: upload multiple room pictures,test this out in postman
         in: formData
-        name: room_pictures
+        name: pictures
         type: file
       produces:
       - application/json

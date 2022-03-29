@@ -808,7 +808,7 @@ var doc = `{
                     {
                         "type": "file",
                         "description": "upload multiple room pictures,test this out in postman",
-                        "name": "room_pictures",
+                        "name": "pictures",
                         "in": "formData"
                     }
                 ],
@@ -1042,7 +1042,7 @@ var doc = `{
                     {
                         "type": "file",
                         "description": "upload multiple room pictures,test this out in postman",
-                        "name": "room_pictures",
+                        "name": "pictures",
                         "in": "formData"
                     }
                 ],

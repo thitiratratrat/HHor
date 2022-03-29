@@ -262,8 +262,8 @@ func (roommateRequestController *roommateRequestController) CreateRoommateReques
 // @Produce json
 // @Accept  multipart/form-data
 // @Param id path int true "Student ID"
-// @Param data formData dto.RoommateRequestPictureDTO true "data"
-// @Param room_pictures formData file false "upload multiple room pictures,test this out in postman"
+// @Param data formData dto.PicturesDTO true "data"
+// @Param pictures formData file false "upload multiple room pictures,test this out in postman"
 // @Success 200 {object} model.RoommateRequestWithUnregisteredDorm "OK"
 // @Router /roommate-request/registered-dorm/{id}/picture [put]
 func (roommateRequestController *roommateRequestController) UpdateRoommateRequestRegDormPictures(context *gin.Context) {
@@ -272,7 +272,7 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 	studentId := context.Param("id")
 	validate := validator.New()
 
-	var roommateRequestPictureDTO dto.RoommateRequestPictureDTO
+	var roommateRequestPictureDTO dto.PicturesDTO
 
 	bindErr := context.ShouldBind(&roommateRequestPictureDTO)
 
@@ -286,7 +286,7 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 		panic(validateError)
 	}
 
-	if roommateRequestPictureDTO.RoomPictures == nil {
+	if roommateRequestPictureDTO.Pictures == nil {
 		context.IndentedJSON(http.StatusOK, "")
 
 		return
@@ -296,7 +296,7 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 		panic(errortype.ErrMismatchRoommateRequestType)
 	}
 
-	files := context.Request.MultipartForm.File["room_pictures"]
+	files := context.Request.MultipartForm.File["pictures"]
 	var roomPictureUrls []string
 
 	for _, roomPicture := range files {
@@ -320,8 +320,8 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 // @Produce json
 // @Accept  multipart/form-data
 // @Param id path int true "Student ID"
-// @Param data formData dto.RoommateRequestPictureDTO true "data"
-// @Param room_pictures formData file false "upload multiple room pictures,test this out in postman"
+// @Param data formData dto.PicturesDTO true "data"
+// @Param pictures formData file false "upload multiple room pictures,test this out in postman"
 // @Success 200 {object} model.RoommateRequestWithUnregisteredDorm "OK"
 // @Router /roommate-request/unregistered-dorm/{id}/picture [put]
 func (roommateRequestController *roommateRequestController) UpdateRoommateRequestUnregDormPictures(context *gin.Context) {
@@ -329,7 +329,7 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 
 	studentId := context.Param("id")
 	validate := validator.New()
-	var roommateRequestPictureDTO dto.RoommateRequestPictureDTO
+	var roommateRequestPictureDTO dto.PicturesDTO
 	bindErr := context.ShouldBind(&roommateRequestPictureDTO)
 
 	if bindErr != nil {
@@ -342,7 +342,7 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 		panic(validateError)
 	}
 
-	if roommateRequestPictureDTO.RoomPictures == nil {
+	if roommateRequestPictureDTO.Pictures == nil {
 		context.IndentedJSON(http.StatusOK, "")
 
 		return
@@ -353,7 +353,7 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 	}
 
 	//TODO: delete old files from bucket
-	files := context.Request.MultipartForm.File["room_pictures"]
+	files := context.Request.MultipartForm.File["pictures"]
 	var roomPictureUrls []string
 
 	for _, roomPicture := range files {
