@@ -16,4 +16,5 @@ func SetDormRoutes(router *gin.Engine, dormController controller.DormController)
 	router.GET(fmt.Sprintf("%s/facility", dormBasePath), dormController.GetAllDormFacilities)
 	router.GET(fmt.Sprintf("%s/zone", dormBasePath), dormController.GetDormZones)
 	router.GET(fmt.Sprintf("%s/:id", dormBasePath), dormController.GetDorm)
+	router.PUT(fmt.Sprintf("%s/:id", dormBasePath), dormController.UpdateDorm)
 }

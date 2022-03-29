@@ -98,7 +98,7 @@ func (authController *authController) RegisterDormOwner(context *gin.Context) {
 // @Tags auth
 // @Produce json
 // @Param data body dto.LoginCredentialsDTO true "login credentials"
-// @Success 200 {array} string "OK"
+// @Success 200 {object} model.Student "OK"
 // @Failure 400,404,401,500  {object} dto.ErrorResponse
 // @Router /auth/student/login [post]
 func (authController *authController) LoginStudent(context *gin.Context) {
@@ -119,16 +119,16 @@ func (authController *authController) LoginStudent(context *gin.Context) {
 		panic(validateError)
 	}
 
-	authController.authService.LoginStudent(loginCredentialsDTO)
+	student := authController.authService.LoginStudent(loginCredentialsDTO)
 
-	context.IndentedJSON(http.StatusOK, "")
+	context.IndentedJSON(http.StatusOK, student)
 }
 
 // @Summary login dorm owner
 // @Tags auth
 // @Produce json
 // @Param data body dto.LoginCredentialsDTO true "login credentials"
-// @Success 200 {array} string "OK"
+// @Success 200 {object} model.DormOwner "OK"
 // @Failure 400,404,401,500  {object} dto.ErrorResponse
 // @Router /auth/dorm-owner/login [post]
 func (authController *authController) LoginDormOwner(context *gin.Context) {
@@ -149,7 +149,7 @@ func (authController *authController) LoginDormOwner(context *gin.Context) {
 		panic(validateError)
 	}
 
-	authController.authService.LoginDormOwner(loginCredentialsDTO)
+	dormOwner := authController.authService.LoginDormOwner(loginCredentialsDTO)
 
-	context.IndentedJSON(http.StatusOK, "")
+	context.IndentedJSON(http.StatusOK, dormOwner)
 }

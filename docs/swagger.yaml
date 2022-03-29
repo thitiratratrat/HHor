@@ -61,6 +61,40 @@ definitions:
     - email
     - password
     type: object
+  dto.RegisterDormDTO:
+    properties:
+      address:
+        type: string
+      description:
+        type: string
+      facilities:
+        items:
+          type: string
+        type: array
+      lat:
+        type: number
+      long:
+        type: number
+      name:
+        type: string
+      owner_id:
+        type: string
+      rules:
+        type: string
+      type:
+        type: string
+      zone:
+        type: string
+    required:
+    - address
+    - facilities
+    - lat
+    - long
+    - name
+    - owner_id
+    - type
+    - zone
+    type: object
   dto.RegisterDormOwnerDTO:
     properties:
       email:
@@ -266,6 +300,33 @@ definitions:
         type: string
     required:
     - enrollment_year
+    type: object
+  dto.UpdateDormDTO:
+    properties:
+      address:
+        type: string
+      description:
+        type: string
+      facilities:
+        items:
+          type: string
+        type: array
+      lat:
+        type: number
+      long:
+        type: number
+      name:
+        type: string
+      owner_id:
+        type: string
+      rules:
+        type: string
+      type:
+        type: string
+      zone:
+        type: string
+    required:
+    - owner_id
     type: object
   model.AllDormFacility:
     properties:
@@ -586,9 +647,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              type: string
-            type: array
+            $ref: '#/definitions/model.DormOwner'
         "400":
           description: Bad Request
           schema:
@@ -650,9 +709,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              type: string
-            type: array
+            $ref: '#/definitions/model.Student'
         "400":
           description: Bad Request
           schema:
@@ -759,15 +816,20 @@ paths:
       tags:
       - dorm
     post:
+      parameters:
+      - description: register dorm
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RegisterDormDTO'
       produces:
       - application/json
       responses:
-        "200":
+        "201":
           description: OK
           schema:
-            items:
-              type: string
-            type: array
+            $ref: '#/definitions/model.Dorm'
       summary: create dorm
       tags:
       - dorm
@@ -799,6 +861,29 @@ paths:
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
       summary: get dorm details from dorm id
+      tags:
+      - dorm
+    put:
+      parameters:
+      - description: Dorm ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: register dorm
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateDormDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Dorm'
+      summary: update dorm
       tags:
       - dorm
   /dorm/facility:

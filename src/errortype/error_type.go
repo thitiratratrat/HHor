@@ -57,3 +57,8 @@ var ErrNoRoommateRequest = ErrorMessage{
 	StatusCode: http.StatusBadRequest,
 	Message:    "student has no opened roommate request",
 }
+
+var ErrInvalidDormOwner = ErrorMessage{
+	StatusCode: http.StatusBadRequest,
+	Message:    "you do not own this dorm",
+}

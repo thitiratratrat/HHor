@@ -155,7 +155,7 @@ func (repository *roommateRequestRepository) UpdateRoommateRequestRegDorm(id str
 		return model.RoommateRequestWithRegisteredDorm{}, err
 	}
 
-	return roommateRequest, nil
+	return repository.FindRoommateRequestWithRegisteredDorm(id)
 }
 
 func (repository *roommateRequestRepository) UpdateRoommateRequestUnregDorm(id string, roommateRequest model.RoommateRequestWithUnregisteredDorm) (model.RoommateRequestWithUnregisteredDorm, error) {
@@ -166,9 +166,9 @@ func (repository *roommateRequestRepository) UpdateRoommateRequestUnregDorm(id s
 	}
 
 	repository.db.Table("roommate_request_unregistered_dorm_room_facility").Where("roommate_request_with_unregistered_dorm_student_id = ?", id).Delete(model.AllRoomFacility{})
-	repository.db.Select("RoomFacilities").Save(roommateRequest)
+	repository.db.Model(&roommateRequest).Association("RoomFacilities").Append(roommateRequest.RoomFacilities)
 
-	return roommateRequest, nil
+	return repository.FindRoommateRequestWithUnregisteredDorm(id)
 }
 
 func (repository *roommateRequestRepository) UpdateRoommateRequestNoRoom(id string, roommateRequest model.RoommateRequestWithNoRoom) (model.RoommateRequestWithNoRoom, error) {
@@ -179,9 +179,9 @@ func (repository *roommateRequestRepository) UpdateRoommateRequestNoRoom(id stri
 	}
 
 	repository.db.Table("roommate_request_no_room_zone").Where("roommate_request_with_no_room_student_id = ?", id).Delete(model.DormZone{})
-	repository.db.Select("Zones").Save(roommateRequest)
+	repository.db.Model(&roommateRequest).Association("Zones").Append(roommateRequest.Zones)
 
-	return roommateRequest, nil
+	return repository.FindRoommateRequestWithNoRoom(id)
 }
 
 func (repository *roommateRequestRepository) DeleteRoommateRequestRegDorm(id string) error {

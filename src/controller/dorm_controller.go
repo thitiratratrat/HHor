@@ -19,6 +19,7 @@ type DormController interface {
 	GetAllDormFacilities(context *gin.Context)
 	GetDormZones(context *gin.Context)
 	CreateDorm(context *gin.Context)
+	UpdateDorm(context *gin.Context)
 }
 
 func DormControllerHandler(dormService service.DormService, fieldValidator fieldvalidator.FieldValidator) DormController {
@@ -138,10 +139,74 @@ func (dormController *dormController) GetDormZones(context *gin.Context) {
 // @Summary create dorm
 // @Tags dorm
 // @Produce json
-// @Success 200 {array} string "OK"
+// @Param data body dto.RegisterDormDTO true "register dorm"
+// @Success 201 {object} model.Dorm "OK"
 // @Router /dorm [post]
 func (dormController *dormController) CreateDorm(context *gin.Context) {
-	// dormZones := dormController.dormService.GetDormZones()
+	defer utils.RecoverInvalidInput(context)
 
-	// context.IndentedJSON(http.StatusOK, dormZones)
+	var registerDormDTO dto.RegisterDormDTO
+	validate := validator.New()
+	_ = validate.RegisterValidation("dormzone", func(fl validator.FieldLevel) bool {
+		return dormController.fieldValidator.ValidDormZone([]string{fl.Field().String()})
+	})
+	_ = validate.RegisterValidation("dormfacilities", func(fl validator.FieldLevel) bool {
+		return dormController.fieldValidator.ValidDormFacility(fl.Field().Interface().([]string))
+	})
+	bindErr := context.ShouldBind(&registerDormDTO)
+
+	if bindErr != nil {
+		panic(bindErr)
+	}
+
+	validateError := validate.Struct(registerDormDTO)
+
+	if validateError != nil {
+		panic(validateError)
+	}
+
+	createdDorm := dormController.dormService.CreateDorm(registerDormDTO)
+
+	context.IndentedJSON(http.StatusCreated, createdDorm)
+}
+
+// @Summary update dorm
+// @Tags dorm
+// @Produce json
+// @Param id path int true "Dorm ID"
+// @Param data body dto.UpdateDormDTO true "register dorm"
+// @Success 201 {object} model.Dorm "OK"
+// @Router /dorm/{id} [put]
+func (dormController *dormController) UpdateDorm(context *gin.Context) {
+	defer utils.RecoverInvalidInput(context)
+
+	dormID := context.Param("id")
+	if _, err := strconv.Atoi(dormID); err != nil {
+		context.IndentedJSON(http.StatusBadRequest, &dto.ErrorResponse{Message: "id is not an integer"})
+
+		return
+	}
+	var updateDormDTO dto.UpdateDormDTO
+	validate := validator.New()
+	_ = validate.RegisterValidation("dormzone", func(fl validator.FieldLevel) bool {
+		return dormController.fieldValidator.ValidDormZone([]string{fl.Field().String()})
+	})
+	_ = validate.RegisterValidation("dormfacilities", func(fl validator.FieldLevel) bool {
+		return dormController.fieldValidator.ValidDormFacility(fl.Field().Interface().([]string))
+	})
+	bindErr := context.ShouldBind(&updateDormDTO)
+
+	if bindErr != nil {
+		panic(bindErr)
+	}
+
+	validateError := validate.Struct(updateDormDTO)
+
+	if validateError != nil {
+		panic(validateError)
+	}
+
+	updatedDorm := dormController.dormService.UpdateDorm(dormID, updateDormDTO)
+
+	context.IndentedJSON(http.StatusOK, updatedDorm)
 }

@@ -11,8 +11,8 @@ import (
 type AuthService interface {
 	RegisterStudent(dto.RegisterStudentDTO) model.Student
 	RegisterDormOwner(dto.RegisterDormOwnerDTO) model.DormOwner
-	LoginStudent(dto.LoginCredentialsDTO)
-	LoginDormOwner(dto.LoginCredentialsDTO)
+	LoginStudent(dto.LoginCredentialsDTO) model.Student
+	LoginDormOwner(dto.LoginCredentialsDTO) model.DormOwner
 }
 
 func AuthServiceHandler(studentRepository repository.StudentRepository, dormOwnerRepository repository.DormOwnerRepository) AuthService {
@@ -77,12 +77,12 @@ func (authService *authService) RegisterDormOwner(registerDormOwnerDTO dto.Regis
 	return createdDormOwner
 }
 
-func (authService *authService) LoginStudent(loginCredentialsDTO dto.LoginCredentialsDTO) {
+func (authService *authService) LoginStudent(loginCredentialsDTO dto.LoginCredentialsDTO) model.Student {
 	student, err := authService.studentRepository.FindStudentByEmail(loginCredentialsDTO.Email)
 
 	if err == nil {
 		if comparePassword(loginCredentialsDTO.Password, student.Password) {
-			return
+			return student
 		}
 
 		panic(errortype.ErrUnauthorized)
@@ -91,12 +91,12 @@ func (authService *authService) LoginStudent(loginCredentialsDTO dto.LoginCreden
 	panic(errortype.ErrUserNotFound)
 }
 
-func (authService *authService) LoginDormOwner(loginCredentialsDTO dto.LoginCredentialsDTO) {
+func (authService *authService) LoginDormOwner(loginCredentialsDTO dto.LoginCredentialsDTO) model.DormOwner {
 	dormOwner, err := authService.dormOwnerRepository.FindDormOwnerByEmail(loginCredentialsDTO.Email)
 
 	if err == nil {
 		if comparePassword(loginCredentialsDTO.Password, dormOwner.Password) {
-			return
+			return dormOwner
 		}
 
 		panic(errortype.ErrUnauthorized)

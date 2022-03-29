@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/thitiratratrat/hhor/src/dto"
 	"github.com/thitiratratrat/hhor/src/errortype"
@@ -15,6 +16,8 @@ type DormService interface {
 	GetDormSuggestions(firstLetter string) []dto.DormSuggestionDTO
 	GetAllDormFacilities() []string
 	GetDormZones() []string
+	CreateDorm(dto.RegisterDormDTO) model.Dorm
+	UpdateDorm(id string, dorm dto.UpdateDormDTO) model.Dorm
 }
 
 func DormServiceHandler(dormRepository repository.DormRepository) DormService {
@@ -80,6 +83,32 @@ func (dormService *dormService) GetDormZones() []string {
 	return dormZones
 }
 
+func (dormService *dormService) CreateDorm(registerDormDTO dto.RegisterDormDTO) model.Dorm {
+	dorm := mapCreateDorm(registerDormDTO)
+	createdDorm, err := dormService.dormRepository.CreateDorm(dorm)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return createdDorm
+}
+
+func (dormService *dormService) UpdateDorm(dormId string, updateDormDTO dto.UpdateDormDTO) model.Dorm {
+	if !dormService.canUpdateDorm(updateDormDTO.DormOwnerID, dormId) {
+		panic(errortype.ErrInvalidDormOwner)
+	}
+
+	dorm := mapUpdateDorm(dormId, updateDormDTO)
+	updatedDorm, err := dormService.dormRepository.UpdateDorm(dorm)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return updatedDorm
+}
+
 func getCheapestRoomPrice(rooms []model.Room) int {
 	min := rooms[0].Price
 
@@ -90,4 +119,63 @@ func getCheapestRoomPrice(rooms []model.Room) int {
 	}
 
 	return min
+}
+
+func (dormService *dormService) canUpdateDorm(dormOwnerID string, dormID string) bool {
+	dorm, err := dormService.dormRepository.FindDorm(dormID)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return strconv.Itoa(dorm.DormOwnerID) == dormOwnerID
+}
+
+func mapCreateDorm(registerDormDTO dto.RegisterDormDTO) model.Dorm {
+	dormOwnerID, _ := strconv.Atoi(registerDormDTO.DormOwnerID)
+	facilities := make([]model.AllDormFacility, len(registerDormDTO.Facilities))
+
+	for index, facility := range registerDormDTO.Facilities {
+		facilities[index] = model.AllDormFacility{
+			Name: facility,
+		}
+	}
+
+	return model.Dorm{
+		Name:         registerDormDTO.Name,
+		Type:         registerDormDTO.Type,
+		Rules:        registerDormDTO.Rules,
+		Longitude:    registerDormDTO.Long,
+		Latitude:     registerDormDTO.Lat,
+		Address:      registerDormDTO.Address,
+		Description:  registerDormDTO.Description,
+		DormZoneName: registerDormDTO.Zone,
+		DormOwnerID:  dormOwnerID,
+		Facilities:   facilities,
+	}
+
+}
+
+func mapUpdateDorm(id string, updateDormDTO dto.UpdateDormDTO) model.Dorm {
+	dormID, _ := strconv.Atoi(id)
+	facilities := make([]model.AllDormFacility, len(updateDormDTO.Facilities))
+
+	for index, facility := range updateDormDTO.Facilities {
+		facilities[index] = model.AllDormFacility{
+			Name: facility,
+		}
+	}
+
+	return model.Dorm{
+		ID:           uint(dormID),
+		Name:         updateDormDTO.Name,
+		Type:         updateDormDTO.Type,
+		Rules:        updateDormDTO.Rules,
+		Longitude:    updateDormDTO.Long,
+		Latitude:     updateDormDTO.Lat,
+		Address:      updateDormDTO.Address,
+		Description:  updateDormDTO.Description,
+		DormZoneName: updateDormDTO.Zone,
+		Facilities:   facilities,
+	}
 }

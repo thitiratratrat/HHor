@@ -259,6 +259,10 @@ func (roommateRequestService *roommateRequestService) UpdateRoommateRequestUnreg
 }
 
 func (roommateRequestService *roommateRequestService) UpdateRoommateRequestRegDorm(roommateRequest dto.RoommateRequestRegDormDTO) model.RoommateRequestWithRegisteredDorm {
+	if !roommateRequestService.CanUpdateRoommateRequest(roommateRequest.StudentID, constant.RoommateRequestRegDorm) {
+		panic(errortype.ErrMismatchRoommateRequestType)
+	}
+
 	update := roommateRequestService.mapRoommateRequestRegDormDTO(roommateRequest)
 	updatedRoommateRequest, err := roommateRequestService.roommateRequestRepository.UpdateRoommateRequestRegDorm(update.StudentID, update)
 
@@ -270,6 +274,10 @@ func (roommateRequestService *roommateRequestService) UpdateRoommateRequestRegDo
 }
 
 func (roommateRequestService *roommateRequestService) UpdateRoommateRequestUnregDorm(roommateRequest dto.RoommateRequestUnregDormDTO) model.RoommateRequestWithUnregisteredDorm {
+	if !roommateRequestService.CanUpdateRoommateRequest(roommateRequest.StudentID, constant.RoommateRequestUnregDorm) {
+		panic(errortype.ErrMismatchRoommateRequestType)
+	}
+
 	update := roommateRequestService.mapRoommateRequestUnregDormDTO(roommateRequest)
 	updatedRoommateRequest, err := roommateRequestService.roommateRequestRepository.UpdateRoommateRequestUnregDorm(update.StudentID, update)
 
@@ -281,6 +289,10 @@ func (roommateRequestService *roommateRequestService) UpdateRoommateRequestUnreg
 }
 
 func (roommateRequestService *roommateRequestService) UpdateRoommateRequestNoRoom(roommateRequest dto.RoommateRequestNoRoomDTO) model.RoommateRequestWithNoRoom {
+	if !roommateRequestService.CanUpdateRoommateRequest(roommateRequest.StudentID, constant.RoommateRequestUnregDorm) {
+		panic(errortype.ErrMismatchRoommateRequestType)
+	}
+
 	update := roommateRequestService.mapRoommateRequestNoRoomDTO(roommateRequest)
 	updatedRoommateRequest, err := roommateRequestService.roommateRequestRepository.UpdateRoommateRequestNoRoom(update.StudentID, update)
 
@@ -320,7 +332,7 @@ func (roommateRequestService *roommateRequestService) DeleteRoommateRequest(id s
 func (roommateRequestService *roommateRequestService) CanUpdateRoommateRequest(studentID string, requestType constant.RoommateRequestType) bool {
 	student := roommateRequestService.studentService.GetStudent(studentID)
 
-	return *student.RoommateRequest == string(requestType)
+	return student.RoommateRequest != nil && *student.RoommateRequest == string(requestType)
 }
 
 func (roommateRequestService *roommateRequestService) canCreateRoommateRequest(studentID string) bool {

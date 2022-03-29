@@ -47,10 +47,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/model.DormOwner"
                         }
                     },
                     "400": {
@@ -146,10 +143,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/model.Student"
                         }
                     },
                     "400": {
@@ -320,14 +314,22 @@ var doc = `{
                     "dorm"
                 ],
                 "summary": "create dorm",
+                "parameters": [
+                    {
+                        "description": "register dorm",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RegisterDormDTO"
+                        }
+                    }
+                ],
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/model.Dorm"
                         }
                     }
                 }
@@ -449,6 +451,41 @@ var doc = `{
                         "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dorm"
+                ],
+                "summary": "update dorm",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Dorm ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "register dorm",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateDormDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Dorm"
                         }
                     }
                 }
@@ -1342,6 +1379,54 @@ var doc = `{
                 }
             }
         },
+        "dto.RegisterDormDTO": {
+            "type": "object",
+            "required": [
+                "address",
+                "facilities",
+                "lat",
+                "long",
+                "name",
+                "owner_id",
+                "type",
+                "zone"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "facilities": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "lat": {
+                    "type": "number"
+                },
+                "long": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "owner_id": {
+                    "type": "string"
+                },
+                "rules": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "zone": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.RegisterDormOwnerDTO": {
             "type": "object",
             "required": [
@@ -1639,6 +1724,47 @@ var doc = `{
                     "type": "string"
                 },
                 "twitter_url": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdateDormDTO": {
+            "type": "object",
+            "required": [
+                "owner_id"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "facilities": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "lat": {
+                    "type": "number"
+                },
+                "long": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "owner_id": {
+                    "type": "string"
+                },
+                "rules": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "zone": {
                     "type": "string"
                 }
             }

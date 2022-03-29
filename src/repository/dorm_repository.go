@@ -2,6 +2,7 @@ package repository
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/thitiratratrat/hhor/src/dto"
@@ -16,6 +17,8 @@ type DormRepository interface {
 	FindDormNames(firstLetter string) []dto.DormSuggestionDTO
 	FindAllDormFacilities() []string
 	FindDormZones() []string
+	CreateDorm(model.Dorm) (model.Dorm, error)
+	UpdateDorm(dorm model.Dorm) (model.Dorm, error)
 }
 
 func DormRepositoryHandler(db *gorm.DB) DormRepository {
@@ -66,6 +69,45 @@ func (repository *dormRepository) FindDormNames(firstLetter string) []dto.DormSu
 	repository.db.Table("dorms").Where("name LIKE ?", firstLetter+"%").Select("name", "id").Find(&dormNames)
 
 	return dormNames
+}
+
+func (repository *dormRepository) FindAllDormFacilities() []string {
+	var facilities []string
+
+	repository.db.Model(&model.AllDormFacility{}).Pluck("name", &facilities)
+
+	return facilities
+}
+
+func (repository *dormRepository) FindDormZones() []string {
+	var zones []string
+
+	repository.db.Model(&model.DormZone{}).Pluck("name", &zones)
+
+	return zones
+}
+
+func (repository *dormRepository) CreateDorm(dorm model.Dorm) (model.Dorm, error) {
+	err := repository.db.Create(&dorm).Error
+
+	if err != nil {
+		return model.Dorm{}, err
+	}
+
+	return dorm, err
+}
+
+func (repository *dormRepository) UpdateDorm(dorm model.Dorm) (model.Dorm, error) {
+	err := repository.db.Model(&model.Dorm{}).Where("id = ?", dorm.ID).Select("Name", "Type", "Rules", "Longitude", "Latitude", "Address", "Description", "Zone").Updates(dorm).Error
+
+	if err != nil {
+		return model.Dorm{}, err
+	}
+
+	repository.db.Table("dorm_facility").Where("dorm_id = ?", dorm.ID).Delete(model.AllDormFacility{})
+	repository.db.Model(&dorm).Association("Facilities").Append(dorm.Facilities)
+
+	return repository.FindDorm(strconv.FormatUint(uint64(dorm.ID), 10))
 }
 
 func getNameCondition(name *string) string {
@@ -142,20 +184,4 @@ func getDormFacilitiesCondition(dormFacilities []string) string {
 	formattedDormFacilities := "'" + strings.Join(dormFacilities, "', '") + "'"
 
 	return fmt.Sprintf("AND %d = (select count(*) from dorm_facility where dorms.id = dorm_facility.dorm_id and all_dorm_facility_name IN (%s))", len(dormFacilities), formattedDormFacilities)
-}
-
-func (repository *dormRepository) FindAllDormFacilities() []string {
-	var facilities []string
-
-	repository.db.Model(&model.AllDormFacility{}).Pluck("name", &facilities)
-
-	return facilities
-}
-
-func (repository *dormRepository) FindDormZones() []string {
-	var zones []string
-
-	repository.db.Model(&model.DormZone{}).Pluck("name", &zones)
-
-	return zones
 }
