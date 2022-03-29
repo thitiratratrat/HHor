@@ -19,6 +19,7 @@ type DormRepository interface {
 	FindDormZones() []string
 	CreateDorm(model.Dorm) (model.Dorm, error)
 	UpdateDorm(dorm model.Dorm) (model.Dorm, error)
+	// UpdateDormPictures(id string, pictureUrls []string) (model.Dorm, error)
 }
 
 func DormRepositoryHandler(db *gorm.DB) DormRepository {
@@ -109,6 +110,24 @@ func (repository *dormRepository) UpdateDorm(dorm model.Dorm) (model.Dorm, error
 
 	return repository.FindDorm(strconv.FormatUint(uint64(dorm.ID), 10))
 }
+
+// func (repository *roommateRequestRepository) UpdateDormPictures(id string, pictureUrls []string) (model.Dorm, error) {
+// 	var roomPictures []model.RoommateRequestUnregisteredDormPicture
+// 	var roommateRequestWithUnregisteredDorm model.RoommateRequestWithUnregisteredDorm
+
+// 	for _, pictureUrl := range pictureUrls {
+// 		roomPictures = append(roomPictures, model.RoommateRequestUnregisteredDormPicture{PictureUrl: pictureUrl,
+// 			RoommateRequestWithUnregisteredDormStudentID: id,
+// 		})
+// 	}
+
+// 	repository.db.Table("roommate_request_unregistered_dorm_pictures").Where("roommate_request_with_unregistered_dorm_student_id = ?", id).Delete(model.RoommateRequestUnregisteredDormPicture{})
+// 	repository.db.Create(&roomPictures)
+
+// 	err := repository.db.Preload("RoomPictures").Preload("RoomFacilities").Where("student_id = ?", id).First(&roommateRequestWithUnregisteredDorm).Error
+
+// 	return roommateRequestWithUnregisteredDorm, err
+// }
 
 func getNameCondition(name *string) string {
 	if name == nil {

@@ -117,7 +117,8 @@ func (repository *roommateRequestRepository) UpdateRoommateRequestWithRegistered
 	var roommateRequestWithRegisteredDorm model.RoommateRequestWithRegisteredDorm
 
 	for _, pictureUrl := range pictureUrls {
-		roomPictures = append(roomPictures, model.RoommateRequestRegisteredDormPicture{PictureUrl: pictureUrl,
+		roomPictures = append(roomPictures, model.RoommateRequestRegisteredDormPicture{
+			PictureUrl: pictureUrl,
 			RoommateRequestWithRegisteredDormStudentID: id,
 		})
 	}
@@ -135,7 +136,8 @@ func (repository *roommateRequestRepository) UpdateRoommateRequestWithUnregister
 	var roommateRequestWithUnregisteredDorm model.RoommateRequestWithUnregisteredDorm
 
 	for _, pictureUrl := range pictureUrls {
-		roomPictures = append(roomPictures, model.RoommateRequestUnregisteredDormPicture{PictureUrl: pictureUrl,
+		roomPictures = append(roomPictures, model.RoommateRequestUnregisteredDormPicture{
+			PictureUrl: pictureUrl,
 			RoommateRequestWithUnregisteredDormStudentID: id,
 		})
 	}

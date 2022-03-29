@@ -13,6 +13,6 @@ func SetStudentRoutes(router *gin.Engine, studentController controller.StudentCo
 	router.GET(fmt.Sprintf("%s/faculty", studentBasePath), studentController.GetFaculties)
 	router.GET(fmt.Sprintf("%s/habit", studentBasePath), studentController.GetHabits)
 	router.GET(fmt.Sprintf("%s/:id", studentBasePath), studentController.GetStudent)
+	router.POST(fmt.Sprintf("%s/:id/picture/", studentBasePath), studentController.UploadPicture)
 	router.PATCH(fmt.Sprintf("%s/:id", studentBasePath), studentController.UpdateStudent)
-	router.POST(fmt.Sprintf("%s/picture/:id", studentBasePath), studentController.UploadPicture)
 }

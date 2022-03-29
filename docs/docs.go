@@ -633,7 +633,9 @@ var doc = `{
                         }
                     }
                 }
-            },
+            }
+        },
+        "/roommate-request/no-room/{id}": {
             "put": {
                 "produces": [
                     "application/json"
@@ -641,8 +643,15 @@ var doc = `{
                 "tags": [
                     "roommate-request"
                 ],
-                "summary": "create roommate request with no room",
+                "summary": "update roommate request with no room",
                 "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Student ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "description": "no room request",
                         "name": "data",
@@ -672,6 +681,13 @@ var doc = `{
                 "summary": "create roommate request with no room",
                 "parameters": [
                     {
+                        "type": "integer",
+                        "description": "Student ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
                         "description": "no room request",
                         "name": "data",
                         "in": "body",
@@ -691,7 +707,7 @@ var doc = `{
                 }
             }
         },
-        "/roommate-request/registered-dorm": {
+        "/roommate-request/registered-dorm/{id}": {
             "put": {
                 "consumes": [
                     "application/json"
@@ -704,6 +720,13 @@ var doc = `{
                 ],
                 "summary": "update roommate request reg dorm",
                 "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Student ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "description": "reg dorm update",
                         "name": "data",
@@ -736,6 +759,13 @@ var doc = `{
                 "summary": "create roommate request with reg dorm",
                 "parameters": [
                     {
+                        "type": "integer",
+                        "description": "Student ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
                         "description": "reg dorm request",
                         "name": "data",
                         "in": "body",
@@ -755,7 +785,7 @@ var doc = `{
                 }
             }
         },
-        "/roommate-request/registered-dorm/picture": {
+        "/roommate-request/registered-dorm/{id}/picture": {
             "put": {
                 "consumes": [
                     "multipart/form-data"
@@ -769,9 +799,10 @@ var doc = `{
                 "summary": "update roommate request with reg dorm pictures",
                 "parameters": [
                     {
-                        "type": "string",
-                        "name": "student_id",
-                        "in": "formData",
+                        "type": "integer",
+                        "description": "Student ID",
+                        "name": "id",
+                        "in": "path",
                         "required": true
                     },
                     {
@@ -910,7 +941,7 @@ var doc = `{
                 }
             }
         },
-        "/roommate-request/unregistered-dorm": {
+        "/roommate-request/unregistered-dorm/{id}": {
             "put": {
                 "consumes": [
                     "application/json"
@@ -923,6 +954,13 @@ var doc = `{
                 ],
                 "summary": "update roommate request with unreg dorm",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Student ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "description": "unreg dorm request",
                         "name": "data",
@@ -955,6 +993,13 @@ var doc = `{
                 "summary": "create roommate request with unreg dorm",
                 "parameters": [
                     {
+                        "type": "integer",
+                        "description": "Student ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
                         "description": "unreg dorm request",
                         "name": "data",
                         "in": "body",
@@ -974,7 +1019,7 @@ var doc = `{
                 }
             }
         },
-        "/roommate-request/unregistered-dorm/picture": {
+        "/roommate-request/unregistered-dorm/{id}/picture": {
             "put": {
                 "consumes": [
                     "multipart/form-data"
@@ -988,9 +1033,10 @@ var doc = `{
                 "summary": "update roommate request with unreg dorm pictures",
                 "parameters": [
                     {
-                        "type": "string",
-                        "name": "student_id",
-                        "in": "formData",
+                        "type": "integer",
+                        "description": "Student ID",
+                        "name": "id",
+                        "in": "path",
                         "required": true
                     },
                     {
@@ -1141,67 +1187,6 @@ var doc = `{
                 }
             }
         },
-        "/student/picture/{id}": {
-            "post": {
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "student"
-                ],
-                "summary": "upload profile picture",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Student ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "file",
-                        "description": "profile picture",
-                        "name": "profile_picture",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "file",
-                        "description": "upload multiple pet pictures,test this out in postman",
-                        "name": "pet_pictures",
-                        "in": "formData"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.Student"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/student/{id}": {
             "get": {
                 "produces": [
@@ -1277,6 +1262,67 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/model.Student"
+                        }
+                    }
+                }
+            }
+        },
+        "/student/{id}/picture": {
+            "post": {
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "student"
+                ],
+                "summary": "upload profile picture",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Student ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "profile picture",
+                        "name": "profile_picture",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "upload multiple pet pictures,test this out in postman",
+                        "name": "pet_pictures",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Student"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
                         }
                     }
                 }
@@ -1549,15 +1595,11 @@ var doc = `{
             "type": "object",
             "required": [
                 "budget",
-                "student_id",
                 "zones"
             ],
             "properties": {
                 "budget": {
                     "type": "integer"
-                },
-                "student_id": {
-                    "type": "string"
                 },
                 "zones": {
                     "type": "array",
@@ -1573,8 +1615,7 @@ var doc = `{
                 "dorm_id",
                 "number_of_roommates",
                 "room_id",
-                "shared_room_price",
-                "student_id"
+                "shared_room_price"
             ],
             "properties": {
                 "dorm_id": {
@@ -1588,9 +1629,6 @@ var doc = `{
                 },
                 "shared_room_price": {
                     "type": "integer"
-                },
-                "student_id": {
-                    "type": "string"
                 }
             }
         },
@@ -1604,7 +1642,6 @@ var doc = `{
                 "room_price",
                 "room_size",
                 "shared_room_price",
-                "student_id",
                 "zone"
             ],
             "properties": {
@@ -1631,9 +1668,6 @@ var doc = `{
                 },
                 "shared_room_price": {
                     "type": "integer"
-                },
-                "student_id": {
-                    "type": "string"
                 },
                 "zone": {
                     "type": "string"
@@ -1955,15 +1989,17 @@ var doc = `{
         "model.Room": {
             "type": "object",
             "properties": {
-                "available": {
-                    "description": "TODO: change to available from? keep as date",
-                    "type": "boolean"
+                "available_from": {
+                    "type": "string"
                 },
                 "capacity": {
                     "type": "integer"
                 },
                 "description": {
                     "type": "string"
+                },
+                "dorm_id": {
+                    "type": "integer"
                 },
                 "facilities": {
                     "type": "array",

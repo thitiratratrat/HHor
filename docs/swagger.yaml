@@ -180,15 +180,12 @@ definitions:
     properties:
       budget:
         type: integer
-      student_id:
-        type: string
       zones:
         items:
           type: string
         type: array
     required:
     - budget
-    - student_id
     - zones
     type: object
   dto.RoommateRequestRegDormDTO:
@@ -201,14 +198,11 @@ definitions:
         type: string
       shared_room_price:
         type: integer
-      student_id:
-        type: string
     required:
     - dorm_id
     - number_of_roommates
     - room_id
     - shared_room_price
-    - student_id
     type: object
   dto.RoommateRequestUnregDormDTO:
     properties:
@@ -228,8 +222,6 @@ definitions:
         type: number
       shared_room_price:
         type: integer
-      student_id:
-        type: string
       zone:
         type: string
     required:
@@ -240,7 +232,6 @@ definitions:
     - room_price
     - room_size
     - shared_room_price
-    - student_id
     - zone
     type: object
   dto.RoommateRequestWithRoomDTO:
@@ -448,13 +439,14 @@ definitions:
     type: object
   model.Room:
     properties:
-      available:
-        description: 'TODO: change to available from? keep as date'
-        type: boolean
+      available_from:
+        type: string
       capacity:
         type: integer
       description:
         type: string
+      dorm_id:
+        type: integer
       facilities:
         items:
           $ref: '#/definitions/model.AllRoomFacility'
@@ -1061,8 +1053,14 @@ paths:
       summary: get roommate requests with no room
       tags:
       - roommate-request
+  /roommate-request/no-room/{id}:
     post:
       parameters:
+      - description: Student ID
+        in: path
+        name: id
+        required: true
+        type: integer
       - description: no room request
         in: body
         name: data
@@ -1081,6 +1079,11 @@ paths:
       - roommate-request
     put:
       parameters:
+      - description: Student ID
+        in: path
+        name: id
+        required: true
+        type: integer
       - description: no room request
         in: body
         name: data
@@ -1094,14 +1097,19 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.RoommateRequestWithNoRoom'
-      summary: create roommate request with no room
+      summary: update roommate request with no room
       tags:
       - roommate-request
-  /roommate-request/registered-dorm:
+  /roommate-request/registered-dorm/{id}:
     post:
       consumes:
       - application/json
       parameters:
+      - description: Student ID
+        in: path
+        name: id
+        required: true
+        type: integer
       - description: reg dorm request
         in: body
         name: data
@@ -1122,6 +1130,11 @@ paths:
       consumes:
       - application/json
       parameters:
+      - description: Student ID
+        in: path
+        name: id
+        required: true
+        type: integer
       - description: reg dorm update
         in: body
         name: data
@@ -1138,15 +1151,16 @@ paths:
       summary: update roommate request reg dorm
       tags:
       - roommate-request
-  /roommate-request/registered-dorm/picture:
+  /roommate-request/registered-dorm/{id}/picture:
     put:
       consumes:
       - multipart/form-data
       parameters:
-      - in: formData
-        name: student_id
+      - description: Student ID
+        in: path
+        name: id
         required: true
-        type: string
+        type: integer
       - description: upload multiple room pictures,test this out in postman
         in: formData
         name: room_pictures
@@ -1238,11 +1252,16 @@ paths:
       summary: get roommate requests with room
       tags:
       - roommate-request
-  /roommate-request/unregistered-dorm:
+  /roommate-request/unregistered-dorm/{id}:
     post:
       consumes:
       - application/json
       parameters:
+      - description: Student ID
+        in: path
+        name: id
+        required: true
+        type: integer
       - description: unreg dorm request
         in: body
         name: data
@@ -1263,6 +1282,11 @@ paths:
       consumes:
       - application/json
       parameters:
+      - description: Student ID
+        in: path
+        name: id
+        required: true
+        type: string
       - description: unreg dorm request
         in: body
         name: data
@@ -1279,15 +1303,16 @@ paths:
       summary: update roommate request with unreg dorm
       tags:
       - roommate-request
-  /roommate-request/unregistered-dorm/picture:
+  /roommate-request/unregistered-dorm/{id}/picture:
     put:
       consumes:
       - multipart/form-data
       parameters:
-      - in: formData
-        name: student_id
+      - description: Student ID
+        in: path
+        name: id
         required: true
-        type: string
+        type: integer
       - description: upload multiple room pictures,test this out in postman
         in: formData
         name: room_pictures
@@ -1354,6 +1379,46 @@ paths:
       summary: update student detail
       tags:
       - student
+  /student/{id}/picture:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: Student ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: profile picture
+        in: formData
+        name: profile_picture
+        type: file
+      - description: upload multiple pet pictures,test this out in postman
+        in: formData
+        name: pet_pictures
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Student'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: upload profile picture
+      tags:
+      - student
   /student/faculty:
     get:
       produces:
@@ -1402,46 +1467,6 @@ paths:
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
       summary: get habits
-      tags:
-      - student
-  /student/picture/{id}:
-    post:
-      consumes:
-      - multipart/form-data
-      parameters:
-      - description: Student ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: profile picture
-        in: formData
-        name: profile_picture
-        type: file
-      - description: upload multiple pet pictures,test this out in postman
-        in: formData
-        name: pet_pictures
-        type: file
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Student'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/dto.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/dto.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/dto.ErrorResponse'
-      summary: upload profile picture
       tags:
       - student
 swagger: "2.0"
