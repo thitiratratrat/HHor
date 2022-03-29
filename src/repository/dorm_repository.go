@@ -43,7 +43,7 @@ func (repository *dormRepository) FindDorms(dormFilterDTO dto.DormFilterDTO) []m
 	roomFacilitiesCondition := getRoomFacilitiesCondition(dormFilterDTO.RoomFacilities)
 	dormFacilitiesCondition := getDormFacilitiesCondition(dormFilterDTO.DormFacilities)
 
-	roomWhereCondition := fmt.Sprintf("AND 0 != (select count(*) from rooms where dorms.id = rooms.dorm_id %s %s %s)", capacityCondition, priceCondition, roomFacilitiesCondition)
+	roomWhereCondition := fmt.Sprintf("AND 0 != (select count(*) from rooms where dorms.id = rooms.dorm_id and available_from IS NOT NULL %s %s %s)", capacityCondition, priceCondition, roomFacilitiesCondition)
 	dormWhereCondition := fmt.Sprintf("%s %s %s %s %s %s", nameCondition, typeCondition, zoneCondition, latLongCondition, dormFacilitiesCondition, roomWhereCondition)
 
 	repository.db.Preload("Rooms").Preload("Pictures").Preload("DormZone").Where(dormWhereCondition).Find(&dorms)
@@ -55,7 +55,7 @@ func (repository *dormRepository) FindDorm(dormID string) (model.Dorm, error) {
 	var dorm model.Dorm
 	var nearbyLocations []model.NearbyLocation
 
-	err := repository.db.Preload("Pictures").Preload("Rooms", "available = ?", "TRUE").Preload("Rooms.Pictures").Preload("Rooms.Facilities").Preload("DormOwner").Preload("Facilities").First(&dorm, dormID).Error
+	err := repository.db.Preload("Pictures").Preload("Rooms", "available_from IS NOT NULL").Preload("Rooms.Pictures").Preload("Rooms.Facilities").Preload("DormOwner").Preload("Facilities").First(&dorm, dormID).Error
 	repository.db.Where("dorm_id = ?", dormID).Preload("Location").Find(&nearbyLocations)
 
 	dorm.NearbyLocations = nearbyLocations

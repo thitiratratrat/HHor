@@ -31,7 +31,7 @@ func (repository *roomRepository) FindAllRoomFacilities() []string {
 func (repository *roomRepository) FindRoom(id string) (model.Room, error) {
 	var room model.Room
 
-	err := repository.db.Model(&model.Room{}).Where("id = ?", id).First(&room).Error
+	err := repository.db.Preload("Pictures").Preload("Facilities").Model(&model.Room{}).Where("id = ?", id).First(&room).Error
 
 	return room, err
 }
