@@ -14,6 +14,7 @@ import (
 type DormRepository interface {
 	FindDorms(dormFilterDTO dto.DormFilterDTO) []model.Dorm
 	FindDorm(dormID string) (model.Dorm, error)
+	FindDormOwnerDorms(dormOwnerID string) []model.Dorm
 	FindDormNames(firstLetter string) []dto.DormSuggestionDTO
 	FindAllDormFacilities() []string
 	FindDormZones() []string
@@ -48,6 +49,14 @@ func (repository *dormRepository) FindDorms(dormFilterDTO dto.DormFilterDTO) []m
 	dormWhereCondition := fmt.Sprintf("%s %s %s %s %s %s", nameCondition, typeCondition, zoneCondition, latLongCondition, dormFacilitiesCondition, roomWhereCondition)
 
 	repository.db.Preload("Rooms").Preload("Pictures").Preload("DormZone").Where(dormWhereCondition).Find(&dorms)
+
+	return dorms
+}
+
+func (repository *dormRepository) FindDormOwnerDorms(dormOwnerID string) []model.Dorm {
+	var dorms []model.Dorm
+
+	repository.db.Preload("Rooms").Preload("Pictures").Preload("DormZone").Where("owner = ?", dormOwnerID).Find(&dorms)
 
 	return dorms
 }

@@ -60,18 +60,20 @@ func init() {
 	roommateRequestRpository := repository.RoommateRequestRepositoryHandler(dbConnector.GetDB())
 
 	dormService := service.DormServiceHandler(dormRepository)
-	roomService := service.RoomServiceHandler(roomRepository)
+	roomService := service.RoomServiceHandler(dormRepository, roomRepository)
 	authService := service.AuthServiceHandler(studentRepository, dormOwnerRepository)
 	studentService := service.StudentServiceHandler(studentRepository)
 	roommateRequestService := service.RoommateRequestServiceHandler(roommateRequestRpository, studentService)
+	dormOwnerService := service.DormOwnerServiceHandler(dormRepository)
 
 	fieldValidator := fieldvalidator.FieldValidatorHandler(dormService, roomService, studentService)
 
 	dormController := controller.DormControllerHandler(dormService, fieldValidator)
-	roomController := controller.RoomControllerHandler(roomService)
+	roomController := controller.RoomControllerHandler(roomService, fieldValidator)
 	authController := controller.AuthControllerHandler(authService, fieldValidator)
 	studentController := controller.StudentControllerHandler(studentService)
 	roommateRequestController := controller.RoommateRequestControllerHandler(roommateRequestService, dormService, roomService, fieldValidator)
+	dormOwnerController := controller.DormOwnerControllerHandler(dormOwnerService)
 
 	controllers = router.Controllers{
 		DormController:            dormController,
@@ -79,6 +81,7 @@ func init() {
 		AuthController:            authController,
 		StudentController:         studentController,
 		RoommateRequestController: roommateRequestController,
+		DormOwnerController:       dormOwnerController,
 	}
 
 }

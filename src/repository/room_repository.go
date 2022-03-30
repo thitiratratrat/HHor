@@ -8,6 +8,7 @@ import (
 type RoomRepository interface {
 	FindAllRoomFacilities() []string
 	FindRoom(id string) (model.Room, error)
+	CreateRoom(model.Room) (model.Room, error)
 }
 
 func RoomRepositoryHandler(db *gorm.DB) RoomRepository {
@@ -32,6 +33,16 @@ func (repository *roomRepository) FindRoom(id string) (model.Room, error) {
 	var room model.Room
 
 	err := repository.db.Preload("Pictures").Preload("Facilities").Model(&model.Room{}).Where("id = ?", id).First(&room).Error
+
+	return room, err
+}
+
+func (repository *roomRepository) CreateRoom(room model.Room) (model.Room, error) {
+	err := repository.db.Create(&room).Error
+
+	if err != nil {
+		return model.Room{}, err
+	}
 
 	return room, err
 }

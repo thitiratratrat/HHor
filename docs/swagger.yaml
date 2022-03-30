@@ -111,6 +111,38 @@ definitions:
     - lastname
     - password
     type: object
+  dto.RegisterRoomDTO:
+    properties:
+      available_from:
+        type: string
+      capacity:
+        type: integer
+      description:
+        type: string
+      dorm_id:
+        type: string
+      dorm_owner_id:
+        type: string
+      facilities:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      price:
+        type: integer
+      size:
+        type: number
+    required:
+    - available_from
+    - capacity
+    - dorm_id
+    - dorm_owner_id
+    - facilities
+    - name
+    - price
+    - size
+    type: object
   dto.RegisterStudentDTO:
     properties:
       email:
@@ -825,6 +857,26 @@ paths:
       summary: create dorm
       tags:
       - dorm
+  /dorm-owner/{id}/dorm:
+    get:
+      parameters:
+      - description: Dorm Owner ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+      summary: get dorm owner's dorms
+      tags:
+      - dorm-owner
   /dorm/{id}:
     get:
       parameters:
@@ -954,6 +1006,25 @@ paths:
       summary: get dorm zones
       tags:
       - dorm
+  /room:
+    post:
+      parameters:
+      - description: register room
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RegisterRoomDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Room'
+      summary: create room
+      tags:
+      - room
   /room/{id}:
     get:
       parameters:

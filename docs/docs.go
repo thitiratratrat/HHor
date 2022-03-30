@@ -335,6 +335,37 @@ var doc = `{
                 }
             }
         },
+        "/dorm-owner/{id}/dorm": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dorm-owner"
+                ],
+                "summary": "get dorm owner's dorms",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Dorm Owner ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/dorm/facility": {
             "get": {
                 "produces": [
@@ -529,6 +560,36 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/model.RoommateRequestWithUnregisteredDorm"
+                        }
+                    }
+                }
+            }
+        },
+        "/room": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "room"
+                ],
+                "summary": "create room",
+                "parameters": [
+                    {
+                        "description": "register room",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RegisterRoomDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Room"
                         }
                     }
                 }
@@ -1536,6 +1597,51 @@ var doc = `{
                 },
                 "password": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.RegisterRoomDTO": {
+            "type": "object",
+            "required": [
+                "available_from",
+                "capacity",
+                "dorm_id",
+                "dorm_owner_id",
+                "facilities",
+                "name",
+                "price",
+                "size"
+            ],
+            "properties": {
+                "available_from": {
+                    "type": "string"
+                },
+                "capacity": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "dorm_id": {
+                    "type": "string"
+                },
+                "dorm_owner_id": {
+                    "type": "string"
+                },
+                "facilities": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "number"
                 }
             }
         },

@@ -3,7 +3,7 @@ package model
 type RoommateRequestWithUnregisteredDorm struct {
 	StudentID         string                                   `gorm:"primaryKey" json:"student_id"`
 	Student           Student                                  `json:"-"`
-	DormName          string                                   `json:"dorm_name"`
+	DormName          string                                   `gorm:"type:citext" json:"dorm_name"`
 	DormZoneName      string                                   `json:"zone"`
 	DormZone          DormZone                                 `json:"-"`
 	RoomDescription   string                                   `gorm:"type:text" json:"room_description"`

@@ -11,6 +11,7 @@ type Controllers struct {
 	AuthController            controller.AuthController
 	StudentController         controller.StudentController
 	RoommateRequestController controller.RoommateRequestController
+	DormOwnerController       controller.DormOwnerController
 }
 
 func InitRoutes(router *gin.Engine, controllers Controllers) {
@@ -19,4 +20,5 @@ func InitRoutes(router *gin.Engine, controllers Controllers) {
 	SetAuthRoutes(router, controllers.AuthController)
 	SetStudentRoutes(router, controllers.StudentController)
 	SetRoommateRequestRoutes(router, controllers.RoommateRequestController)
+	SetDormOwnerRoutes(router, controllers.DormOwnerController)
 }
