@@ -69,7 +69,7 @@ func (repository *studentRepository) UpdateStudentPetPictures(id string, picture
 		petPictures = append(petPictures, model.PetPicture{PictureUrl: pictureUrl, StudentID: id})
 	}
 
-	repository.db.Table("pet_pictures").Where("student_email = ?", id).Delete(model.PetPicture{})
+	repository.db.Table("pet_pictures").Where("student_id = ?", id).Delete(model.PetPicture{})
 	repository.db.Create(&petPictures)
 
 	student, err := repository.FindStudent(id)

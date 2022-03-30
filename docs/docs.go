@@ -1311,7 +1311,7 @@ var doc = `{
             }
         },
         "/student/{id}/picture": {
-            "post": {
+            "put": {
                 "consumes": [
                     "multipart/form-data"
                 ],

@@ -74,7 +74,7 @@ func (studentController *studentController) UpdateStudent(context *gin.Context) 
 // @Param   pet_pictures formData file false  "upload multiple pet pictures,test this out in postman"
 // @Param data formData dto.StudentPictureDTO true  "profile picture"
 // @Failure 400,404,500 {object} dto.ErrorResponse
-// @Router /student/{id}/picture [post]
+// @Router /student/{id}/picture [put]
 func (studentController *studentController) UploadPicture(context *gin.Context) {
 	defer utils.RecoverInvalidInput(context)
 
