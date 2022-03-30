@@ -1,12 +1,15 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/thitiratratrat/hhor/src/constant"
 	"github.com/thitiratratrat/hhor/src/dto"
+	"github.com/thitiratratrat/hhor/src/errortype"
 	"github.com/thitiratratrat/hhor/src/fieldvalidator"
 	"github.com/thitiratratrat/hhor/src/service"
 	"github.com/thitiratratrat/hhor/src/utils"
@@ -20,7 +23,7 @@ type DormController interface {
 	GetDormZones(context *gin.Context)
 	CreateDorm(context *gin.Context)
 	UpdateDorm(context *gin.Context)
-	// UpdateDormPictures(context *gin.Context)
+	UpdateDormPictures(context *gin.Context)
 }
 
 func DormControllerHandler(dormService service.DormService, fieldValidator fieldvalidator.FieldValidator) DormController {
@@ -212,58 +215,58 @@ func (dormController *dormController) UpdateDorm(context *gin.Context) {
 	context.IndentedJSON(http.StatusOK, updatedDorm)
 }
 
-// // @Summary update dorm pictures
-// // @Tags dorm
-// // @Produce json
-// // @Accept  multipart/form-data
-// // @Param data formData dto.RoommateRequestPictureDTO true "data"
-// // @Param room_pictures formData file false "upload multiple room pictures,test this out in postman"
-// // @Success 200 {object} model.RoommateRequestWithUnregisteredDorm "OK"
-// // @Router /roommate-request/registered-dorm/picture [put]
-// func (roommateRequestController *roommateRequestController) UpdateDormPictures(context *gin.Context) {
-// 	defer utils.RecoverInvalidInput(context)
+// @Summary update dorm pictures
+// @Tags dorm
+// @Produce json
+// @Accept  multipart/form-data
+// @Param id path int true "Dorm ID"
+// @Param data formData dto.DormPicturesDTO true "data"
+// @Param pictures formData file false "upload multiple room pictures,test this out in postman"
+// @Success 200 {object} model.RoommateRequestWithUnregisteredDorm "OK"
+// @Router /dorm/{id}/picture [put]
+func (dormController *dormController) UpdateDormPictures(context *gin.Context) {
+	defer utils.RecoverInvalidInput(context)
 
-// 	validate := validator.New()
+	dormID := context.Param("id")
+	validate := validator.New()
+	var dormPicturesDTO dto.DormPicturesDTO
+	bindErr := context.ShouldBind(&dormPicturesDTO)
 
-// 	var roommateRequestPictureDTO dto.RoommateRequestPictureDTO
+	if bindErr != nil {
+		panic(bindErr)
+	}
 
-// 	bindErr := context.ShouldBind(&roommateRequestPictureDTO)
+	validateError := validate.Struct(dormPicturesDTO)
 
-// 	if bindErr != nil {
-// 		panic(bindErr)
-// 	}
+	if validateError != nil {
+		panic(validateError)
+	}
 
-// 	validateError := validate.Struct(roommateRequestPictureDTO)
+	if dormPicturesDTO.Pictures == nil {
+		context.IndentedJSON(http.StatusOK, "")
 
-// 	if validateError != nil {
-// 		panic(validateError)
-// 	}
+		return
+	}
 
-// 	if roommateRequestPictureDTO.RoomPictures == nil {
-// 		context.IndentedJSON(http.StatusOK, "")
+	if !dormController.dormService.CanUpdateDorm(dormPicturesDTO.DormOwnerID, dormID) {
+		panic(errortype.ErrInvalidDormOwner)
+	}
 
-// 		return
-// 	}
+	files := context.Request.MultipartForm.File["pictures"]
+	var dormPicturesUrl []string
 
-// 	if !roommateRequestController.roommateRequestService.CanUpdateRoommateRequest(roommateRequestPictureDTO.StudentID, constant.RoommateRequestRegDorm) {
-// 		panic(errortype.ErrMismatchRoommateRequestType)
-// 	}
+	for _, dormPicture := range files {
+		picture, err := dormPicture.Open()
 
-// 	files := context.Request.MultipartForm.File["room_pictures"]
-// 	var roomPictureUrls []string
+		if err != nil {
+			panic(err)
+		}
 
-// 	for _, roomPicture := range files {
-// 		picture, err := roomPicture.Open()
+		dormPictureUrl := utils.UploadPicture(picture, fmt.Sprintf("%s%s/", constant.RoommateRequestRoomPictureFolder, dormPicturesDTO.DormOwnerID), dormPicture.Filename, context.Request)
+		dormPicturesUrl = append(dormPicturesUrl, dormPictureUrl)
+	}
 
-// 		if err != nil {
-// 			panic(err)
-// 		}
+	updatedDorm := dormController.dormService.UpdateDormPictures(dormID, dormPicturesUrl)
 
-// 		roomPictureUrl := utils.UploadPicture(picture, fmt.Sprintf("%s%s/", constant.RoommateRequestRoomPictureFolder, roommateRequestPictureDTO.StudentID), roomPicture.Filename, context.Request)
-// 		roomPictureUrls = append(roomPictureUrls, roomPictureUrl)
-// 	}
-
-// 	createdRoommateRequest := roommateRequestController.roommateRequestService.UpdateRoommateRequestRegDormPictures(roommateRequestPictureDTO.StudentID, roomPictureUrls)
-
-// 	context.IndentedJSON(http.StatusOK, createdRoommateRequest)
-// }
+	context.IndentedJSON(http.StatusOK, updatedDorm)
+}

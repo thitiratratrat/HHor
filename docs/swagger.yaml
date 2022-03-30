@@ -878,6 +878,34 @@ paths:
       summary: update dorm
       tags:
       - dorm
+  /dorm/{id}/picture:
+    put:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: Dorm ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - in: formData
+        name: owner_id
+        required: true
+        type: string
+      - description: upload multiple room pictures,test this out in postman
+        in: formData
+        name: pictures
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.RoommateRequestWithUnregisteredDorm'
+      summary: update dorm pictures
+      tags:
+      - dorm
   /dorm/facility:
     get:
       produces:

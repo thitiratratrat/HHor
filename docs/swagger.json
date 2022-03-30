@@ -472,6 +472,49 @@
                 }
             }
         },
+        "/dorm/{id}/picture": {
+            "put": {
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dorm"
+                ],
+                "summary": "update dorm pictures",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Dorm ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "owner_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "upload multiple room pictures,test this out in postman",
+                        "name": "pictures",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.RoommateRequestWithUnregisteredDorm"
+                        }
+                    }
+                }
+            }
+        },
         "/room/facility": {
             "get": {
                 "produces": [

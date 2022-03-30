@@ -18,6 +18,8 @@ type DormService interface {
 	GetDormZones() []string
 	CreateDorm(dto.RegisterDormDTO) model.Dorm
 	UpdateDorm(id string, dorm dto.UpdateDormDTO) model.Dorm
+	UpdateDormPictures(id string, pictures []string) model.Dorm
+	CanUpdateDorm(dormOwnerID string, dormID string) bool
 }
 
 func DormServiceHandler(dormRepository repository.DormRepository) DormService {
@@ -95,12 +97,22 @@ func (dormService *dormService) CreateDorm(registerDormDTO dto.RegisterDormDTO) 
 }
 
 func (dormService *dormService) UpdateDorm(dormId string, updateDormDTO dto.UpdateDormDTO) model.Dorm {
-	if !dormService.canUpdateDorm(updateDormDTO.DormOwnerID, dormId) {
+	if !dormService.CanUpdateDorm(updateDormDTO.DormOwnerID, dormId) {
 		panic(errortype.ErrInvalidDormOwner)
 	}
 
 	dorm := mapUpdateDorm(dormId, updateDormDTO)
 	updatedDorm, err := dormService.dormRepository.UpdateDorm(dorm)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return updatedDorm
+}
+
+func (dormService *dormService) UpdateDormPictures(id string, pictures []string) model.Dorm {
+	updatedDorm, err := dormService.dormRepository.UpdateDormPictures(id, pictures)
 
 	if err != nil {
 		panic(err)
@@ -121,7 +133,7 @@ func getCheapestRoomPrice(rooms []model.Room) int {
 	return min
 }
 
-func (dormService *dormService) canUpdateDorm(dormOwnerID string, dormID string) bool {
+func (dormService *dormService) CanUpdateDorm(dormOwnerID string, dormID string) bool {
 	dorm, err := dormService.dormRepository.FindDorm(dormID)
 
 	if err != nil {

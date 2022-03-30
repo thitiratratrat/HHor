@@ -19,7 +19,7 @@ type DormRepository interface {
 	FindDormZones() []string
 	CreateDorm(model.Dorm) (model.Dorm, error)
 	UpdateDorm(dorm model.Dorm) (model.Dorm, error)
-	// UpdateDormPictures(id string, pictureUrls []string) (model.Dorm, error)
+	UpdateDormPictures(id string, pictureUrls []string) (model.Dorm, error)
 }
 
 func DormRepositoryHandler(db *gorm.DB) DormRepository {
@@ -111,23 +111,22 @@ func (repository *dormRepository) UpdateDorm(dorm model.Dorm) (model.Dorm, error
 	return repository.FindDorm(strconv.FormatUint(uint64(dorm.ID), 10))
 }
 
-// func (repository *roommateRequestRepository) UpdateDormPictures(id string, pictureUrls []string) (model.Dorm, error) {
-// 	var roomPictures []model.RoommateRequestUnregisteredDormPicture
-// 	var roommateRequestWithUnregisteredDorm model.RoommateRequestWithUnregisteredDorm
+func (repository *dormRepository) UpdateDormPictures(id string, pictureUrls []string) (model.Dorm, error) {
+	var dormPictures []model.DormPicture
+	dormId, _ := strconv.Atoi(id)
 
-// 	for _, pictureUrl := range pictureUrls {
-// 		roomPictures = append(roomPictures, model.RoommateRequestUnregisteredDormPicture{PictureUrl: pictureUrl,
-// 			RoommateRequestWithUnregisteredDormStudentID: id,
-// 		})
-// 	}
+	for _, pictureUrl := range pictureUrls {
+		dormPictures = append(dormPictures, model.DormPicture{
+			PictureUrl: pictureUrl,
+			DormID:     uint(dormId),
+		})
+	}
 
-// 	repository.db.Table("roommate_request_unregistered_dorm_pictures").Where("roommate_request_with_unregistered_dorm_student_id = ?", id).Delete(model.RoommateRequestUnregisteredDormPicture{})
-// 	repository.db.Create(&roomPictures)
+	repository.db.Table("dorm_pictures").Where("dorm_id = ?", id).Delete(model.DormPicture{})
+	repository.db.Create(&dormPictures)
 
-// 	err := repository.db.Preload("RoomPictures").Preload("RoomFacilities").Where("student_id = ?", id).First(&roommateRequestWithUnregisteredDorm).Error
-
-// 	return roommateRequestWithUnregisteredDorm, err
-// }
+	return repository.FindDorm(id)
+}
 
 func getNameCondition(name *string) string {
 	if name == nil {
