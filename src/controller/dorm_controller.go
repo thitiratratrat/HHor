@@ -24,6 +24,7 @@ type DormController interface {
 	CreateDorm(context *gin.Context)
 	UpdateDorm(context *gin.Context)
 	UpdateDormPictures(context *gin.Context)
+	DeleteDorm(context *gin.Context)
 }
 
 func DormControllerHandler(dormService service.DormService, fieldValidator fieldvalidator.FieldValidator) DormController {
@@ -269,4 +270,22 @@ func (dormController *dormController) UpdateDormPictures(context *gin.Context) {
 	updatedDorm := dormController.dormService.UpdateDormPictures(dormID, dormPicturesUrl)
 
 	context.IndentedJSON(http.StatusOK, updatedDorm)
+}
+
+// @Summary delete dorm
+// @Tags dorm
+// @Produce json
+// @Param id path int true "Dorm ID"
+// @Param dorm-owner-id query int true "Dorm Owner ID"
+// @Success 200 "OK"
+// @Router /dorm/{id} [delete]
+func (dormController *dormController) DeleteDorm(context *gin.Context) {
+	defer utils.RecoverInvalidInput(context)
+
+	dormID := context.Param("id")
+	dormOwnerID := context.Query("dorm-owner-id")
+
+	dormController.dormService.DeleteDorm(dormID, dormOwnerID)
+
+	context.IndentedJSON(http.StatusOK, "")
 }

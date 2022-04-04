@@ -59,7 +59,7 @@ func init() {
 	studentRepository := repository.StudentRepositoryHandler(dbConnector.GetDB())
 	roommateRequestRpository := repository.RoommateRequestRepositoryHandler(dbConnector.GetDB())
 
-	dormService := service.DormServiceHandler(dormRepository)
+	dormService := service.DormServiceHandler(dormRepository, roomRepository)
 	roomService := service.RoomServiceHandler(dormRepository, roomRepository)
 	authService := service.AuthServiceHandler(studentRepository, dormOwnerRepository)
 	studentService := service.StudentServiceHandler(studentRepository)

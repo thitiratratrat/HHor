@@ -19,17 +19,20 @@ type DormService interface {
 	CreateDorm(dto.RegisterDormDTO) model.Dorm
 	UpdateDorm(id string, dorm dto.UpdateDormDTO) model.Dorm
 	UpdateDormPictures(id string, pictures []string) model.Dorm
+	DeleteDorm(id string, dormOwnerID string)
 	CanUpdateDorm(dormOwnerID string, dormID string) bool
 }
 
-func DormServiceHandler(dormRepository repository.DormRepository) DormService {
+func DormServiceHandler(dormRepository repository.DormRepository, roomRepository repository.RoomRepository) DormService {
 	return &dormService{
 		dormRepository: dormRepository,
+		roomRepository: roomRepository,
 	}
 }
 
 type dormService struct {
 	dormRepository repository.DormRepository
+	roomRepository repository.RoomRepository
 }
 
 func (dormService *dormService) GetDorms(dormFilterDTO dto.DormFilterDTO) []dto.DormDTO {
@@ -119,6 +122,32 @@ func (dormService *dormService) UpdateDormPictures(id string, pictures []string)
 	}
 
 	return updatedDorm
+}
+
+func (dormService *dormService) DeleteDorm(id string, dormOwnerID string) {
+	if !dormService.CanUpdateDorm(dormOwnerID, id) {
+		panic(errortype.ErrInvalidDormOwner)
+	}
+
+	dorm, err := dormService.dormRepository.FindDorm(id)
+
+	if err != nil {
+		panic(err)
+	}
+
+	for _, room := range dorm.Rooms {
+		err := dormService.roomRepository.DeleteRoom(strconv.FormatUint(uint64(room.ID), 10))
+
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	err = dormService.dormRepository.DeleteDorm(id)
+
+	if err != nil {
+		panic(err)
+	}
 }
 
 func getCheapestRoomPrice(rooms []model.Room) int {

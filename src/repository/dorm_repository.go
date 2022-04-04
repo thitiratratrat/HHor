@@ -21,6 +21,7 @@ type DormRepository interface {
 	CreateDorm(model.Dorm) (model.Dorm, error)
 	UpdateDorm(dorm model.Dorm) (model.Dorm, error)
 	UpdateDormPictures(id string, pictureUrls []string) (model.Dorm, error)
+	DeleteDorm(id string) error
 }
 
 func DormRepositoryHandler(db *gorm.DB) DormRepository {
@@ -135,6 +136,20 @@ func (repository *dormRepository) UpdateDormPictures(id string, pictureUrls []st
 	repository.db.Create(&dormPictures)
 
 	return repository.FindDorm(id)
+}
+
+func (repository *dormRepository) DeleteDorm(id string) error {
+	repository.db.Table("dorm_pictures").Where("dorm_id = ?", id).Delete(model.DormPicture{})
+	repository.db.Table("dorm_facility").Where("dorm_id = ?", id).Delete(model.AllDormFacility{})
+	repository.db.Table("nearby_locations").Where("dorm_id = ?", id).Delete(model.NearbyLocation{})
+
+	err := repository.db.Delete(&model.Dorm{}, id).Error
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func getNameCondition(name *string) string {

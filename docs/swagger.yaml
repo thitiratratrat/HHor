@@ -909,6 +909,26 @@ paths:
       tags:
       - dorm-owner
   /dorm/{id}:
+    delete:
+      parameters:
+      - description: Dorm ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Dorm Owner ID
+        in: query
+        name: dorm-owner-id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: delete dorm
+      tags:
+      - dorm
     get:
       parameters:
       - description: Dorm ID

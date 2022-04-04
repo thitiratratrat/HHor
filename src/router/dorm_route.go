@@ -18,4 +18,5 @@ func SetDormRoutes(router *gin.Engine, dormController controller.DormController)
 	router.PUT(fmt.Sprintf("%s/:id/picture", dormBasePath), dormController.UpdateDormPictures)
 	router.GET(fmt.Sprintf("%s/:id", dormBasePath), dormController.GetDorm)
 	router.PUT(fmt.Sprintf("%s/:id", dormBasePath), dormController.UpdateDorm)
+	router.DELETE(fmt.Sprintf("%s/:id", dormBasePath), dormController.DeleteDorm)
 }
