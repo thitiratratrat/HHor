@@ -113,6 +113,11 @@ func (roommateRequestService *roommateRequestService) GetRoommateRequest(id stri
 			Name: regDormReq.Dorm.Name,
 			Zone: regDormReq.Dorm.DormZoneName,
 		}
+
+		if len(regDormReq.Dorm.Pictures) != 0 {
+			roommateRequest.Dorm.Picture = &regDormReq.Dorm.Pictures[0].PictureUrl
+		}
+
 		roommateRequest.Room = &dto.Room{
 			ID:                &regDormReq.RoomID,
 			Name:              &regDormReq.Room.Name,

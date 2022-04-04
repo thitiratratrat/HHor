@@ -89,7 +89,7 @@ func (repository *roommateRequestRepository) FindRoommateRequestWithUnregistered
 func (repository *roommateRequestRepository) FindRoommateRequestWithRegisteredDorm(id string) (model.RoommateRequestWithRegisteredDorm, error) {
 	var roommateRequest model.RoommateRequestWithRegisteredDorm
 
-	err := repository.db.Preload("Room.Pictures").Preload("Room.Facilities").Preload("RoomPictures").Joins("Dorm").Joins("Room").Joins("Student").First(&roommateRequest, id).Error
+	err := repository.db.Preload("Room.Pictures").Preload("Dorm.Pictures").Preload("Room.Facilities").Preload("RoomPictures").Joins("Dorm").Joins("Room").Joins("Student").First(&roommateRequest, id).Error
 
 	return roommateRequest, err
 }

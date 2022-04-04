@@ -15,6 +15,7 @@ type RoomController interface {
 	GetAllRoomFacilities(context *gin.Context)
 	GetRoom(context *gin.Context)
 	CreateRoom(context *gin.Context)
+	UpdateRoom(context *gin.Context)
 }
 
 func RoomControllerHandler(roomService service.RoomService, fieldValidator fieldvalidator.FieldValidator) RoomController {
@@ -82,6 +83,39 @@ func (roomController *roomController) CreateRoom(context *gin.Context) {
 	}
 
 	createdRoom := roomController.roomService.CreateRoom(registerRoomDTO)
+
+	context.IndentedJSON(http.StatusCreated, createdRoom)
+}
+
+// @Summary update room
+// @Tags room
+// @Produce json
+// @Param id path int true "Room ID"
+// @Param data body dto.UpdateRoomDTO true "update room"
+// @Success 201 {object} model.Room "OK"
+// @Router /room/{id} [put]
+func (roomController *roomController) UpdateRoom(context *gin.Context) {
+	defer utils.RecoverInvalidInput(context)
+
+	roomID := context.Param("id")
+	validate := validator.New()
+	_ = validate.RegisterValidation("roomfacility", func(fl validator.FieldLevel) bool {
+		return roomController.fieldValidator.ValidRoomFacility(fl.Field().Interface().([]string))
+	})
+	var updateRoomDTO dto.UpdateRoomDTO
+	bindErr := context.ShouldBind(&updateRoomDTO)
+
+	if bindErr != nil {
+		panic(bindErr)
+	}
+
+	validateError := validate.Struct(updateRoomDTO)
+
+	if validateError != nil {
+		panic(validateError)
+	}
+
+	createdRoom := roomController.roomService.UpdateRoom(roomID, updateRoomDTO)
 
 	context.IndentedJSON(http.StatusCreated, createdRoom)
 }

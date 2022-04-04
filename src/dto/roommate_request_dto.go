@@ -27,7 +27,8 @@ type Room struct {
 }
 
 type Dorm struct {
-	ID   *uint  `json:"id"`
-	Name string `json:"name"`
-	Zone string `json:"zone"`
+	ID      *uint   `json:"id"`
+	Name    string  `json:"name"`
+	Zone    string  `json:"zone"`
+	Picture *string `json:"picture"`
 }

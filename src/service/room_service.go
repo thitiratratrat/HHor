@@ -14,6 +14,7 @@ type RoomService interface {
 	GetAllRoomFacilities() []string
 	GetRoom(id string) model.Room
 	CreateRoom(registerRoomDTO dto.RegisterRoomDTO) model.Room
+	UpdateRoom(id string, updateRoomDTO dto.UpdateRoomDTO) model.Room
 }
 
 func RoomServiceHandler(dormRepository repository.DormRepository, roomRepository repository.RoomRepository) RoomService {
@@ -59,8 +60,39 @@ func (roomService *roomService) CreateRoom(registerRoomDTO dto.RegisterRoomDTO) 
 	return createdRoom
 }
 
+func (roomService *roomService) UpdateRoom(id string, updateRoomDTO dto.UpdateRoomDTO) model.Room {
+	if !roomService.canUpdateRoom(id, updateRoomDTO.DormOwnerID) {
+		panic(errortype.ErrInvalidDormOwner)
+	}
+
+	room := mapUpdateRoom(id, updateRoomDTO)
+	updatedRoom, err := roomService.roomRepository.UpdateRoom(room)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return updatedRoom
+}
+
 func (roomService *roomService) canCreateRoom(dormID string, dormOwnerID string) bool {
 	dorm, err := roomService.dormRepository.FindDorm(dormID)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return strconv.Itoa(dorm.DormOwnerID) == dormOwnerID
+}
+
+func (roomService *roomService) canUpdateRoom(roomID string, dormOwnerID string) bool {
+	room, err := roomService.roomRepository.FindRoom(roomID)
+
+	if err != nil {
+		panic(err)
+	}
+
+	dorm, err := roomService.dormRepository.FindDorm(strconv.FormatUint(uint64(room.DormID), 10))
 
 	if err != nil {
 		panic(err)
@@ -72,6 +104,14 @@ func (roomService *roomService) canCreateRoom(dormID string, dormOwnerID string)
 func mapRoom(registerRoomDTO dto.RegisterRoomDTO) model.Room {
 	dormID, _ := strconv.Atoi(registerRoomDTO.DormID)
 	availableFrom, err := time.Parse("2006-01-02", *registerRoomDTO.AvailableFrom)
+	facilities := make([]model.AllRoomFacility, len(registerRoomDTO.Facilities))
+
+	for index, facility := range registerRoomDTO.Facilities {
+		facilities[index] = model.AllRoomFacility{
+			Name: facility,
+		}
+	}
+
 	room := model.Room{
 		Name:        registerRoomDTO.Name,
 		Price:       registerRoomDTO.Price,
@@ -79,6 +119,7 @@ func mapRoom(registerRoomDTO dto.RegisterRoomDTO) model.Room {
 		Description: registerRoomDTO.Description,
 		Capacity:    registerRoomDTO.Capacity,
 		DormID:      uint(dormID),
+		Facilities:  facilities,
 	}
 
 	if err == nil {
@@ -86,4 +127,32 @@ func mapRoom(registerRoomDTO dto.RegisterRoomDTO) model.Room {
 	}
 
 	return room
+}
+
+func mapUpdateRoom(roomID string, updateRoomDTO dto.UpdateRoomDTO) model.Room {
+	id, _ := strconv.Atoi(roomID)
+	availableFrom, err := time.Parse("2006-01-02", *updateRoomDTO.AvailableFrom)
+	facilities := make([]model.AllRoomFacility, len(updateRoomDTO.Facilities))
+
+	for index, facility := range updateRoomDTO.Facilities {
+		facilities[index] = model.AllRoomFacility{
+			Name: facility,
+		}
+	}
+
+	room := model.Room{
+		ID:          uint(id),
+		Name:        updateRoomDTO.Name,
+		Price:       updateRoomDTO.Price,
+		Description: updateRoomDTO.Description,
+		Capacity:    updateRoomDTO.Capacity,
+		Facilities:  facilities,
+	}
+
+	if err == nil {
+		room.AvailableFrom = &availableFrom
+	}
+
+	return room
+
 }

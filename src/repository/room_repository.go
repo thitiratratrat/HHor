@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"strconv"
+
 	"github.com/thitiratratrat/hhor/src/model"
 	"gorm.io/gorm"
 )
@@ -9,6 +11,7 @@ type RoomRepository interface {
 	FindAllRoomFacilities() []string
 	FindRoom(id string) (model.Room, error)
 	CreateRoom(model.Room) (model.Room, error)
+	UpdateRoom(model.Room) (model.Room, error)
 }
 
 func RoomRepositoryHandler(db *gorm.DB) RoomRepository {
@@ -45,4 +48,17 @@ func (repository *roomRepository) CreateRoom(room model.Room) (model.Room, error
 	}
 
 	return room, err
+}
+
+func (repository *roomRepository) UpdateRoom(room model.Room) (model.Room, error) {
+	err := repository.db.Model(&model.Room{ID: room.ID}).Select("Name", "Price", "Size", "Description", "Capacity", "AvailableFrom").Updates(room).Error
+
+	if err != nil {
+		return model.Room{}, err
+	}
+
+	repository.db.Table("room_facility").Where("room_id = ?", room.ID).Delete(model.AllRoomFacility{})
+	repository.db.Model(&room).Association("Facilities").Append(room.Facilities)
+
+	return repository.FindRoom(strconv.FormatUint(uint64(room.ID), 10))
 }

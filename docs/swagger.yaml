@@ -191,6 +191,8 @@ definitions:
         type: string
       number_of_roommates:
         type: integer
+      picture:
+        type: string
       pictures:
         items:
           $ref: '#/definitions/model.Picture'
@@ -350,6 +352,35 @@ definitions:
         type: string
     required:
     - owner_id
+    type: object
+  dto.UpdateRoomDTO:
+    properties:
+      available_from:
+        type: string
+      capacity:
+        type: integer
+      description:
+        type: string
+      dorm_owner_id:
+        type: string
+      facilities:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      price:
+        type: integer
+      size:
+        type: number
+    required:
+    - available_from
+    - capacity
+    - dorm_owner_id
+    - facilities
+    - name
+    - price
+    - size
     type: object
   model.AllDormFacility:
     properties:
@@ -1018,7 +1049,7 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
+        "201":
           description: OK
           schema:
             $ref: '#/definitions/model.Room'
@@ -1041,6 +1072,29 @@ paths:
           schema:
             $ref: '#/definitions/model.Room'
       summary: get room by id
+      tags:
+      - room
+    put:
+      parameters:
+      - description: Room ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: update room
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateRoomDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Room'
+      summary: update room
       tags:
       - room
   /room/facility:
