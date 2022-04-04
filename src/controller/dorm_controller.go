@@ -220,7 +220,7 @@ func (dormController *dormController) UpdateDorm(context *gin.Context) {
 // @Produce json
 // @Accept  multipart/form-data
 // @Param id path int true "Dorm ID"
-// @Param data formData dto.DormPicturesDTO true "data"
+// @Param data formData dto.DormRoomPicturesDTO true "data"
 // @Param pictures formData file false "upload multiple room pictures,test this out in postman"
 // @Success 200 {object} model.RoommateRequestWithUnregisteredDorm "OK"
 // @Router /dorm/{id}/picture [put]
@@ -229,7 +229,7 @@ func (dormController *dormController) UpdateDormPictures(context *gin.Context) {
 
 	dormID := context.Param("id")
 	validate := validator.New()
-	var dormPicturesDTO dto.DormPicturesDTO
+	var dormPicturesDTO dto.DormRoomPicturesDTO
 	bindErr := context.ShouldBind(&dormPicturesDTO)
 
 	if bindErr != nil {
@@ -262,7 +262,7 @@ func (dormController *dormController) UpdateDormPictures(context *gin.Context) {
 			panic(err)
 		}
 
-		dormPictureUrl := utils.UploadPicture(picture, fmt.Sprintf("%s%s/", constant.RoommateRequestRoomPictureFolder, dormPicturesDTO.DormOwnerID), dormPicture.Filename, context.Request)
+		dormPictureUrl := utils.UploadPicture(picture, fmt.Sprintf("%s%s/", constant.DormPictureFolder, dormID), dormPicture.Filename, context.Request)
 		dormPicturesUrl = append(dormPicturesUrl, dormPictureUrl)
 	}
 

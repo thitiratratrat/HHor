@@ -1057,6 +1057,28 @@ paths:
       tags:
       - room
   /room/{id}:
+    delete:
+      parameters:
+      - description: Room ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Dorm Owner ID
+        in: query
+        name: dorm-owner-id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Room'
+      summary: delete room
+      tags:
+      - room
     get:
       parameters:
       - description: Room ID
@@ -1095,6 +1117,34 @@ paths:
           schema:
             $ref: '#/definitions/model.Room'
       summary: update room
+      tags:
+      - room
+  /room/{id}/picture:
+    put:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: Room ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - in: formData
+        name: owner_id
+        required: true
+        type: string
+      - description: upload multiple room pictures,test this out in postman
+        in: formData
+        name: pictures
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.RoommateRequestWithUnregisteredDorm'
+      summary: update room pictures
       tags:
       - room
   /room/facility:

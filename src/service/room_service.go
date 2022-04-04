@@ -15,6 +15,9 @@ type RoomService interface {
 	GetRoom(id string) model.Room
 	CreateRoom(registerRoomDTO dto.RegisterRoomDTO) model.Room
 	UpdateRoom(id string, updateRoomDTO dto.UpdateRoomDTO) model.Room
+	UpdateRoomPictures(id string, pictures []string) model.Room
+	DeleteRoom(id string, dormOwnerID string)
+	CanUpdateRoom(roomID string, dormOwnerID string) bool
 }
 
 func RoomServiceHandler(dormRepository repository.DormRepository, roomRepository repository.RoomRepository) RoomService {
@@ -61,7 +64,7 @@ func (roomService *roomService) CreateRoom(registerRoomDTO dto.RegisterRoomDTO) 
 }
 
 func (roomService *roomService) UpdateRoom(id string, updateRoomDTO dto.UpdateRoomDTO) model.Room {
-	if !roomService.canUpdateRoom(id, updateRoomDTO.DormOwnerID) {
+	if !roomService.CanUpdateRoom(id, updateRoomDTO.DormOwnerID) {
 		panic(errortype.ErrInvalidDormOwner)
 	}
 
@@ -75,8 +78,36 @@ func (roomService *roomService) UpdateRoom(id string, updateRoomDTO dto.UpdateRo
 	return updatedRoom
 }
 
-func (roomService *roomService) canCreateRoom(dormID string, dormOwnerID string) bool {
-	dorm, err := roomService.dormRepository.FindDorm(dormID)
+func (roomService *roomService) UpdateRoomPictures(id string, pictures []string) model.Room {
+	updatedRoom, err := roomService.roomRepository.UpdateRoomPictures(id, pictures)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return updatedRoom
+}
+
+func (roomService *roomService) DeleteRoom(id string, dormOwnerID string) {
+	if !roomService.CanUpdateRoom(id, dormOwnerID) {
+		panic(errortype.ErrInvalidDormOwner)
+	}
+
+	err := roomService.roomRepository.DeleteRoom(id)
+
+	if err != nil {
+		panic(err)
+	}
+}
+
+func (roomService *roomService) CanUpdateRoom(roomID string, dormOwnerID string) bool {
+	room, err := roomService.roomRepository.FindRoom(roomID)
+
+	if err != nil {
+		panic(err)
+	}
+
+	dorm, err := roomService.dormRepository.FindDorm(strconv.FormatUint(uint64(room.DormID), 10))
 
 	if err != nil {
 		panic(err)
@@ -85,14 +116,8 @@ func (roomService *roomService) canCreateRoom(dormID string, dormOwnerID string)
 	return strconv.Itoa(dorm.DormOwnerID) == dormOwnerID
 }
 
-func (roomService *roomService) canUpdateRoom(roomID string, dormOwnerID string) bool {
-	room, err := roomService.roomRepository.FindRoom(roomID)
-
-	if err != nil {
-		panic(err)
-	}
-
-	dorm, err := roomService.dormRepository.FindDorm(strconv.FormatUint(uint64(room.DormID), 10))
+func (roomService *roomService) canCreateRoom(dormID string, dormOwnerID string) bool {
+	dorm, err := roomService.dormRepository.FindDorm(dormID)
 
 	if err != nil {
 		panic(err)
@@ -144,6 +169,7 @@ func mapUpdateRoom(roomID string, updateRoomDTO dto.UpdateRoomDTO) model.Room {
 		ID:          uint(id),
 		Name:        updateRoomDTO.Name,
 		Price:       updateRoomDTO.Price,
+		Size:        updateRoomDTO.Size,
 		Description: updateRoomDTO.Description,
 		Capacity:    updateRoomDTO.Capacity,
 		Facilities:  facilities,

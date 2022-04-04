@@ -12,6 +12,8 @@ type RoomRepository interface {
 	FindRoom(id string) (model.Room, error)
 	CreateRoom(model.Room) (model.Room, error)
 	UpdateRoom(model.Room) (model.Room, error)
+	UpdateRoomPictures(id string, pictureUrls []string) (model.Room, error)
+	DeleteRoom(id string) error
 }
 
 func RoomRepositoryHandler(db *gorm.DB) RoomRepository {
@@ -61,4 +63,34 @@ func (repository *roomRepository) UpdateRoom(room model.Room) (model.Room, error
 	repository.db.Model(&room).Association("Facilities").Append(room.Facilities)
 
 	return repository.FindRoom(strconv.FormatUint(uint64(room.ID), 10))
+}
+
+func (repository *roomRepository) UpdateRoomPictures(id string, pictureUrls []string) (model.Room, error) {
+	var roomPictures []model.RoomPicture
+	roomID, _ := strconv.Atoi(id)
+
+	for _, pictureUrl := range pictureUrls {
+		roomPictures = append(roomPictures, model.RoomPicture{
+			PictureUrl: pictureUrl,
+			RoomID:     uint(roomID),
+		})
+	}
+
+	repository.db.Table("room_pictures").Where("room_id = ?", id).Delete(model.RoomPicture{})
+	repository.db.Create(&roomPictures)
+
+	return repository.FindRoom(id)
+}
+
+func (repository *roomRepository) DeleteRoom(id string) error {
+	repository.db.Table("room_pictures").Where("room_id = ?", id).Delete(model.RoomPicture{})
+	repository.db.Table("room_facility").Where("room_id = ?", id).Delete(model.AllRoomFacility{})
+
+	err := repository.db.Delete(&model.Room{}, id).Error
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

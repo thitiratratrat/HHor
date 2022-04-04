@@ -12,6 +12,8 @@ const roomBasePath = "room"
 func SetRoomRoutes(router *gin.Engine, roomController controller.RoomController) {
 	router.GET(fmt.Sprintf("%s/facility", roomBasePath), roomController.GetAllRoomFacilities)
 	router.GET(fmt.Sprintf("%s/:id", roomBasePath), roomController.GetRoom)
+	router.PUT(fmt.Sprintf("%s/:id/picture", roomBasePath), roomController.UpdateRoomPictures)
 	router.PUT(fmt.Sprintf("%s/:id", roomBasePath), roomController.UpdateRoom)
+	router.DELETE(fmt.Sprintf("%s/:id", roomBasePath), roomController.DeleteRoom)
 	router.POST(roomBasePath, roomController.CreateRoom)
 }

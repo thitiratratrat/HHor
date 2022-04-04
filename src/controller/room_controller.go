@@ -1,11 +1,14 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/thitiratratrat/hhor/src/constant"
 	"github.com/thitiratratrat/hhor/src/dto"
+	"github.com/thitiratratrat/hhor/src/errortype"
 	"github.com/thitiratratrat/hhor/src/fieldvalidator"
 	"github.com/thitiratratrat/hhor/src/service"
 	"github.com/thitiratratrat/hhor/src/utils"
@@ -16,6 +19,8 @@ type RoomController interface {
 	GetRoom(context *gin.Context)
 	CreateRoom(context *gin.Context)
 	UpdateRoom(context *gin.Context)
+	UpdateRoomPictures(context *gin.Context)
+	DeleteRoom(context *gin.Context)
 }
 
 func RoomControllerHandler(roomService service.RoomService, fieldValidator fieldvalidator.FieldValidator) RoomController {
@@ -118,4 +123,78 @@ func (roomController *roomController) UpdateRoom(context *gin.Context) {
 	createdRoom := roomController.roomService.UpdateRoom(roomID, updateRoomDTO)
 
 	context.IndentedJSON(http.StatusCreated, createdRoom)
+}
+
+// @Summary update room pictures
+// @Tags room
+// @Produce json
+// @Accept  multipart/form-data
+// @Param id path int true "Room ID"
+// @Param data formData dto.DormRoomPicturesDTO true "data"
+// @Param pictures formData file false "upload multiple room pictures,test this out in postman"
+// @Success 200 {object} model.RoommateRequestWithUnregisteredDorm "OK"
+// @Router /room/{id}/picture [put]
+func (roomController *roomController) UpdateRoomPictures(context *gin.Context) {
+	defer utils.RecoverInvalidInput(context)
+
+	roomID := context.Param("id")
+	validate := validator.New()
+	var roomPicturesDTO dto.DormRoomPicturesDTO
+	bindErr := context.ShouldBind(&roomPicturesDTO)
+
+	if bindErr != nil {
+		panic(bindErr)
+	}
+
+	validateError := validate.Struct(roomPicturesDTO)
+
+	if validateError != nil {
+		panic(validateError)
+	}
+
+	if roomPicturesDTO.Pictures == nil {
+		context.IndentedJSON(http.StatusOK, "")
+
+		return
+	}
+
+	if !roomController.roomService.CanUpdateRoom(roomID, roomPicturesDTO.DormOwnerID) {
+		panic(errortype.ErrInvalidDormOwner)
+	}
+
+	files := context.Request.MultipartForm.File["pictures"]
+	var roomPicturesUrl []string
+
+	for _, roomPicture := range files {
+		picture, err := roomPicture.Open()
+
+		if err != nil {
+			panic(err)
+		}
+
+		roomPictureUrl := utils.UploadPicture(picture, fmt.Sprintf("%s%s/", constant.RoomPictureFolder, roomID), roomPicture.Filename, context.Request)
+		roomPicturesUrl = append(roomPicturesUrl, roomPictureUrl)
+	}
+
+	updatedRoom := roomController.roomService.UpdateRoomPictures(roomID, roomPicturesUrl)
+
+	context.IndentedJSON(http.StatusOK, updatedRoom)
+}
+
+// @Summary delete room
+// @Tags room
+// @Produce json
+// @Param id path int true "Room ID"
+// @Param dorm-owner-id query int true "Dorm Owner ID"
+// @Success 201 {object} model.Room "OK"
+// @Router /room/{id} [delete]
+func (roomController *roomController) DeleteRoom(context *gin.Context) {
+	defer utils.RecoverInvalidInput(context)
+
+	roomID := context.Param("id")
+	dormOwnerID := context.Query("dorm-owner-id")
+
+	roomController.roomService.DeleteRoom(roomID, dormOwnerID)
+
+	context.IndentedJSON(http.StatusOK, "")
 }
