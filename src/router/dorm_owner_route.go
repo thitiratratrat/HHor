@@ -10,5 +10,5 @@ import (
 const dormOwnerBasePath = "dorm-owner"
 
 func SetDormOwnerRoutes(router *gin.Engine, dormOwnerController controller.DormOwnerController) {
-	router.GET(fmt.Sprintf("%s/:id/dorm", dormOwnerBasePath), dormOwnerController.GetDorms)
+	router.GET(fmt.Sprintf("%s/:id", dormOwnerBasePath), dormOwnerController.GetDormOwner)
 }

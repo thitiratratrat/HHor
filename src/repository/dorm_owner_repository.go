@@ -7,6 +7,7 @@ import (
 
 type DormOwnerRepository interface {
 	FindDormOwnerByEmail(email string) (model.DormOwner, error)
+	FindDormOwnerByID(id string) (model.DormOwner, error)
 	CreateDormOwner(model.DormOwner) (model.DormOwner, error)
 }
 
@@ -23,7 +24,15 @@ type dormOwnerRepository struct {
 func (repository *dormOwnerRepository) FindDormOwnerByEmail(email string) (model.DormOwner, error) {
 	var dormOwner model.DormOwner
 
-	err := repository.db.Where("email = ?", email).First(&dormOwner).Error
+	err := repository.db.Preload("Dorms.Rooms").Preload("Dorms.Pictures").Preload("Dorms.DormZone").Preload("Dorms").Where("email = ?", email).First(&dormOwner).Error
+
+	return dormOwner, err
+}
+
+func (repository *dormOwnerRepository) FindDormOwnerByID(id string) (model.DormOwner, error) {
+	var dormOwner model.DormOwner
+
+	err := repository.db.Preload("Dorms.Rooms").Preload("Dorms.Pictures").Preload("Dorms.DormZone").Preload("Dorms").Where("id = ?", id).First(&dormOwner).Error
 
 	return dormOwner, err
 }

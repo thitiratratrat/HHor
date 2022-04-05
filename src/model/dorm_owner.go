@@ -6,4 +6,5 @@ type DormOwner struct {
 	Lastname  string `gorm:"not null" json:"lastname"`
 	Email     string `gorm:"not null;unique" json:"email"`
 	Password  string `gorm:"not null" json:"-"`
+	Dorms     []Dorm `json:"dorms"`
 }

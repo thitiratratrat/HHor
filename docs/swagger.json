@@ -316,7 +316,7 @@
                 }
             }
         },
-        "/dorm-owner/{id}/dorm": {
+        "/dorm-owner/{id}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -324,7 +324,7 @@
                 "tags": [
                     "dorm-owner"
                 ],
-                "summary": "get dorm owner's dorms",
+                "summary": "get dorm owner profile",
                 "parameters": [
                     {
                         "type": "integer",
@@ -338,10 +338,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/model.DormOwner"
                         }
                     }
                 }
@@ -2143,9 +2140,6 @@
                 "description": {
                     "type": "string"
                 },
-                "dorm_owner": {
-                    "$ref": "#/definitions/model.DormOwner"
-                },
                 "facilities": {
                     "type": "array",
                     "items": {
@@ -2196,6 +2190,12 @@
         "model.DormOwner": {
             "type": "object",
             "properties": {
+                "dorms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Dorm"
+                    }
+                },
                 "email": {
                     "type": "string"
                 },

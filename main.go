@@ -59,12 +59,12 @@ func init() {
 	studentRepository := repository.StudentRepositoryHandler(dbConnector.GetDB())
 	roommateRequestRpository := repository.RoommateRequestRepositoryHandler(dbConnector.GetDB())
 
-	dormService := service.DormServiceHandler(dormRepository, roomRepository)
+	dormService := service.DormServiceHandler(dormRepository, roomRepository, dormOwnerRepository)
 	roomService := service.RoomServiceHandler(dormRepository, roomRepository)
 	authService := service.AuthServiceHandler(studentRepository, dormOwnerRepository)
 	studentService := service.StudentServiceHandler(studentRepository)
 	roommateRequestService := service.RoommateRequestServiceHandler(roommateRequestRpository, studentService)
-	dormOwnerService := service.DormOwnerServiceHandler(dormRepository)
+	dormOwnerService := service.DormOwnerServiceHandler(dormOwnerRepository)
 
 	fieldValidator := fieldvalidator.FieldValidatorHandler(dormService, roomService, studentService)
 

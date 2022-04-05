@@ -12,7 +12,7 @@ import (
 
 type DormService interface {
 	GetDorms(dormFilterDTO dto.DormFilterDTO) []dto.DormDTO
-	GetDorm(dormID string) model.Dorm
+	GetDorm(dormID string) dto.DormDetailDTO
 	GetDormSuggestions(firstLetter string) []dto.DormSuggestionDTO
 	GetAllDormFacilities() []string
 	GetDormZones() []string
@@ -23,16 +23,18 @@ type DormService interface {
 	CanUpdateDorm(dormOwnerID string, dormID string) bool
 }
 
-func DormServiceHandler(dormRepository repository.DormRepository, roomRepository repository.RoomRepository) DormService {
+func DormServiceHandler(dormRepository repository.DormRepository, roomRepository repository.RoomRepository, dormOwnerRepository repository.DormOwnerRepository) DormService {
 	return &dormService{
-		dormRepository: dormRepository,
-		roomRepository: roomRepository,
+		dormRepository:      dormRepository,
+		roomRepository:      roomRepository,
+		dormOwnerRepository: dormOwnerRepository,
 	}
 }
 
 type dormService struct {
-	dormRepository repository.DormRepository
-	roomRepository repository.RoomRepository
+	dormRepository      repository.DormRepository
+	dormOwnerRepository repository.DormOwnerRepository
+	roomRepository      repository.RoomRepository
 }
 
 func (dormService *dormService) GetDorms(dormFilterDTO dto.DormFilterDTO) []dto.DormDTO {
@@ -60,14 +62,23 @@ func (dormService *dormService) GetDorms(dormFilterDTO dto.DormFilterDTO) []dto.
 	return dormDTOs
 }
 
-func (dormService *dormService) GetDorm(dormID string) model.Dorm {
+func (dormService *dormService) GetDorm(dormID string) dto.DormDetailDTO {
 	dorm, err := dormService.dormRepository.FindDorm(dormID)
+	dormOwner, err := dormService.dormOwnerRepository.FindDormOwnerByID(strconv.FormatUint(uint64(dorm.DormOwnerID), 10))
 
 	if err != nil {
 		panic(errortype.ErrResourceNotFound)
 	}
 
-	return dorm
+	return dto.DormDetailDTO{
+		Dorm: dorm,
+		DormOwner: dto.DormOwnerDTO{
+			ID:        dormOwner.ID,
+			Firstname: dormOwner.Firstname,
+			Lastname:  dormOwner.Lastname,
+			Email:     dormOwner.Email,
+		},
+	}
 }
 
 func (dormService *dormService) GetDormSuggestions(firstLetter string) []dto.DormSuggestionDTO {

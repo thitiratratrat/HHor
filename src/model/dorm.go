@@ -20,7 +20,6 @@ type Dorm struct {
 	DormZoneName    string            `json:"zone"`
 	DormZone        DormZone          `json:"-"`
 	DormOwnerID     int               `gorm:"column:owner" json:"-"`
-	DormOwner       DormOwner         `json:"dorm_owner"`
 	Facilities      []AllDormFacility `gorm:"many2many:dorm_facility;" json:"facilities"`
 	Pictures        []DormPicture     `gorm:"foreignKey:DormID" json:"pictures"`
 	NearbyLocations []NearbyLocation  `gorm:"many2many:nearby_locations;" json:"nearby_locations"`

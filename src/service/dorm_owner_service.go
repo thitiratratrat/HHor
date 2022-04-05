@@ -6,19 +6,25 @@ import (
 )
 
 type DormOwnerService interface {
-	GetDorms(id string) []model.Dorm
+	GetDormOwner(id string) model.DormOwner
 }
 
-func DormOwnerServiceHandler(dormRepository repository.DormRepository) DormOwnerService {
+func DormOwnerServiceHandler(dormOwnerRepository repository.DormOwnerRepository) DormOwnerService {
 	return &dormOwnerService{
-		dormRepository: dormRepository,
+		dormOwnerRepository: dormOwnerRepository,
 	}
 }
 
 type dormOwnerService struct {
-	dormRepository repository.DormRepository
+	dormOwnerRepository repository.DormOwnerRepository
 }
 
-func (dormOwnerService *dormOwnerService) GetDorms(id string) []model.Dorm {
-	return dormOwnerService.dormRepository.FindDormOwnerDorms(id)
+func (dormOwnerService *dormOwnerService) GetDormOwner(id string) model.DormOwner {
+	dormOwner, err := dormOwnerService.dormOwnerRepository.FindDormOwnerByID(id)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return dormOwner
 }

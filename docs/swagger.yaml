@@ -398,8 +398,6 @@ definitions:
         type: string
       description:
         type: string
-      dorm_owner:
-        $ref: '#/definitions/model.DormOwner'
       facilities:
         items:
           $ref: '#/definitions/model.AllDormFacility'
@@ -433,6 +431,10 @@ definitions:
     type: object
   model.DormOwner:
     properties:
+      dorms:
+        items:
+          $ref: '#/definitions/model.Dorm'
+        type: array
       email:
         type: string
       firstname:
@@ -888,7 +890,7 @@ paths:
       summary: create dorm
       tags:
       - dorm
-  /dorm-owner/{id}/dorm:
+  /dorm-owner/{id}:
     get:
       parameters:
       - description: Dorm Owner ID
@@ -902,10 +904,8 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              type: string
-            type: array
-      summary: get dorm owner's dorms
+            $ref: '#/definitions/model.DormOwner'
+      summary: get dorm owner profile
       tags:
       - dorm-owner
   /dorm/{id}:

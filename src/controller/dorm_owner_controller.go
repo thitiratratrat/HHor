@@ -8,7 +8,7 @@ import (
 )
 
 type DormOwnerController interface {
-	GetDorms(*gin.Context)
+	GetDormOwner(*gin.Context)
 }
 
 func DormOwnerControllerHandler(dormOwnerService service.DormOwnerService) DormOwnerController {
@@ -21,16 +21,16 @@ type dormOwnerController struct {
 	dormOwnerService service.DormOwnerService
 }
 
-// @Summary get dorm owner's dorms
+// @Summary get dorm owner profile
 // @Tags dorm-owner
 // @Produce json
 // @Param id path int true "Dorm Owner ID"
-// @Success 200 {array} string "OK"
-// @Router /dorm-owner/{id}/dorm [get]
-func (dormOwnerController *dormOwnerController) GetDorms(context *gin.Context) {
+// @Success 200 {object} model.DormOwner "OK"
+// @Router /dorm-owner/{id} [get]
+func (dormOwnerController *dormOwnerController) GetDormOwner(context *gin.Context) {
 	dormOwnerID := context.Param("id")
 
-	dorms := dormOwnerController.dormOwnerService.GetDorms(dormOwnerID)
+	dormOwner := dormOwnerController.dormOwnerService.GetDormOwner(dormOwnerID)
 
-	context.IndentedJSON(http.StatusOK, dorms)
+	context.IndentedJSON(http.StatusOK, dormOwner)
 }

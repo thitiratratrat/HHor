@@ -14,7 +14,6 @@ import (
 type DormRepository interface {
 	FindDorms(dormFilterDTO dto.DormFilterDTO) []model.Dorm
 	FindDorm(dormID string) (model.Dorm, error)
-	FindDormOwnerDorms(dormOwnerID string) []model.Dorm
 	FindDormNames(firstLetter string) []dto.DormSuggestionDTO
 	FindAllDormFacilities() []string
 	FindDormZones() []string
@@ -54,19 +53,11 @@ func (repository *dormRepository) FindDorms(dormFilterDTO dto.DormFilterDTO) []m
 	return dorms
 }
 
-func (repository *dormRepository) FindDormOwnerDorms(dormOwnerID string) []model.Dorm {
-	var dorms []model.Dorm
-
-	repository.db.Preload("Rooms").Preload("Pictures").Preload("DormZone").Where("owner = ?", dormOwnerID).Find(&dorms)
-
-	return dorms
-}
-
 func (repository *dormRepository) FindDorm(dormID string) (model.Dorm, error) {
 	var dorm model.Dorm
 	var nearbyLocations []model.NearbyLocation
 
-	err := repository.db.Preload("Pictures").Preload("Rooms", "available_from IS NOT NULL").Preload("Rooms.Pictures").Preload("Rooms.Facilities").Preload("DormOwner").Preload("Facilities").First(&dorm, dormID).Error
+	err := repository.db.Preload("Pictures").Preload("Rooms", "available_from IS NOT NULL").Preload("Rooms.Pictures").Preload("Rooms.Facilities").Preload("Facilities").First(&dorm, dormID).Error
 	repository.db.Where("dorm_id = ?", dormID).Preload("Location").Find(&nearbyLocations)
 
 	dorm.NearbyLocations = nearbyLocations

@@ -335,7 +335,7 @@ var doc = `{
                 }
             }
         },
-        "/dorm-owner/{id}/dorm": {
+        "/dorm-owner/{id}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -343,7 +343,7 @@ var doc = `{
                 "tags": [
                     "dorm-owner"
                 ],
-                "summary": "get dorm owner's dorms",
+                "summary": "get dorm owner profile",
                 "parameters": [
                     {
                         "type": "integer",
@@ -357,10 +357,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/model.DormOwner"
                         }
                     }
                 }
@@ -2162,9 +2159,6 @@ var doc = `{
                 "description": {
                     "type": "string"
                 },
-                "dorm_owner": {
-                    "$ref": "#/definitions/model.DormOwner"
-                },
                 "facilities": {
                     "type": "array",
                     "items": {
@@ -2215,6 +2209,12 @@ var doc = `{
         "model.DormOwner": {
             "type": "object",
             "properties": {
+                "dorms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Dorm"
+                    }
+                },
                 "email": {
                     "type": "string"
                 },
