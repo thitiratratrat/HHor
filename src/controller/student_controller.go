@@ -4,48 +4,85 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/fatih/structs"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/thitiratratrat/hhor/src/constant"
 	"github.com/thitiratratrat/hhor/src/dto"
+	"github.com/thitiratratrat/hhor/src/fieldvalidator"
 	"github.com/thitiratratrat/hhor/src/model"
 	"github.com/thitiratratrat/hhor/src/service"
 	"github.com/thitiratratrat/hhor/src/utils"
 )
 
-//TODO: separate update habit
 type StudentController interface {
 	GetHabits(context *gin.Context)
 	GetFaculties(context *gin.Context)
 	GetStudent(context *gin.Context)
 	UpdateStudent(context *gin.Context)
+	UpdateHabit(context *gin.Context)
+	UpdatePreference(context *gin.Context)
 	UploadPicture(context *gin.Context)
 }
 
-func StudentControllerHandler(studentService service.StudentService) StudentController {
+func StudentControllerHandler(studentService service.StudentService, fieldValidator fieldvalidator.FieldValidator) StudentController {
 	return &studentController{
 		studentService: studentService,
+		fieldValidator: fieldValidator,
 	}
 }
 
 type studentController struct {
 	studentService service.StudentService
+	fieldValidator fieldvalidator.FieldValidator
 }
-
-//TODO: able to pass null now but cannot validate
 
 // @Summary update student detail
 // @Tags student
 // @Produce json
 // @Param id path string true "Student ID"
-// @Param data body dto.StudentUpdateSwagDTO false "student update"
+// @Param data body dto.UpdateStudentDTO false "student update"
 // @Success 200 {object} model.Student "OK"
 // @Router /student/{id} [patch]
 func (studentController *studentController) UpdateStudent(context *gin.Context) {
 	defer utils.RecoverInvalidInput(context)
 
 	id := context.Param("id")
-	var studentUpdateDTO dto.StudentUpdateDTO
+	var studentUpdateDTO dto.UpdateStudentDTO
+	validate := validator.New()
+	_ = validate.RegisterValidation("faculty", func(fl validator.FieldLevel) bool {
+		return studentController.fieldValidator.ValidFaculty([]string{fl.Field().String()})
+	})
+	bindErr := context.ShouldBind(&studentUpdateDTO)
+
+	if bindErr != nil {
+		panic(bindErr)
+	}
+
+	validateError := validate.Struct(studentUpdateDTO)
+
+	if validateError != nil {
+		panic(validateError)
+	}
+
+	studentUpdateMap := structs.Map(studentUpdateDTO)
+	updatedStudent := studentController.studentService.UpdateStudent(id, studentUpdateMap)
+
+	context.IndentedJSON(http.StatusOK, updatedStudent)
+}
+
+// @Summary update student habit
+// @Tags student
+// @Produce json
+// @Param id path string true "Student ID"
+// @Param data body dto.UpdateHabitDTO false "habit update"
+// @Success 200 {object} model.Student "OK"
+// @Router /student/{id}/habit [patch]
+func (studentController *studentController) UpdateHabit(context *gin.Context) {
+	defer utils.RecoverInvalidInput(context)
+
+	id := context.Param("id")
+	var studentUpdateDTO dto.UpdateHabitDTO
 	validate := validator.New()
 	bindErr := context.ShouldBind(&studentUpdateDTO)
 
@@ -59,7 +96,38 @@ func (studentController *studentController) UpdateStudent(context *gin.Context) 
 		panic(validateError)
 	}
 
-	studentUpdateMap := utils.Map(studentUpdateDTO)
+	studentUpdateMap := structs.Map(studentUpdateDTO)
+	updatedStudent := studentController.studentService.UpdateStudent(id, studentUpdateMap)
+
+	context.IndentedJSON(http.StatusOK, updatedStudent)
+}
+
+// @Summary update student preference
+// @Tags student
+// @Produce json
+// @Param id path string true "Student ID"
+// @Param data body dto.UpdatePreferenceDTO false "preference update"
+// @Success 200 {object} model.Student "OK"
+// @Router /student/{id}/preference [patch]
+func (studentController *studentController) UpdatePreference(context *gin.Context) {
+	defer utils.RecoverInvalidInput(context)
+
+	id := context.Param("id")
+	var studentUpdateDTO dto.UpdatePreferenceDTO
+	validate := validator.New()
+	bindErr := context.ShouldBind(&studentUpdateDTO)
+
+	if bindErr != nil {
+		panic(bindErr)
+	}
+
+	validateError := validate.Struct(studentUpdateDTO)
+
+	if validateError != nil {
+		panic(validateError)
+	}
+
+	studentUpdateMap := structs.Map(studentUpdateDTO)
 	updatedStudent := studentController.studentService.UpdateStudent(id, studentUpdateMap)
 
 	context.IndentedJSON(http.StatusOK, updatedStudent)

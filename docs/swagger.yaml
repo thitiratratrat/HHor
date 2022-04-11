@@ -291,47 +291,6 @@ definitions:
       student:
         $ref: '#/definitions/model.Student'
     type: object
-  dto.StudentUpdateSwagDTO:
-    properties:
-      biography:
-        type: string
-      enrollment_year:
-        type: integer
-      facebook_url:
-        type: string
-      instagram_url:
-        type: string
-      linkedin_url:
-        type: string
-      other_preference:
-        type: string
-      pet_habit_id:
-        type: string
-      preferred_gender:
-        type: string
-      preferred_pet_habit_id:
-        type: string
-      preferred_room_care_habit_id:
-        type: string
-      preferred_sleep_habit_id:
-        type: string
-      preferred_smoke_habit_id:
-        type: string
-      preferred_study_habit_id:
-        type: string
-      room_care_habit_id:
-        type: string
-      sleep_habit_id:
-        type: string
-      smoke_habit_id:
-        type: string
-      study_habit_id:
-        type: string
-      twitter_url:
-        type: string
-    required:
-    - enrollment_year
-    type: object
   dto.UpdateBankAccountDTO:
     properties:
       account_name:
@@ -395,6 +354,36 @@ definitions:
     - line_id
     - phone_number
     type: object
+  dto.UpdateHabitDTO:
+    properties:
+      pet_habit_id:
+        type: string
+      room_care_habit_id:
+        type: string
+      sleep_habit_id:
+        type: string
+      smoke_habit_id:
+        type: string
+      study_habit_id:
+        type: string
+    type: object
+  dto.UpdatePreferenceDTO:
+    properties:
+      other_preference:
+        type: string
+      preferred_gender:
+        type: string
+      preferred_pet_habit_id:
+        type: string
+      preferred_room_care_habit_id:
+        type: string
+      preferred_sleep_habit_id:
+        type: string
+      preferred_smoke_habit_id:
+        type: string
+      preferred_study_habit_id:
+        type: string
+    type: object
   dto.UpdateRoomDTO:
     properties:
       available_from:
@@ -423,6 +412,29 @@ definitions:
     - name
     - price
     - size
+    type: object
+  dto.UpdateStudentDTO:
+    properties:
+      biography:
+        type: string
+      facebook_url:
+        type: string
+      faculty:
+        type: string
+      firstname:
+        type: string
+      instagram_url:
+        type: string
+      lastname:
+        type: string
+      linkedin_url:
+        type: string
+      twitter_url:
+        type: string
+    required:
+    - faculty
+    - firstname
+    - lastname
     type: object
   model.AllDormFacility:
     properties:
@@ -1754,7 +1766,7 @@ paths:
         in: body
         name: data
         schema:
-          $ref: '#/definitions/dto.StudentUpdateSwagDTO'
+          $ref: '#/definitions/dto.UpdateStudentDTO'
       produces:
       - application/json
       responses:
@@ -1763,6 +1775,29 @@ paths:
           schema:
             $ref: '#/definitions/model.Student'
       summary: update student detail
+      tags:
+      - student
+  /student/{id}/habit:
+    patch:
+      parameters:
+      - description: Student ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: habit update
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/dto.UpdateHabitDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Student'
+      summary: update student habit
       tags:
       - student
   /student/{id}/picture:
@@ -1803,6 +1838,29 @@ paths:
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
       summary: upload profile picture
+      tags:
+      - student
+  /student/{id}/preference:
+    patch:
+      parameters:
+      - description: Student ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: preference update
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/dto.UpdatePreferenceDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Student'
+      summary: update student detail
       tags:
       - student
   /student/faculty:

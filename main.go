@@ -73,7 +73,7 @@ func init() {
 	dormController := controller.DormControllerHandler(dormService, fieldValidator)
 	roomController := controller.RoomControllerHandler(roomService, fieldValidator)
 	authController := controller.AuthControllerHandler(authService, fieldValidator)
-	studentController := controller.StudentControllerHandler(studentService)
+	studentController := controller.StudentControllerHandler(studentService, fieldValidator)
 	roommateRequestController := controller.RoommateRequestControllerHandler(roommateRequestService, dormService, roomService, fieldValidator)
 	dormOwnerController := controller.DormOwnerControllerHandler(dormOwnerService, fieldValidator)
 

@@ -1633,7 +1633,43 @@
                         "name": "data",
                         "in": "body",
                         "schema": {
-                            "$ref": "#/definitions/dto.StudentUpdateSwagDTO"
+                            "$ref": "#/definitions/dto.UpdateStudentDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Student"
+                        }
+                    }
+                }
+            }
+        },
+        "/student/{id}/habit": {
+            "patch": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "student"
+                ],
+                "summary": "update student habit",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Student ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "habit update",
+                        "name": "data",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateHabitDTO"
                         }
                     }
                 ],
@@ -1703,6 +1739,42 @@
                         "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/student/{id}/preference": {
+            "patch": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "student"
+                ],
+                "summary": "update student detail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Student ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "preference update",
+                        "name": "data",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdatePreferenceDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Student"
                         }
                     }
                 }
@@ -2136,68 +2208,6 @@
                 }
             }
         },
-        "dto.StudentUpdateSwagDTO": {
-            "type": "object",
-            "required": [
-                "enrollment_year"
-            ],
-            "properties": {
-                "biography": {
-                    "type": "string"
-                },
-                "enrollment_year": {
-                    "type": "integer"
-                },
-                "facebook_url": {
-                    "type": "string"
-                },
-                "instagram_url": {
-                    "type": "string"
-                },
-                "linkedin_url": {
-                    "type": "string"
-                },
-                "other_preference": {
-                    "type": "string"
-                },
-                "pet_habit_id": {
-                    "type": "string"
-                },
-                "preferred_gender": {
-                    "type": "string"
-                },
-                "preferred_pet_habit_id": {
-                    "type": "string"
-                },
-                "preferred_room_care_habit_id": {
-                    "type": "string"
-                },
-                "preferred_sleep_habit_id": {
-                    "type": "string"
-                },
-                "preferred_smoke_habit_id": {
-                    "type": "string"
-                },
-                "preferred_study_habit_id": {
-                    "type": "string"
-                },
-                "room_care_habit_id": {
-                    "type": "string"
-                },
-                "sleep_habit_id": {
-                    "type": "string"
-                },
-                "smoke_habit_id": {
-                    "type": "string"
-                },
-                "study_habit_id": {
-                    "type": "string"
-                },
-                "twitter_url": {
-                    "type": "string"
-                }
-            }
-        },
         "dto.UpdateBankAccountDTO": {
             "type": "object",
             "required": [
@@ -2288,6 +2298,52 @@
                 }
             }
         },
+        "dto.UpdateHabitDTO": {
+            "type": "object",
+            "properties": {
+                "pet_habit_id": {
+                    "type": "string"
+                },
+                "room_care_habit_id": {
+                    "type": "string"
+                },
+                "sleep_habit_id": {
+                    "type": "string"
+                },
+                "smoke_habit_id": {
+                    "type": "string"
+                },
+                "study_habit_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdatePreferenceDTO": {
+            "type": "object",
+            "properties": {
+                "other_preference": {
+                    "type": "string"
+                },
+                "preferred_gender": {
+                    "type": "string"
+                },
+                "preferred_pet_habit_id": {
+                    "type": "string"
+                },
+                "preferred_room_care_habit_id": {
+                    "type": "string"
+                },
+                "preferred_sleep_habit_id": {
+                    "type": "string"
+                },
+                "preferred_smoke_habit_id": {
+                    "type": "string"
+                },
+                "preferred_study_habit_id": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.UpdateRoomDTO": {
             "type": "object",
             "required": [
@@ -2326,6 +2382,40 @@
                 },
                 "size": {
                     "type": "number"
+                }
+            }
+        },
+        "dto.UpdateStudentDTO": {
+            "type": "object",
+            "required": [
+                "faculty",
+                "firstname",
+                "lastname"
+            ],
+            "properties": {
+                "biography": {
+                    "type": "string"
+                },
+                "facebook_url": {
+                    "type": "string"
+                },
+                "faculty": {
+                    "type": "string"
+                },
+                "firstname": {
+                    "type": "string"
+                },
+                "instagram_url": {
+                    "type": "string"
+                },
+                "lastname": {
+                    "type": "string"
+                },
+                "linkedin_url": {
+                    "type": "string"
+                },
+                "twitter_url": {
+                    "type": "string"
                 }
             }
         },
