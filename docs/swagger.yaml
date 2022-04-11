@@ -103,13 +103,19 @@ definitions:
         type: string
       lastname:
         type: string
+      line_id:
+        type: string
       password:
+        type: string
+      phone_number:
         type: string
     required:
     - email
     - firstname
     - lastname
+    - line_id
     - password
+    - phone_number
     type: object
   dto.RegisterRoomDTO:
     properties:
@@ -326,6 +332,19 @@ definitions:
     required:
     - enrollment_year
     type: object
+  dto.UpdateBankAccountDTO:
+    properties:
+      account_name:
+        type: string
+      account_number:
+        type: string
+      bank:
+        type: string
+    required:
+    - account_name
+    - account_number
+    - bank
+    type: object
   dto.UpdateDormDTO:
     properties:
       address:
@@ -351,7 +370,30 @@ definitions:
       zone:
         type: string
     required:
+    - address
+    - facilities
+    - lat
+    - long
+    - name
     - owner_id
+    - type
+    - zone
+    type: object
+  dto.UpdateDormOwnerDTO:
+    properties:
+      firstname:
+        type: string
+      lastname:
+        type: string
+      line_id:
+        type: string
+      phone_number:
+        type: string
+    required:
+    - firstname
+    - lastname
+    - line_id
+    - phone_number
     type: object
   dto.UpdateRoomDTO:
     properties:
@@ -390,6 +432,17 @@ definitions:
   model.AllRoomFacility:
     properties:
       name:
+        type: string
+    type: object
+  model.BankAccount:
+    properties:
+      account_name:
+        type: string
+      account_number:
+        type: string
+      bank:
+        type: string
+      bank_qr_url:
         type: string
     type: object
   model.Dorm:
@@ -431,6 +484,8 @@ definitions:
     type: object
   model.DormOwner:
     properties:
+      bank_account:
+        $ref: '#/definitions/model.BankAccount'
       dorms:
         items:
           $ref: '#/definitions/model.Dorm'
@@ -442,6 +497,12 @@ definitions:
       id:
         type: integer
       lastname:
+        type: string
+      line_id:
+        type: string
+      phone_number:
+        type: string
+      picture_url:
         type: string
     type: object
   model.DormPicture:
@@ -906,6 +967,108 @@ paths:
           schema:
             $ref: '#/definitions/model.DormOwner'
       summary: get dorm owner profile
+      tags:
+      - dorm-owner
+    put:
+      parameters:
+      - description: Dorm Owner ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: dorm owner update
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/dto.UpdateDormOwnerDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.DormOwner'
+      summary: update dorm owner
+      tags:
+      - dorm-owner
+  /dorm-owner/{id}/bank-account:
+    delete:
+      parameters:
+      - description: Dorm Owner ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.DormOwner'
+      summary: delete bank account
+      tags:
+      - dorm-owner
+    put:
+      parameters:
+      - description: Dorm Owner ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: bank account update
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/dto.UpdateBankAccountDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.DormOwner'
+      summary: update bank account
+      tags:
+      - dorm-owner
+  /dorm-owner/{id}/picture:
+    put:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: Dorm Owner ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: profile picture
+        in: formData
+        name: profile_picture
+        type: file
+      - description: bank qr
+        in: formData
+        name: bank_qr
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.DormOwner'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: upload picture
       tags:
       - dorm-owner
   /dorm/{id}:

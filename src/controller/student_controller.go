@@ -13,6 +13,7 @@ import (
 	"github.com/thitiratratrat/hhor/src/utils"
 )
 
+//TODO: separate update habit
 type StudentController interface {
 	GetHabits(context *gin.Context)
 	GetFaculties(context *gin.Context)
@@ -93,12 +94,10 @@ func (studentController *studentController) UploadPicture(context *gin.Context) 
 		panic(validateError)
 	}
 
-	student := studentController.studentService.GetStudent(id)
-
 	var updatedStudent model.Student
 
 	if studentPictureDTO.ProfilePicture != nil {
-		filename := student.ID + ".png"
+		filename := id + ".png"
 		file, _, err := context.Request.FormFile("profile_picture")
 
 		if err != nil {
@@ -121,7 +120,7 @@ func (studentController *studentController) UploadPicture(context *gin.Context) 
 				panic(err)
 			}
 
-			petPictureUrl := utils.UploadPicture(picture, fmt.Sprintf("%s%s/", constant.PetPicturesFolder, student.ID), petPicture.Filename, context.Request)
+			petPictureUrl := utils.UploadPicture(picture, fmt.Sprintf("%s%s/", constant.PetPicturesFolder, id), petPicture.Filename, context.Request)
 			petPictureUrls = append(petPictureUrls, petPictureUrl)
 		}
 

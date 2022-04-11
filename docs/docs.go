@@ -361,6 +361,163 @@ var doc = `{
                         }
                     }
                 }
+            },
+            "put": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dorm-owner"
+                ],
+                "summary": "update dorm owner",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Dorm Owner ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "dorm owner update",
+                        "name": "data",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateDormOwnerDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.DormOwner"
+                        }
+                    }
+                }
+            }
+        },
+        "/dorm-owner/{id}/bank-account": {
+            "put": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dorm-owner"
+                ],
+                "summary": "update bank account",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Dorm Owner ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "bank account update",
+                        "name": "data",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateBankAccountDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.DormOwner"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dorm-owner"
+                ],
+                "summary": "delete bank account",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Dorm Owner ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.DormOwner"
+                        }
+                    }
+                }
+            }
+        },
+        "/dorm-owner/{id}/picture": {
+            "put": {
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dorm-owner"
+                ],
+                "summary": "upload picture",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Dorm Owner ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "profile picture",
+                        "name": "profile_picture",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "bank qr",
+                        "name": "bank_qr",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.DormOwner"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
             }
         },
         "/dorm/facility": {
@@ -1721,7 +1878,9 @@ var doc = `{
                 "email",
                 "firstname",
                 "lastname",
-                "password"
+                "line_id",
+                "password",
+                "phone_number"
             ],
             "properties": {
                 "email": {
@@ -1733,7 +1892,13 @@ var doc = `{
                 "lastname": {
                     "type": "string"
                 },
+                "line_id": {
+                    "type": "string"
+                },
                 "password": {
+                    "type": "string"
+                },
+                "phone_number": {
                     "type": "string"
                 }
             }
@@ -2052,10 +2217,36 @@ var doc = `{
                 }
             }
         },
+        "dto.UpdateBankAccountDTO": {
+            "type": "object",
+            "required": [
+                "account_name",
+                "account_number",
+                "bank"
+            ],
+            "properties": {
+                "account_name": {
+                    "type": "string"
+                },
+                "account_number": {
+                    "type": "string"
+                },
+                "bank": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.UpdateDormDTO": {
             "type": "object",
             "required": [
-                "owner_id"
+                "address",
+                "facilities",
+                "lat",
+                "long",
+                "name",
+                "owner_id",
+                "type",
+                "zone"
             ],
             "properties": {
                 "address": {
@@ -2089,6 +2280,29 @@ var doc = `{
                     "type": "string"
                 },
                 "zone": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdateDormOwnerDTO": {
+            "type": "object",
+            "required": [
+                "firstname",
+                "lastname",
+                "line_id",
+                "phone_number"
+            ],
+            "properties": {
+                "firstname": {
+                    "type": "string"
+                },
+                "lastname": {
+                    "type": "string"
+                },
+                "line_id": {
+                    "type": "string"
+                },
+                "phone_number": {
                     "type": "string"
                 }
             }
@@ -2146,6 +2360,23 @@ var doc = `{
             "type": "object",
             "properties": {
                 "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.BankAccount": {
+            "type": "object",
+            "properties": {
+                "account_name": {
+                    "type": "string"
+                },
+                "account_number": {
+                    "type": "string"
+                },
+                "bank": {
+                    "type": "string"
+                },
+                "bank_qr_url": {
                     "type": "string"
                 }
             }
@@ -2209,6 +2440,9 @@ var doc = `{
         "model.DormOwner": {
             "type": "object",
             "properties": {
+                "bank_account": {
+                    "$ref": "#/definitions/model.BankAccount"
+                },
                 "dorms": {
                     "type": "array",
                     "items": {
@@ -2225,6 +2459,15 @@ var doc = `{
                     "type": "integer"
                 },
                 "lastname": {
+                    "type": "string"
+                },
+                "line_id": {
+                    "type": "string"
+                },
+                "phone_number": {
+                    "type": "string"
+                },
+                "picture_url": {
                     "type": "string"
                 }
             }

@@ -76,6 +76,9 @@ func (authController *authController) RegisterDormOwner(context *gin.Context) {
 	defer utils.RecoverInvalidInput(context)
 
 	validate := validator.New()
+	_ = validate.RegisterValidation("phone", func(fl validator.FieldLevel) bool {
+		return authController.fieldValidator.ValidPhoneNumber(fl.Field().String())
+	})
 	var registerDormOwnerDTO dto.RegisterDormOwnerDTO
 	bindErr := context.ShouldBind(&registerDormOwnerDTO)
 

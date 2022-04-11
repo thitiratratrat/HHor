@@ -2,6 +2,7 @@ package dto
 
 import "github.com/thitiratratrat/hhor/src/customtype"
 
+//TODO: add update last name, first name
 type StudentUpdateDTO struct {
 	Biography                customtype.JSONString `json:"biography"`
 	EnrollmentYear           customtype.JSONInt    `json:"enrollment_year" validate:"required,gte=2014"`

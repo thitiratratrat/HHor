@@ -1,6 +1,8 @@
 package fieldvalidator
 
 import (
+	"regexp"
+
 	"github.com/thitiratratrat/hhor/src/service"
 )
 
@@ -9,6 +11,7 @@ type FieldValidator interface {
 	ValidDormZone(inputDormZones []string) bool
 	ValidRoomFacility(inputRoomFacilities []string) bool
 	ValidDormFacility(inputDormFacilities []string) bool
+	ValidPhoneNumber(phohneNumber string) bool
 }
 
 func FieldValidatorHandler(dormService service.DormService, roomService service.RoomService, studentService service.StudentService) FieldValidator {
@@ -47,6 +50,12 @@ func (fieldValidator *fieldValidator) ValidRoomFacility(inputRoomFacilities []st
 	roomFacilities := fieldValidator.roomService.GetAllRoomFacilities()
 
 	return containsAllItems(inputRoomFacilities, roomFacilities)
+}
+
+func (fieldValidator *fieldValidator) ValidPhoneNumber(phoneNumber string) bool {
+	r, _ := regexp.Compile("^(0[689]{1})+([0-9]{8})+$")
+
+	return r.MatchString(phoneNumber)
 }
 
 func containsAllItems(inputList []string, mainList []string) bool {

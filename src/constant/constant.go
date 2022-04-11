@@ -1,7 +1,9 @@
 package constant
 
 const StudentProfilePictureFolder = "student_profile/"
+const DormOwnerProfilePictureFolder = "dorm_owner_profile/"
 const PetPicturesFolder = "pet_pictures/"
+const BankQRPictureFolder = "bank_qr/"
 const RoommateRequestRoomPictureFolder = "roommate_request_room_pictures/"
 const DormPictureFolder = "dorm_pictures/"
 const RoomPictureFolder = "room_pictures/"
