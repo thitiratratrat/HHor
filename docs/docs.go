@@ -981,11 +981,6 @@ var doc = `{
         },
         "/roommate-request/no-room": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -1292,11 +1287,6 @@ var doc = `{
         },
         "/roommate-request/room": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -1546,11 +1536,6 @@ var doc = `{
         },
         "/roommate-request/{id}": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],
