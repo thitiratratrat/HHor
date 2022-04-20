@@ -23,15 +23,17 @@ type RoomController interface {
 	DeleteRoom(context *gin.Context)
 }
 
-func RoomControllerHandler(roomService service.RoomService, fieldValidator fieldvalidator.FieldValidator) RoomController {
+func RoomControllerHandler(roomService service.RoomService, jwtService service.JWTService, fieldValidator fieldvalidator.FieldValidator) RoomController {
 	return &roomController{
 		roomService:    roomService,
+		jwtService:     jwtService,
 		fieldValidator: fieldValidator,
 	}
 }
 
 type roomController struct {
 	roomService    service.RoomService
+	jwtService     service.JWTService
 	fieldValidator fieldvalidator.FieldValidator
 }
 
@@ -61,6 +63,7 @@ func (roomController *roomController) GetRoom(context *gin.Context) {
 	context.IndentedJSON(http.StatusOK, room)
 }
 
+// @Security BearerAuth
 // @Summary create room
 // @Tags room
 // @Produce json
@@ -92,6 +95,7 @@ func (roomController *roomController) CreateRoom(context *gin.Context) {
 	context.IndentedJSON(http.StatusCreated, createdRoom)
 }
 
+// @Security BearerAuth
 // @Summary update room
 // @Tags room
 // @Produce json
@@ -120,11 +124,13 @@ func (roomController *roomController) UpdateRoom(context *gin.Context) {
 		panic(validateError)
 	}
 
-	createdRoom := roomController.roomService.UpdateRoom(roomID, updateRoomDTO)
+	claims := roomController.jwtService.GetClaims(context.GetHeader("Authorization"))
+	createdRoom := roomController.roomService.UpdateRoom(roomID, claims["id"].(string), updateRoomDTO)
 
 	context.IndentedJSON(http.StatusCreated, createdRoom)
 }
 
+// @Security BearerAuth
 // @Summary update room pictures
 // @Tags room
 // @Produce json
@@ -158,7 +164,8 @@ func (roomController *roomController) UpdateRoomPictures(context *gin.Context) {
 		return
 	}
 
-	if !roomController.roomService.CanUpdateRoom(roomID, roomPicturesDTO.DormOwnerID) {
+	claims := roomController.jwtService.GetClaims(context.GetHeader("Authorization"))
+	if !roomController.roomService.CanUpdateRoom(roomID, claims["id"].(string)) {
 		panic(errortype.ErrInvalidDormOwner)
 	}
 
@@ -181,20 +188,20 @@ func (roomController *roomController) UpdateRoomPictures(context *gin.Context) {
 	context.IndentedJSON(http.StatusOK, updatedRoom)
 }
 
+// @Security BearerAuth
 // @Summary delete room
 // @Tags room
 // @Produce json
 // @Param id path int true "Room ID"
-// @Param dorm-owner-id query int true "Dorm Owner ID"
 // @Success 201 {object} model.Room "OK"
 // @Router /room/{id} [delete]
 func (roomController *roomController) DeleteRoom(context *gin.Context) {
 	defer utils.RecoverInvalidInput(context)
 
 	roomID := context.Param("id")
-	dormOwnerID := context.Query("dorm-owner-id")
 
-	roomController.roomService.DeleteRoom(roomID, dormOwnerID)
+	claims := roomController.jwtService.GetClaims(context.GetHeader("Authorization"))
+	roomController.roomService.DeleteRoom(roomID, claims["id"].(string))
 
 	context.IndentedJSON(http.StatusOK, "")
 }

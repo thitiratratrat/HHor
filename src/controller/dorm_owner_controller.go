@@ -32,6 +32,7 @@ type dormOwnerController struct {
 	fieldValidator   fieldvalidator.FieldValidator
 }
 
+// @Security BearerAuth
 // @Summary get dorm owner profile
 // @Tags dorm-owner
 // @Produce json
@@ -39,13 +40,14 @@ type dormOwnerController struct {
 // @Success 200 {object} model.DormOwner "OK"
 // @Router /dorm-owner/{id} [get]
 func (dormOwnerController *dormOwnerController) GetDormOwner(context *gin.Context) {
-	dormOwnerID := context.Param("id")
+	dormOwnerID := context.Param("userid")
 
 	dormOwner := dormOwnerController.dormOwnerService.GetDormOwner(dormOwnerID)
 
 	context.IndentedJSON(http.StatusOK, dormOwner)
 }
 
+// @Security BearerAuth
 // @Summary update dorm owner
 // @Tags dorm-owner
 // @Produce json
@@ -56,7 +58,7 @@ func (dormOwnerController *dormOwnerController) GetDormOwner(context *gin.Contex
 func (dormOwnerController *dormOwnerController) UpdateDormOwner(context *gin.Context) {
 	defer utils.RecoverInvalidInput(context)
 
-	dormOwnerID := context.Param("id")
+	dormOwnerID := context.Param("userid")
 	var updateDormOwnerDTO dto.UpdateDormOwnerDTO
 	validate := validator.New()
 	_ = validate.RegisterValidation("phone", func(fl validator.FieldLevel) bool {
@@ -79,6 +81,7 @@ func (dormOwnerController *dormOwnerController) UpdateDormOwner(context *gin.Con
 	context.IndentedJSON(http.StatusOK, dormOwner)
 }
 
+// @Security BearerAuth
 // @Summary update bank account
 // @Tags dorm-owner
 // @Produce json
@@ -89,7 +92,7 @@ func (dormOwnerController *dormOwnerController) UpdateDormOwner(context *gin.Con
 func (dormOwnerController *dormOwnerController) UpdateBankAccount(context *gin.Context) {
 	defer utils.RecoverInvalidInput(context)
 
-	dormOwnerID := context.Param("id")
+	dormOwnerID := context.Param("userid")
 	var updateBankAccountDTO dto.UpdateBankAccountDTO
 	validate := validator.New()
 	bindErr := context.ShouldBind(&updateBankAccountDTO)
@@ -109,6 +112,7 @@ func (dormOwnerController *dormOwnerController) UpdateBankAccount(context *gin.C
 	context.IndentedJSON(http.StatusOK, dormOwner)
 }
 
+// @Security BearerAuth
 // @Summary delete bank account
 // @Tags dorm-owner
 // @Produce json
@@ -118,12 +122,13 @@ func (dormOwnerController *dormOwnerController) UpdateBankAccount(context *gin.C
 func (dormOwnerController *dormOwnerController) DeleteBankAccount(context *gin.Context) {
 	defer utils.RecoverInvalidInput(context)
 
-	dormOwnerID := context.Param("id")
+	dormOwnerID := context.Param("userid")
 	dormOwner := dormOwnerController.dormOwnerService.DeleteBankAccount(dormOwnerID)
 
 	context.IndentedJSON(http.StatusOK, dormOwner)
 }
 
+// @Security BearerAuth
 // @Summary upload picture
 // @Tags dorm-owner
 // @Accept  multipart/form-data
@@ -138,7 +143,7 @@ func (dormOwnerController *dormOwnerController) DeleteBankAccount(context *gin.C
 func (dormOwnerController *dormOwnerController) UploadPicture(context *gin.Context) {
 	defer utils.RecoverInvalidInput(context)
 
-	dormOwnerID := context.Param("id")
+	dormOwnerID := context.Param("userid")
 	var dormOwnerPictureDTO dto.DormOwnerPictureDTO
 	validate := validator.New()
 	bindErr := context.ShouldBind(&dormOwnerPictureDTO)

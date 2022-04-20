@@ -10,5 +10,4 @@ type UpdateDormDTO struct {
 	Description string   `json:"description"`
 	Zone        string   `json:"zone"  validate:"required,dormzone"`
 	Facilities  []string `json:"facilities" validate:"required,min=1,dormfacilities"`
-	DormOwnerID string   `json:"owner_id" validate:"required,numeric"`
 }

@@ -5,21 +5,25 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/thitiratratrat/hhor/src/controller"
+	"github.com/thitiratratrat/hhor/src/middleware"
+	"github.com/thitiratratrat/hhor/src/service"
 )
 
-const roommateRequestRoute = "roommate-request"
+const roommateReqBasePath = "roommate-request"
 
 func SetRoommateRequestRoutes(router *gin.Engine, roommateRequestController controller.RoommateRequestController) {
-	router.GET(fmt.Sprintf("%s/room", roommateRequestRoute), roommateRequestController.GetRoommateRequestsWithRoom)
-	router.GET(fmt.Sprintf("%s/no-room", roommateRequestRoute), roommateRequestController.GetRoommateRequestsNoRoom)
-	router.POST(fmt.Sprintf("%s/no-room/:id", roommateRequestRoute), roommateRequestController.CreateRoommateRequestNoRoom)
-	router.POST(fmt.Sprintf("%s/registered-dorm/:id", roommateRequestRoute), roommateRequestController.CreateRoommateRequestRegDorm)
-	router.POST(fmt.Sprintf("%s/unregistered-dorm/:id", roommateRequestRoute), roommateRequestController.CreateRoommateRequestUnregDorm)
-	router.PUT(fmt.Sprintf("%s/unregistered-dorm/:id/picture", roommateRequestRoute), roommateRequestController.UpdateRoommateRequestUnregDormPictures)
-	router.PUT(fmt.Sprintf("%s/registered-dorm/:id/picture", roommateRequestRoute), roommateRequestController.UpdateRoommateRequestRegDormPictures)
-	router.PUT(fmt.Sprintf("%s/registered-dorm/:id", roommateRequestRoute), roommateRequestController.UpdateRoommateRequestRegDorm)
-	router.PUT(fmt.Sprintf("%s/unregistered-dorm/:id", roommateRequestRoute), roommateRequestController.UpdateRoommateRequestUnregDorm)
-	router.PUT(fmt.Sprintf("%s/no-room/:id", roommateRequestRoute), roommateRequestController.UpdateRoommateRequestNoRoom)
-	router.GET(fmt.Sprintf("%s/:id", roommateRequestRoute), roommateRequestController.GetRoommateRequest)
-	router.DELETE(fmt.Sprintf("%s/:id", roommateRequestRoute), roommateRequestController.DeleteRoommateRequest)
+	roommateReqGroup := router.Group(fmt.Sprintf("/%s", roommateReqBasePath)).Use(middleware.AuthorizeJWT(service.Student))
+
+	roommateReqGroup.GET("/room", roommateRequestController.GetRoommateRequestsWithRoom)
+	roommateReqGroup.GET("/no-room", roommateRequestController.GetRoommateRequestsNoRoom)
+	roommateReqGroup.POST("/no-room/:userid", roommateRequestController.CreateRoommateRequestNoRoom)
+	roommateReqGroup.POST("/registered-dorm/:userid", roommateRequestController.CreateRoommateRequestRegDorm)
+	roommateReqGroup.POST("/unregistered-dorm/:userid", roommateRequestController.CreateRoommateRequestUnregDorm)
+	roommateReqGroup.PUT("/unregistered-dorm/:userid/picture", roommateRequestController.UpdateRoommateRequestUnregDormPictures)
+	roommateReqGroup.PUT("/registered-dorm/:userid/picture", roommateRequestController.UpdateRoommateRequestRegDormPictures)
+	roommateReqGroup.PUT("/registered-dorm/:userid", roommateRequestController.UpdateRoommateRequestRegDorm)
+	roommateReqGroup.PUT("/unregistered-dorm/:userid", roommateRequestController.UpdateRoommateRequestUnregDorm)
+	roommateReqGroup.PUT("/no-room/:userid", roommateRequestController.UpdateRoommateRequestNoRoom)
+	roommateReqGroup.GET("/:id", roommateRequestController.GetRoommateRequest)
+	roommateReqGroup.DELETE("/:userid", roommateRequestController.DeleteRoommateRequest)
 }

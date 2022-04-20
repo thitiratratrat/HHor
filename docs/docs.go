@@ -47,7 +47,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.DormOwner"
+                            "$ref": "#/definitions/dto.LoginDTO"
                         }
                     },
                     "400": {
@@ -143,7 +143,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Student"
+                            "$ref": "#/definitions/dto.LoginDTO"
                         }
                     },
                     "400": {
@@ -307,6 +307,11 @@ var doc = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -337,6 +342,11 @@ var doc = `{
         },
         "/dorm-owner/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -363,6 +373,11 @@ var doc = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -399,6 +414,11 @@ var doc = `{
         },
         "/dorm-owner/{id}/bank-account": {
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -433,6 +453,11 @@ var doc = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -461,6 +486,11 @@ var doc = `{
         },
         "/dorm-owner/{id}/picture": {
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -641,6 +671,11 @@ var doc = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -676,6 +711,11 @@ var doc = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -690,13 +730,6 @@ var doc = `{
                         "name": "id",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Dorm Owner ID",
-                        "name": "dorm-owner-id",
-                        "in": "query",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -708,6 +741,11 @@ var doc = `{
         },
         "/dorm/{id}/picture": {
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -724,12 +762,6 @@ var doc = `{
                         "description": "Dorm ID",
                         "name": "id",
                         "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "name": "owner_id",
-                        "in": "formData",
                         "required": true
                     },
                     {
@@ -751,6 +783,11 @@ var doc = `{
         },
         "/room": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -829,6 +866,11 @@ var doc = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -864,6 +906,11 @@ var doc = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -877,13 +924,6 @@ var doc = `{
                         "description": "Room ID",
                         "name": "id",
                         "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Dorm Owner ID",
-                        "name": "dorm-owner-id",
-                        "in": "query",
                         "required": true
                     }
                 ],
@@ -899,6 +939,11 @@ var doc = `{
         },
         "/room/{id}/picture": {
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -915,12 +960,6 @@ var doc = `{
                         "description": "Room ID",
                         "name": "id",
                         "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "name": "owner_id",
-                        "in": "formData",
                         "required": true
                     },
                     {
@@ -942,6 +981,11 @@ var doc = `{
         },
         "/roommate-request/no-room": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -1036,6 +1080,11 @@ var doc = `{
         },
         "/roommate-request/no-room/{id}": {
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -1071,6 +1120,11 @@ var doc = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -1108,6 +1162,11 @@ var doc = `{
         },
         "/roommate-request/registered-dorm/{id}": {
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -1146,6 +1205,11 @@ var doc = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -1186,6 +1250,11 @@ var doc = `{
         },
         "/roommate-request/registered-dorm/{id}/picture": {
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -1223,6 +1292,11 @@ var doc = `{
         },
         "/roommate-request/room": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -1342,6 +1416,11 @@ var doc = `{
         },
         "/roommate-request/unregistered-dorm/{id}": {
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -1380,6 +1459,11 @@ var doc = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -1420,6 +1504,11 @@ var doc = `{
         },
         "/roommate-request/unregistered-dorm/{id}/picture": {
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -1457,6 +1546,11 @@ var doc = `{
         },
         "/roommate-request/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -1486,6 +1580,11 @@ var doc = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -1588,6 +1687,11 @@ var doc = `{
         },
         "/student/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -1632,6 +1736,11 @@ var doc = `{
                 }
             },
             "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -1668,6 +1777,11 @@ var doc = `{
         },
         "/student/{id}/habit": {
             "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -1704,6 +1818,11 @@ var doc = `{
         },
         "/student/{id}/picture": {
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -1765,13 +1884,18 @@ var doc = `{
         },
         "/student/{id}/preference": {
             "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "student"
                 ],
-                "summary": "update student detail",
+                "summary": "update student preference",
                 "parameters": [
                     {
                         "type": "string",
@@ -1892,6 +2016,17 @@ var doc = `{
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.LoginDTO": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "token": {
                     "type": "string"
                 }
             }
@@ -2254,7 +2389,6 @@ var doc = `{
                 "lat",
                 "long",
                 "name",
-                "owner_id",
                 "type",
                 "zone"
             ],
@@ -2278,9 +2412,6 @@ var doc = `{
                     "type": "number"
                 },
                 "name": {
-                    "type": "string"
-                },
-                "owner_id": {
                     "type": "string"
                 },
                 "rules": {
@@ -2319,6 +2450,13 @@ var doc = `{
         },
         "dto.UpdateHabitDTO": {
             "type": "object",
+            "required": [
+                "pet_habit_id",
+                "room_care_habit_id",
+                "sleep_habit_id",
+                "smoke_habit_id",
+                "study_habit_id"
+            ],
             "properties": {
                 "pet_habit_id": {
                     "type": "string"
@@ -2368,7 +2506,6 @@ var doc = `{
             "required": [
                 "available_from",
                 "capacity",
-                "dorm_owner_id",
                 "facilities",
                 "name",
                 "price",
@@ -2382,9 +2519,6 @@ var doc = `{
                     "type": "integer"
                 },
                 "description": {
-                    "type": "string"
-                },
-                "dorm_owner_id": {
                     "type": "string"
                 },
                 "facilities": {
@@ -2935,6 +3069,13 @@ var doc = `{
                     "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`

@@ -27,15 +27,17 @@ type DormController interface {
 	DeleteDorm(context *gin.Context)
 }
 
-func DormControllerHandler(dormService service.DormService, fieldValidator fieldvalidator.FieldValidator) DormController {
+func DormControllerHandler(dormService service.DormService, jwtService service.JWTService, fieldValidator fieldvalidator.FieldValidator) DormController {
 	return &dormController{
 		dormService:    dormService,
 		fieldValidator: fieldValidator,
+		jwtService:     jwtService,
 	}
 }
 
 type dormController struct {
 	dormService    service.DormService
+	jwtService     service.JWTService
 	fieldValidator fieldvalidator.FieldValidator
 }
 
@@ -141,6 +143,7 @@ func (dormController *dormController) GetDormZones(context *gin.Context) {
 	context.IndentedJSON(http.StatusOK, dormZones)
 }
 
+// @Security BearerAuth
 // @Summary create dorm
 // @Tags dorm
 // @Produce json
@@ -175,6 +178,7 @@ func (dormController *dormController) CreateDorm(context *gin.Context) {
 	context.IndentedJSON(http.StatusCreated, createdDorm)
 }
 
+// @Security BearerAuth
 // @Summary update dorm
 // @Tags dorm
 // @Produce json
@@ -211,11 +215,13 @@ func (dormController *dormController) UpdateDorm(context *gin.Context) {
 		panic(validateError)
 	}
 
-	updatedDorm := dormController.dormService.UpdateDorm(dormID, updateDormDTO)
+	claims := dormController.jwtService.GetClaims(context.GetHeader("Authorization"))
+	updatedDorm := dormController.dormService.UpdateDorm(dormID, claims["id"].(string), updateDormDTO)
 
 	context.IndentedJSON(http.StatusOK, updatedDorm)
 }
 
+// @Security BearerAuth
 // @Summary update dorm pictures
 // @Tags dorm
 // @Produce json
@@ -249,7 +255,8 @@ func (dormController *dormController) UpdateDormPictures(context *gin.Context) {
 		return
 	}
 
-	if !dormController.dormService.CanUpdateDorm(dormPicturesDTO.DormOwnerID, dormID) {
+	claims := dormController.jwtService.GetClaims(context.GetHeader("Authorization"))
+	if !dormController.dormService.CanUpdateDorm(claims["id"].(string), dormID) {
 		panic(errortype.ErrInvalidDormOwner)
 	}
 
@@ -272,20 +279,20 @@ func (dormController *dormController) UpdateDormPictures(context *gin.Context) {
 	context.IndentedJSON(http.StatusOK, updatedDorm)
 }
 
+// @Security BearerAuth
 // @Summary delete dorm
 // @Tags dorm
 // @Produce json
 // @Param id path int true "Dorm ID"
-// @Param dorm-owner-id query int true "Dorm Owner ID"
 // @Success 200 "OK"
 // @Router /dorm/{id} [delete]
 func (dormController *dormController) DeleteDorm(context *gin.Context) {
 	defer utils.RecoverInvalidInput(context)
 
 	dormID := context.Param("id")
-	dormOwnerID := context.Query("dorm-owner-id")
+	claims := dormController.jwtService.GetClaims(context.GetHeader("Authorization"))
 
-	dormController.dormService.DeleteDorm(dormID, dormOwnerID)
+	dormController.dormService.DeleteDorm(dormID, claims["id"].(string))
 
 	context.IndentedJSON(http.StatusOK, "")
 }

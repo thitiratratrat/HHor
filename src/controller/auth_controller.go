@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -18,15 +19,17 @@ type AuthController interface {
 	LoginDormOwner(context *gin.Context)
 }
 
-func AuthControllerHandler(authService service.AuthService, fieldValidator fieldvalidator.FieldValidator) AuthController {
+func AuthControllerHandler(authService service.AuthService, jwtService service.JWTService, fieldValidator fieldvalidator.FieldValidator) AuthController {
 	return &authController{
 		authService:    authService,
+		jwtService:     jwtService,
 		fieldValidator: fieldValidator,
 	}
 }
 
 type authController struct {
 	authService    service.AuthService
+	jwtService     service.JWTService
 	fieldValidator fieldvalidator.FieldValidator
 }
 
@@ -101,7 +104,7 @@ func (authController *authController) RegisterDormOwner(context *gin.Context) {
 // @Tags auth
 // @Produce json
 // @Param data body dto.LoginCredentialsDTO true "login credentials"
-// @Success 200 {object} model.Student "OK"
+// @Success 200 {object} dto.LoginDTO "OK"
 // @Failure 400,404,401,500  {object} dto.ErrorResponse
 // @Router /auth/student/login [post]
 func (authController *authController) LoginStudent(context *gin.Context) {
@@ -123,15 +126,19 @@ func (authController *authController) LoginStudent(context *gin.Context) {
 	}
 
 	student := authController.authService.LoginStudent(loginCredentialsDTO)
+	token := authController.jwtService.GenerateToken(student.ID, service.Student)
 
-	context.IndentedJSON(http.StatusOK, student)
+	context.IndentedJSON(http.StatusOK, dto.LoginDTO{
+		ID:    student.ID,
+		Token: token,
+	})
 }
 
 // @Summary login dorm owner
 // @Tags auth
 // @Produce json
 // @Param data body dto.LoginCredentialsDTO true "login credentials"
-// @Success 200 {object} model.DormOwner "OK"
+// @Success 200 {object} dto.LoginDTO "OK"
 // @Failure 400,404,401,500  {object} dto.ErrorResponse
 // @Router /auth/dorm-owner/login [post]
 func (authController *authController) LoginDormOwner(context *gin.Context) {
@@ -153,6 +160,11 @@ func (authController *authController) LoginDormOwner(context *gin.Context) {
 	}
 
 	dormOwner := authController.authService.LoginDormOwner(loginCredentialsDTO)
+	dormOwnerID := strconv.FormatUint(uint64(dormOwner.ID), 10)
+	token := authController.jwtService.GenerateToken(dormOwnerID, service.DormOwner)
 
-	context.IndentedJSON(http.StatusOK, dormOwner)
+	context.IndentedJSON(http.StatusOK, dto.LoginDTO{
+		ID:    dormOwnerID,
+		Token: token,
+	})
 }

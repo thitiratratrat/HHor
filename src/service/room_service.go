@@ -14,7 +14,7 @@ type RoomService interface {
 	GetAllRoomFacilities() []string
 	GetRoom(id string) model.Room
 	CreateRoom(registerRoomDTO dto.RegisterRoomDTO) model.Room
-	UpdateRoom(id string, updateRoomDTO dto.UpdateRoomDTO) model.Room
+	UpdateRoom(id string, dormOwnerID string, updateRoomDTO dto.UpdateRoomDTO) model.Room
 	UpdateRoomPictures(id string, pictures []string) model.Room
 	DeleteRoom(id string, dormOwnerID string)
 	CanUpdateRoom(roomID string, dormOwnerID string) bool
@@ -63,8 +63,8 @@ func (roomService *roomService) CreateRoom(registerRoomDTO dto.RegisterRoomDTO) 
 	return createdRoom
 }
 
-func (roomService *roomService) UpdateRoom(id string, updateRoomDTO dto.UpdateRoomDTO) model.Room {
-	if !roomService.CanUpdateRoom(id, updateRoomDTO.DormOwnerID) {
+func (roomService *roomService) UpdateRoom(id string, dormOwnerID string, updateRoomDTO dto.UpdateRoomDTO) model.Room {
+	if !roomService.CanUpdateRoom(id, dormOwnerID) {
 		panic(errortype.ErrInvalidDormOwner)
 	}
 

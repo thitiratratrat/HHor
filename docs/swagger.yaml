@@ -61,6 +61,13 @@ definitions:
     - email
     - password
     type: object
+  dto.LoginDTO:
+    properties:
+      id:
+        type: string
+      token:
+        type: string
+    type: object
   dto.RegisterDormDTO:
     properties:
       address:
@@ -320,8 +327,6 @@ definitions:
         type: number
       name:
         type: string
-      owner_id:
-        type: string
       rules:
         type: string
       type:
@@ -334,7 +339,6 @@ definitions:
     - lat
     - long
     - name
-    - owner_id
     - type
     - zone
     type: object
@@ -366,6 +370,12 @@ definitions:
         type: string
       study_habit_id:
         type: string
+    required:
+    - pet_habit_id
+    - room_care_habit_id
+    - sleep_habit_id
+    - smoke_habit_id
+    - study_habit_id
     type: object
   dto.UpdatePreferenceDTO:
     properties:
@@ -392,8 +402,6 @@ definitions:
         type: integer
       description:
         type: string
-      dorm_owner_id:
-        type: string
       facilities:
         items:
           type: string
@@ -407,7 +415,6 @@ definitions:
     required:
     - available_from
     - capacity
-    - dorm_owner_id
     - facilities
     - name
     - price
@@ -777,7 +784,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.DormOwner'
+            $ref: '#/definitions/dto.LoginDTO'
         "400":
           description: Bad Request
           schema:
@@ -839,7 +846,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.Student'
+            $ref: '#/definitions/dto.LoginDTO'
         "400":
           description: Bad Request
           schema:
@@ -960,6 +967,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.Dorm'
+      security:
+      - BearerAuth: []
       summary: create dorm
       tags:
       - dorm
@@ -978,6 +987,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.DormOwner'
+      security:
+      - BearerAuth: []
       summary: get dorm owner profile
       tags:
       - dorm-owner
@@ -1000,6 +1011,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.DormOwner'
+      security:
+      - BearerAuth: []
       summary: update dorm owner
       tags:
       - dorm-owner
@@ -1018,6 +1031,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.DormOwner'
+      security:
+      - BearerAuth: []
       summary: delete bank account
       tags:
       - dorm-owner
@@ -1040,6 +1055,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.DormOwner'
+      security:
+      - BearerAuth: []
       summary: update bank account
       tags:
       - dorm-owner
@@ -1080,6 +1097,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
       summary: upload picture
       tags:
       - dorm-owner
@@ -1091,16 +1110,13 @@ paths:
         name: id
         required: true
         type: integer
-      - description: Dorm Owner ID
-        in: query
-        name: dorm-owner-id
-        required: true
-        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
+      security:
+      - BearerAuth: []
       summary: delete dorm
       tags:
       - dorm
@@ -1153,6 +1169,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.Dorm'
+      security:
+      - BearerAuth: []
       summary: update dorm
       tags:
       - dorm
@@ -1166,10 +1184,6 @@ paths:
         name: id
         required: true
         type: integer
-      - in: formData
-        name: owner_id
-        required: true
-        type: string
       - description: upload multiple room pictures,test this out in postman
         in: formData
         name: pictures
@@ -1181,6 +1195,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.RoommateRequestWithUnregisteredDorm'
+      security:
+      - BearerAuth: []
       summary: update dorm pictures
       tags:
       - dorm
@@ -1248,6 +1264,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.Room'
+      security:
+      - BearerAuth: []
       summary: create room
       tags:
       - room
@@ -1259,11 +1277,6 @@ paths:
         name: id
         required: true
         type: integer
-      - description: Dorm Owner ID
-        in: query
-        name: dorm-owner-id
-        required: true
-        type: integer
       produces:
       - application/json
       responses:
@@ -1271,6 +1284,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.Room'
+      security:
+      - BearerAuth: []
       summary: delete room
       tags:
       - room
@@ -1311,6 +1326,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.Room'
+      security:
+      - BearerAuth: []
       summary: update room
       tags:
       - room
@@ -1324,10 +1341,6 @@ paths:
         name: id
         required: true
         type: integer
-      - in: formData
-        name: owner_id
-        required: true
-        type: string
       - description: upload multiple room pictures,test this out in postman
         in: formData
         name: pictures
@@ -1339,6 +1352,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.RoommateRequestWithUnregisteredDorm'
+      security:
+      - BearerAuth: []
       summary: update room pictures
       tags:
       - room
@@ -1369,6 +1384,8 @@ paths:
       responses:
         "200":
           description: OK
+      security:
+      - BearerAuth: []
       summary: delete roommate request
       tags:
       - roommate-request
@@ -1388,6 +1405,8 @@ paths:
             items:
               $ref: '#/definitions/dto.RoommateRequestDTO'
             type: array
+      security:
+      - BearerAuth: []
       summary: get roommate request
       tags:
       - roommate-request
@@ -1448,6 +1467,8 @@ paths:
             items:
               $ref: '#/definitions/model.RoommateRequestWithNoRoom'
             type: array
+      security:
+      - BearerAuth: []
       summary: get roommate requests with no room
       tags:
       - roommate-request
@@ -1472,6 +1493,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.RoommateRequestWithNoRoom'
+      security:
+      - BearerAuth: []
       summary: create roommate request with no room
       tags:
       - roommate-request
@@ -1495,6 +1518,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.RoommateRequestWithNoRoom'
+      security:
+      - BearerAuth: []
       summary: update roommate request with no room
       tags:
       - roommate-request
@@ -1521,6 +1546,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.RoommateRequestWithRegisteredDorm'
+      security:
+      - BearerAuth: []
       summary: create roommate request with reg dorm
       tags:
       - roommate-request
@@ -1546,6 +1573,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.RoommateRequestWithRegisteredDorm'
+      security:
+      - BearerAuth: []
       summary: update roommate request reg dorm
       tags:
       - roommate-request
@@ -1570,6 +1599,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.RoommateRequestWithUnregisteredDorm'
+      security:
+      - BearerAuth: []
       summary: update roommate request with reg dorm pictures
       tags:
       - roommate-request
@@ -1647,6 +1678,8 @@ paths:
             items:
               $ref: '#/definitions/dto.RoommateRequestWithRoomDTO'
             type: array
+      security:
+      - BearerAuth: []
       summary: get roommate requests with room
       tags:
       - roommate-request
@@ -1673,6 +1706,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.RoommateRequestWithUnregisteredDorm'
+      security:
+      - BearerAuth: []
       summary: create roommate request with unreg dorm
       tags:
       - roommate-request
@@ -1698,6 +1733,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.RoommateRequestWithUnregisteredDorm'
+      security:
+      - BearerAuth: []
       summary: update roommate request with unreg dorm
       tags:
       - roommate-request
@@ -1722,6 +1759,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.RoommateRequestWithUnregisteredDorm'
+      security:
+      - BearerAuth: []
       summary: update roommate request with unreg dorm pictures
       tags:
       - roommate-request
@@ -1752,6 +1791,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
       summary: get student profile
       tags:
       - student
@@ -1774,6 +1815,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.Student'
+      security:
+      - BearerAuth: []
       summary: update student detail
       tags:
       - student
@@ -1797,6 +1840,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.Student'
+      security:
+      - BearerAuth: []
       summary: update student habit
       tags:
       - student
@@ -1837,6 +1882,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
       summary: upload profile picture
       tags:
       - student
@@ -1860,7 +1907,9 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.Student'
-      summary: update student detail
+      security:
+      - BearerAuth: []
+      summary: update student preference
       tags:
       - student
   /student/faculty:
@@ -1913,4 +1962,9 @@ paths:
       summary: get habits
       tags:
       - student
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

@@ -37,6 +37,7 @@ type studentController struct {
 	fieldValidator fieldvalidator.FieldValidator
 }
 
+// @Security BearerAuth
 // @Summary update student detail
 // @Tags student
 // @Produce json
@@ -47,7 +48,7 @@ type studentController struct {
 func (studentController *studentController) UpdateStudent(context *gin.Context) {
 	defer utils.RecoverInvalidInput(context)
 
-	id := context.Param("id")
+	id := context.Param("userid")
 	var studentUpdateDTO dto.UpdateStudentDTO
 	validate := validator.New()
 	_ = validate.RegisterValidation("faculty", func(fl validator.FieldLevel) bool {
@@ -71,6 +72,7 @@ func (studentController *studentController) UpdateStudent(context *gin.Context) 
 	context.IndentedJSON(http.StatusOK, updatedStudent)
 }
 
+// @Security BearerAuth
 // @Summary update student habit
 // @Tags student
 // @Produce json
@@ -81,7 +83,7 @@ func (studentController *studentController) UpdateStudent(context *gin.Context) 
 func (studentController *studentController) UpdateHabit(context *gin.Context) {
 	defer utils.RecoverInvalidInput(context)
 
-	id := context.Param("id")
+	id := context.Param("userid")
 	var studentUpdateDTO dto.UpdateHabitDTO
 	validate := validator.New()
 	bindErr := context.ShouldBind(&studentUpdateDTO)
@@ -102,6 +104,7 @@ func (studentController *studentController) UpdateHabit(context *gin.Context) {
 	context.IndentedJSON(http.StatusOK, updatedStudent)
 }
 
+// @Security BearerAuth
 // @Summary update student preference
 // @Tags student
 // @Produce json
@@ -112,7 +115,7 @@ func (studentController *studentController) UpdateHabit(context *gin.Context) {
 func (studentController *studentController) UpdatePreference(context *gin.Context) {
 	defer utils.RecoverInvalidInput(context)
 
-	id := context.Param("id")
+	id := context.Param("userid")
 	var studentUpdateDTO dto.UpdatePreferenceDTO
 	validate := validator.New()
 	bindErr := context.ShouldBind(&studentUpdateDTO)
@@ -133,6 +136,7 @@ func (studentController *studentController) UpdatePreference(context *gin.Contex
 	context.IndentedJSON(http.StatusOK, updatedStudent)
 }
 
+// @Security BearerAuth
 // @Summary upload profile picture
 // @Tags student
 // @Accept  multipart/form-data
@@ -147,7 +151,7 @@ func (studentController *studentController) UpdatePreference(context *gin.Contex
 func (studentController *studentController) UploadPicture(context *gin.Context) {
 	defer utils.RecoverInvalidInput(context)
 
-	id := context.Param("id")
+	id := context.Param("userid")
 	var studentPictureDTO dto.StudentPictureDTO
 	validate := validator.New()
 	bindErr := context.ShouldBind(&studentPictureDTO)
@@ -198,6 +202,7 @@ func (studentController *studentController) UploadPicture(context *gin.Context) 
 	context.IndentedJSON(http.StatusOK, updatedStudent)
 }
 
+// @Security BearerAuth
 // @Summary get student profile
 // @Tags student
 // @Produce json
@@ -208,7 +213,7 @@ func (studentController *studentController) UploadPicture(context *gin.Context) 
 func (studentController *studentController) GetStudent(context *gin.Context) {
 	defer utils.RecoverInvalidInput(context)
 
-	id := context.Param("id")
+	id := context.Param("userid")
 	student := studentController.studentService.GetStudent(id)
 
 	context.IndentedJSON(http.StatusOK, student)

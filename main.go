@@ -22,6 +22,9 @@ var dbConnector utils.DBConnector
 var controllers router.Controllers
 
 func setUpSwagger() {
+	// @securityDefinitions.apikey BearerAuth
+	// @in header
+	// @name Authorization
 	docs.SwaggerInfo.Title = "HHor API"
 	docs.SwaggerInfo.Description = "HHor is a mobile application that helps students to find nearby dormitories around the university and roommates by allowing the students to search for interested dorms, view dorm’s details, chat with dorm owners, and reserve the room."
 	docs.SwaggerInfo.Version = "1.0"
@@ -61,6 +64,7 @@ func init() {
 
 	encryptor := utils.EncryptorHandler()
 
+	jwtService := service.JWTServiceHandler()
 	dormService := service.DormServiceHandler(dormRepository, roomRepository, dormOwnerRepository)
 	roomService := service.RoomServiceHandler(dormRepository, roomRepository)
 	authService := service.AuthServiceHandler(studentRepository, dormOwnerRepository)
@@ -70,9 +74,9 @@ func init() {
 
 	fieldValidator := fieldvalidator.FieldValidatorHandler(dormService, roomService, studentService)
 
-	dormController := controller.DormControllerHandler(dormService, fieldValidator)
-	roomController := controller.RoomControllerHandler(roomService, fieldValidator)
-	authController := controller.AuthControllerHandler(authService, fieldValidator)
+	dormController := controller.DormControllerHandler(dormService, jwtService, fieldValidator)
+	roomController := controller.RoomControllerHandler(roomService, jwtService, fieldValidator)
+	authController := controller.AuthControllerHandler(authService, jwtService, fieldValidator)
 	studentController := controller.StudentControllerHandler(studentService, fieldValidator)
 	roommateRequestController := controller.RoommateRequestControllerHandler(roommateRequestService, dormService, roomService, fieldValidator)
 	dormOwnerController := controller.DormOwnerControllerHandler(dormOwnerService, fieldValidator)

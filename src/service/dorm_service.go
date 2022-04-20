@@ -17,7 +17,7 @@ type DormService interface {
 	GetAllDormFacilities() []string
 	GetDormZones() []string
 	CreateDorm(dto.RegisterDormDTO) model.Dorm
-	UpdateDorm(id string, dorm dto.UpdateDormDTO) model.Dorm
+	UpdateDorm(id string, dormOwnerID string, dorm dto.UpdateDormDTO) model.Dorm
 	UpdateDormPictures(id string, pictures []string) model.Dorm
 	DeleteDorm(id string, dormOwnerID string)
 	CanUpdateDorm(dormOwnerID string, dormID string) bool
@@ -35,6 +35,7 @@ type dormService struct {
 	dormRepository      repository.DormRepository
 	dormOwnerRepository repository.DormOwnerRepository
 	roomRepository      repository.RoomRepository
+	jwtService          JWTService
 }
 
 func (dormService *dormService) GetDorms(dormFilterDTO dto.DormFilterDTO) []dto.DormDTO {
@@ -110,8 +111,8 @@ func (dormService *dormService) CreateDorm(registerDormDTO dto.RegisterDormDTO) 
 	return createdDorm
 }
 
-func (dormService *dormService) UpdateDorm(dormId string, updateDormDTO dto.UpdateDormDTO) model.Dorm {
-	if !dormService.CanUpdateDorm(updateDormDTO.DormOwnerID, dormId) {
+func (dormService *dormService) UpdateDorm(dormId string, dormOwnerID string, updateDormDTO dto.UpdateDormDTO) model.Dorm {
+	if !dormService.CanUpdateDorm(dormOwnerID, dormId) {
 		panic(errortype.ErrInvalidDormOwner)
 	}
 

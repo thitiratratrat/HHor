@@ -46,6 +46,7 @@ type roommateRequestController struct {
 	fieldValidator         fieldvalidator.FieldValidator
 }
 
+// @Security BearerAuth
 // @Summary get roommate requests with room
 // @Tags roommate-request
 // @Produce json
@@ -90,6 +91,7 @@ func (roommateRequestController *roommateRequestController) GetRoommateRequestsW
 	context.IndentedJSON(http.StatusOK, roommateRequests)
 }
 
+// @Security BearerAuth
 // @Summary get roommate requests with no room
 // @Tags roommate-request
 // @Produce json
@@ -129,6 +131,7 @@ func (roommateRequestController *roommateRequestController) GetRoommateRequestsN
 	context.IndentedJSON(http.StatusOK, roommateRequests)
 }
 
+// @Security BearerAuth
 // @Summary get roommate request
 // @Tags roommate-request
 // @Produce json
@@ -151,6 +154,7 @@ func (roommateRequestController *roommateRequestController) GetRoommateRequest(c
 	context.IndentedJSON(http.StatusOK, roommateRequests)
 }
 
+// @Security BearerAuth
 // @Summary create roommate request with no room
 // @Tags roommate-request
 // @Produce json
@@ -161,7 +165,7 @@ func (roommateRequestController *roommateRequestController) GetRoommateRequest(c
 func (roommateRequestController *roommateRequestController) CreateRoommateRequestNoRoom(context *gin.Context) {
 	defer utils.RecoverInvalidInput(context)
 
-	studentId := context.Param("id")
+	studentId := context.Param("userid")
 	validate := validator.New()
 	_ = validate.RegisterValidation("dormzone", func(fl validator.FieldLevel) bool {
 		return roommateRequestController.fieldValidator.ValidDormZone(fl.Field().Interface().([]string))
@@ -185,6 +189,7 @@ func (roommateRequestController *roommateRequestController) CreateRoommateReques
 	context.IndentedJSON(http.StatusCreated, createdRoommateRequest)
 }
 
+// @Security BearerAuth
 // @Summary create roommate request with reg dorm
 // @Tags roommate-request
 // @Produce json
@@ -196,7 +201,7 @@ func (roommateRequestController *roommateRequestController) CreateRoommateReques
 func (roommateRequestController *roommateRequestController) CreateRoommateRequestRegDorm(context *gin.Context) {
 	defer utils.RecoverInvalidInput(context)
 
-	studentId := context.Param("id")
+	studentId := context.Param("userid")
 	validate := validator.New()
 	var roommateRequestRegDormDTO dto.RoommateRequestRegDormDTO
 	bindErr := context.ShouldBind(&roommateRequestRegDormDTO)
@@ -220,6 +225,7 @@ func (roommateRequestController *roommateRequestController) CreateRoommateReques
 	context.IndentedJSON(http.StatusCreated, createdRoommateRequest)
 }
 
+// @Security BearerAuth
 // @Summary create roommate request with unreg dorm
 // @Tags roommate-request
 // @Produce json
@@ -231,7 +237,7 @@ func (roommateRequestController *roommateRequestController) CreateRoommateReques
 func (roommateRequestController *roommateRequestController) CreateRoommateRequestUnregDorm(context *gin.Context) {
 	defer utils.RecoverInvalidInput(context)
 
-	studentId := context.Param("id")
+	studentId := context.Param("userid")
 	validate := validator.New()
 	_ = validate.RegisterValidation("dormzone", func(fl validator.FieldLevel) bool {
 		return roommateRequestController.fieldValidator.ValidDormZone([]string{fl.Field().String()})
@@ -257,6 +263,7 @@ func (roommateRequestController *roommateRequestController) CreateRoommateReques
 	context.IndentedJSON(http.StatusCreated, createdRoommateRequest)
 }
 
+// @Security BearerAuth
 // @Summary update roommate request with reg dorm pictures
 // @Tags roommate-request
 // @Produce json
@@ -269,7 +276,7 @@ func (roommateRequestController *roommateRequestController) CreateRoommateReques
 func (roommateRequestController *roommateRequestController) UpdateRoommateRequestRegDormPictures(context *gin.Context) {
 	defer utils.RecoverInvalidInput(context)
 
-	studentId := context.Param("id")
+	studentId := context.Param("userid")
 	validate := validator.New()
 
 	var roommateRequestPictureDTO dto.PicturesDTO
@@ -315,6 +322,7 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 	context.IndentedJSON(http.StatusOK, createdRoommateRequest)
 }
 
+// @Security BearerAuth
 // @Summary update roommate request with unreg dorm pictures
 // @Tags roommate-request
 // @Produce json
@@ -327,7 +335,7 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 func (roommateRequestController *roommateRequestController) UpdateRoommateRequestUnregDormPictures(context *gin.Context) {
 	defer utils.RecoverInvalidInput(context)
 
-	studentId := context.Param("id")
+	studentId := context.Param("userid")
 	validate := validator.New()
 	var roommateRequestPictureDTO dto.PicturesDTO
 	bindErr := context.ShouldBind(&roommateRequestPictureDTO)
@@ -372,6 +380,7 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 	context.IndentedJSON(http.StatusOK, createdRoommateRequest)
 }
 
+// @Security BearerAuth
 // @Summary update roommate request reg dorm
 // @Tags roommate-request
 // @Produce json
@@ -383,7 +392,7 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 func (roommateRequestController *roommateRequestController) UpdateRoommateRequestRegDorm(context *gin.Context) {
 	defer utils.RecoverInvalidInput(context)
 
-	studentId := context.Param("id")
+	studentId := context.Param("userid")
 	validate := validator.New()
 	var roommateRequestRegDormDTO dto.RoommateRequestRegDormDTO
 	bindErr := context.ShouldBind(&roommateRequestRegDormDTO)
@@ -407,6 +416,7 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 	context.IndentedJSON(http.StatusOK, createdRoommateRequest)
 }
 
+// @Security BearerAuth
 // @Summary update roommate request with unreg dorm
 // @Tags roommate-request
 // @Produce json
@@ -418,7 +428,7 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 func (roommateRequestController *roommateRequestController) UpdateRoommateRequestUnregDorm(context *gin.Context) {
 	defer utils.RecoverInvalidInput(context)
 
-	studentId := context.Param("id")
+	studentId := context.Param("userid")
 	validate := validator.New()
 	_ = validate.RegisterValidation("dormzone", func(fl validator.FieldLevel) bool {
 		return roommateRequestController.fieldValidator.ValidDormZone([]string{fl.Field().String()})
@@ -444,6 +454,7 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 	context.IndentedJSON(http.StatusOK, createdRoommateRequest)
 }
 
+// @Security BearerAuth
 // @Summary update roommate request with no room
 // @Tags roommate-request
 // @Produce json
@@ -454,7 +465,7 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 func (roommateRequestController *roommateRequestController) UpdateRoommateRequestNoRoom(context *gin.Context) {
 	defer utils.RecoverInvalidInput(context)
 
-	studentId := context.Param("id")
+	studentId := context.Param("userid")
 	validate := validator.New()
 	_ = validate.RegisterValidation("dormzone", func(fl validator.FieldLevel) bool {
 		return roommateRequestController.fieldValidator.ValidDormZone(fl.Field().Interface().([]string))
@@ -477,6 +488,7 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 	context.IndentedJSON(http.StatusOK, updatedRoommateRequest)
 }
 
+// @Security BearerAuth
 // @Summary delete roommate request
 // @Tags roommate-request
 // @Produce json
@@ -486,7 +498,7 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 func (roommateRequestController *roommateRequestController) DeleteRoommateRequest(context *gin.Context) {
 	defer utils.RecoverInvalidInput(context)
 
-	roommateRequestID := context.Param("id")
+	roommateRequestID := context.Param("userid")
 
 	if _, err := strconv.Atoi(roommateRequestID); err != nil {
 		context.IndentedJSON(http.StatusBadRequest, &dto.ErrorResponse{Message: "id is not an integer"})
