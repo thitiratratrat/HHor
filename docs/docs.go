@@ -647,7 +647,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Dorm"
+                            "$ref": "#/definitions/dto.DormDetailDTO"
                         }
                     },
                     "400": {
@@ -1932,6 +1932,85 @@ var doc = `{
                     "type": "integer"
                 },
                 "zone": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.DormDetailDTO": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "dorm_owner": {
+                    "$ref": "#/definitions/dto.DormOwnerDTO"
+                },
+                "facilities": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.AllDormFacility"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "lat": {
+                    "type": "number"
+                },
+                "long": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "nearby_locations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.NearbyLocation"
+                    }
+                },
+                "pictures": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.DormPicture"
+                    }
+                },
+                "rooms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Room"
+                    }
+                },
+                "rules": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "zone": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.DormOwnerDTO": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "firstname": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "lastname": {
+                    "type": "string"
+                },
+                "picture_url": {
                     "type": "string"
                 }
             }

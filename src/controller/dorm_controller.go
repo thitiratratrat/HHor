@@ -87,7 +87,7 @@ func (dormController *dormController) GetDorms(context *gin.Context) {
 // @Summary get dorm details from dorm id
 // @Tags dorm
 // @Produce json
-// @Success 200 {object} model.Dorm "OK"
+// @Success 200 {object} dto.DormDetailDTO "OK"
 // @Failure 400,404,500 {object} dto.ErrorResponse
 // @Param id path int true "Dorm ID"
 // @Router /dorm/{id} [get]

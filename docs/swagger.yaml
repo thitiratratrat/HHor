@@ -16,6 +16,58 @@ definitions:
       zone:
         type: string
     type: object
+  dto.DormDetailDTO:
+    properties:
+      address:
+        type: string
+      description:
+        type: string
+      dorm_owner:
+        $ref: '#/definitions/dto.DormOwnerDTO'
+      facilities:
+        items:
+          $ref: '#/definitions/model.AllDormFacility'
+        type: array
+      id:
+        type: integer
+      lat:
+        type: number
+      long:
+        type: number
+      name:
+        type: string
+      nearby_locations:
+        items:
+          $ref: '#/definitions/model.NearbyLocation'
+        type: array
+      pictures:
+        items:
+          $ref: '#/definitions/model.DormPicture'
+        type: array
+      rooms:
+        items:
+          $ref: '#/definitions/model.Room'
+        type: array
+      rules:
+        type: string
+      type:
+        type: string
+      zone:
+        type: string
+    type: object
+  dto.DormOwnerDTO:
+    properties:
+      email:
+        type: string
+      firstname:
+        type: string
+      id:
+        type: integer
+      lastname:
+        type: string
+      picture_url:
+        type: string
+    type: object
   dto.DormSuggestionDTO:
     properties:
       id:
@@ -1133,7 +1185,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.Dorm'
+            $ref: '#/definitions/dto.DormDetailDTO'
         "400":
           description: Bad Request
           schema:
