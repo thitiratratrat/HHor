@@ -74,11 +74,13 @@ func (dormService *dormService) GetDorm(dormID string) dto.DormDetailDTO {
 	return dto.DormDetailDTO{
 		Dorm: dorm,
 		DormOwner: dto.DormOwnerDTO{
-			ID:         dormOwner.ID,
-			Firstname:  dormOwner.Firstname,
-			Lastname:   dormOwner.Lastname,
-			Email:      dormOwner.Email,
-			PictureUrl: dormOwner.PictureUrl,
+			ID:          dormOwner.ID,
+			Firstname:   dormOwner.Firstname,
+			Lastname:    dormOwner.Lastname,
+			Email:       dormOwner.Email,
+			PictureUrl:  dormOwner.PictureUrl,
+			PhoneNumber: dormOwner.PhoneNumber,
+			LineID:      dormOwner.LineID,
 		},
 	}
 }

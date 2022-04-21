@@ -8,9 +8,11 @@ type DormDetailDTO struct {
 }
 
 type DormOwnerDTO struct {
-	ID         uint    `json:"id"`
-	Firstname  string  `json:"firstname"`
-	Lastname   string  `json:"lastname"`
-	Email      string  `json:"email"`
-	PictureUrl *string `json:"picture_url"`
+	ID          uint    `json:"id"`
+	Firstname   string  `json:"firstname"`
+	Lastname    string  `json:"lastname"`
+	Email       string  `json:"email"`
+	PictureUrl  *string `json:"picture_url"`
+	LineID      string  `json:"line_id"`
+	PhoneNumber string  `json:"phone_number"`
 }
