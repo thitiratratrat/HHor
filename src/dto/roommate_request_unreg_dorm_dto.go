@@ -9,4 +9,6 @@ type RoommateRequestUnregDormDTO struct {
 	RoomFacilities    []string `json:"room_facilities" validate:"required,roomfacilities"`
 	NumberOfRoommates int      `json:"number_of_roommates" validate:"required,gt=0"`
 	SharedRoomPrice   int      `json:"shared_room_price" validate:"required,gt=0"`
+	Long              float64  `json:"long" validate:"required,longitude"`
+	Lat               float64  `json:"lat"  validate:"required,latitude"`
 }

@@ -13,4 +13,6 @@ type RoommateRequestWithUnregisteredDorm struct {
 	NumberOfRoommates int                                      `json:"number_of_roommates"`
 	SharedRoomPrice   int                                      `json:"shared_room_price"`
 	RoomPictures      []RoommateRequestUnregisteredDormPicture `json:"room_pictures"`
+	Longitude         float64                                  `gorm:"type:decimal(9,6);" json:"long"`
+	Latitude          float64                                  `gorm:"type:decimal(8,6);" json:"lat"`
 }

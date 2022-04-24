@@ -75,6 +75,8 @@ func (roommateRequestService *roommateRequestService) GetRoommateRequest(id stri
 		roommateRequest.Dorm = &dto.Dorm{
 			Name: unregDormReq.DormName,
 			Zone: unregDormReq.DormZoneName,
+			Long: &unregDormReq.Longitude,
+			Lat:  &unregDormReq.Latitude,
 		}
 		roommateRequest.Room = &dto.Room{
 			Description:       unregDormReq.RoomDescription,
@@ -112,6 +114,8 @@ func (roommateRequestService *roommateRequestService) GetRoommateRequest(id stri
 			ID:   &regDormReq.Dorm.ID,
 			Name: regDormReq.Dorm.Name,
 			Zone: regDormReq.Dorm.DormZoneName,
+			Long: &regDormReq.Dorm.Longitude,
+			Lat:  &regDormReq.Dorm.Latitude,
 		}
 
 		if len(regDormReq.Dorm.Pictures) != 0 {
@@ -174,6 +178,8 @@ func (roommateRequestService *roommateRequestService) GetRoommateRequestsWithRoo
 			DormName:        roommateRequest.DormName,
 			Student:         student,
 			SharedRoomPrice: roommateRequest.SharedRoomPrice,
+			Longitude:       &roommateRequest.Longitude,
+			Latitude:        &roommateRequest.Latitude,
 		})
 	}
 
@@ -396,5 +402,7 @@ func (roommateRequestService *roommateRequestService) mapRoommateRequestUnregDor
 		RoomFacilities:    roomFacilities,
 		NumberOfRoommates: roommateRequestWithUnregisteredDormDTO.NumberOfRoommates,
 		SharedRoomPrice:   roommateRequestWithUnregisteredDormDTO.SharedRoomPrice,
+		Latitude:          roommateRequestWithUnregisteredDormDTO.Lat,
+		Longitude:         roommateRequestWithUnregisteredDormDTO.Long,
 	}
 }

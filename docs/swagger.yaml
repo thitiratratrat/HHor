@@ -65,6 +65,10 @@ definitions:
         type: integer
       lastname:
         type: string
+      line_id:
+        type: string
+      phone_number:
+        type: string
       picture_url:
         type: string
     type: object
@@ -252,6 +256,10 @@ definitions:
         items:
           $ref: '#/definitions/model.DormZone'
         type: array
+      lat:
+        type: number
+      long:
+        type: number
       name:
         type: string
       number_of_roommates:
@@ -307,6 +315,10 @@ definitions:
     properties:
       dorm_name:
         type: string
+      lat:
+        type: number
+      long:
+        type: number
       number_of_roommates:
         type: integer
       room_description:
@@ -325,6 +337,8 @@ definitions:
         type: string
     required:
     - dorm_name
+    - lat
+    - long
     - number_of_roommates
     - room_description
     - room_facilities
@@ -736,6 +750,10 @@ definitions:
         items:
           $ref: '#/definitions/model.AllRoomFacility'
         type: array
+      lat:
+        type: number
+      long:
+        type: number
       number_of_roommates:
         type: integer
       room_description:

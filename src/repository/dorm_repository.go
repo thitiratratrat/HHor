@@ -124,7 +124,11 @@ func (repository *dormRepository) UpdateDormPictures(id string, pictureUrls []st
 	}
 
 	repository.db.Table("dorm_pictures").Where("dorm_id = ?", id).Delete(model.DormPicture{})
-	repository.db.Create(&dormPictures)
+	err := repository.db.Create(&dormPictures).Error
+
+	if err != nil {
+		return model.Dorm{}, err
+	}
 
 	return repository.FindDorm(id)
 }

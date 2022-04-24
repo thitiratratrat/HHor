@@ -2010,6 +2010,12 @@ var doc = `{
                 "lastname": {
                     "type": "string"
                 },
+                "line_id": {
+                    "type": "string"
+                },
+                "phone_number": {
+                    "type": "string"
+                },
                 "picture_url": {
                     "type": "string"
                 }
@@ -2282,6 +2288,12 @@ var doc = `{
                         "$ref": "#/definitions/model.DormZone"
                     }
                 },
+                "lat": {
+                    "type": "number"
+                },
+                "long": {
+                    "type": "number"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -2362,6 +2374,8 @@ var doc = `{
             "type": "object",
             "required": [
                 "dorm_name",
+                "lat",
+                "long",
                 "number_of_roommates",
                 "room_description",
                 "room_facilities",
@@ -2373,6 +2387,12 @@ var doc = `{
             "properties": {
                 "dorm_name": {
                     "type": "string"
+                },
+                "lat": {
+                    "type": "number"
+                },
+                "long": {
+                    "type": "number"
                 },
                 "number_of_roommates": {
                     "type": "integer"
@@ -3007,6 +3027,12 @@ var doc = `{
                     "items": {
                         "$ref": "#/definitions/model.AllRoomFacility"
                     }
+                },
+                "lat": {
+                    "type": "number"
+                },
+                "long": {
+                    "type": "number"
                 },
                 "number_of_roommates": {
                     "type": "integer"

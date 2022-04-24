@@ -77,7 +77,11 @@ func (repository *roomRepository) UpdateRoomPictures(id string, pictureUrls []st
 	}
 
 	repository.db.Table("room_pictures").Where("room_id = ?", id).Delete(model.RoomPicture{})
-	repository.db.Create(&roomPictures)
+	err := repository.db.Create(&roomPictures).Error
+
+	if err != nil {
+		return model.Room{}, err
+	}
 
 	return repository.FindRoom(id)
 }

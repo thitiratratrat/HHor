@@ -1991,6 +1991,12 @@
                 "lastname": {
                     "type": "string"
                 },
+                "line_id": {
+                    "type": "string"
+                },
+                "phone_number": {
+                    "type": "string"
+                },
                 "picture_url": {
                     "type": "string"
                 }
@@ -2263,6 +2269,12 @@
                         "$ref": "#/definitions/model.DormZone"
                     }
                 },
+                "lat": {
+                    "type": "number"
+                },
+                "long": {
+                    "type": "number"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -2343,6 +2355,8 @@
             "type": "object",
             "required": [
                 "dorm_name",
+                "lat",
+                "long",
                 "number_of_roommates",
                 "room_description",
                 "room_facilities",
@@ -2354,6 +2368,12 @@
             "properties": {
                 "dorm_name": {
                     "type": "string"
+                },
+                "lat": {
+                    "type": "number"
+                },
+                "long": {
+                    "type": "number"
                 },
                 "number_of_roommates": {
                     "type": "integer"
@@ -2988,6 +3008,12 @@
                     "items": {
                         "$ref": "#/definitions/model.AllRoomFacility"
                     }
+                },
+                "lat": {
+                    "type": "number"
+                },
+                "long": {
+                    "type": "number"
                 },
                 "number_of_roommates": {
                     "type": "integer"
