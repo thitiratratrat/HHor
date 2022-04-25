@@ -173,7 +173,8 @@ func (dormController *dormController) CreateDorm(context *gin.Context) {
 		panic(validateError)
 	}
 
-	createdDorm := dormController.dormService.CreateDorm(registerDormDTO)
+	claims := dormController.jwtService.GetClaims(context.GetHeader("Authorization"))
+	createdDorm := dormController.dormService.CreateDorm(claims["id"].(string), registerDormDTO)
 
 	context.IndentedJSON(http.StatusCreated, createdDorm)
 }

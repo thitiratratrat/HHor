@@ -140,8 +140,6 @@ definitions:
         type: number
       name:
         type: string
-      owner_id:
-        type: string
       rules:
         type: string
       type:
@@ -154,7 +152,6 @@ definitions:
     - lat
     - long
     - name
-    - owner_id
     - type
     - zone
     type: object

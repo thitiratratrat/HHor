@@ -2109,7 +2109,6 @@ var doc = `{
                 "lat",
                 "long",
                 "name",
-                "owner_id",
                 "type",
                 "zone"
             ],
@@ -2133,9 +2132,6 @@ var doc = `{
                     "type": "number"
                 },
                 "name": {
-                    "type": "string"
-                },
-                "owner_id": {
                     "type": "string"
                 },
                 "rules": {

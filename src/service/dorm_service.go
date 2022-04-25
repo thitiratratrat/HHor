@@ -16,7 +16,7 @@ type DormService interface {
 	GetDormSuggestions(firstLetter string) []dto.DormSuggestionDTO
 	GetAllDormFacilities() []string
 	GetDormZones() []string
-	CreateDorm(dto.RegisterDormDTO) model.Dorm
+	CreateDorm(string, dto.RegisterDormDTO) model.Dorm
 	UpdateDorm(id string, dormOwnerID string, dorm dto.UpdateDormDTO) model.Dorm
 	UpdateDormPictures(id string, pictures []string) model.Dorm
 	DeleteDorm(id string, dormOwnerID string)
@@ -103,8 +103,8 @@ func (dormService *dormService) GetDormZones() []string {
 	return dormZones
 }
 
-func (dormService *dormService) CreateDorm(registerDormDTO dto.RegisterDormDTO) model.Dorm {
-	dorm := mapCreateDorm(registerDormDTO)
+func (dormService *dormService) CreateDorm(dormOwnerID string, registerDormDTO dto.RegisterDormDTO) model.Dorm {
+	dorm := mapCreateDorm(dormOwnerID, registerDormDTO)
 	createdDorm, err := dormService.dormRepository.CreateDorm(dorm)
 
 	if err != nil {
@@ -187,8 +187,8 @@ func (dormService *dormService) CanUpdateDorm(dormOwnerID string, dormID string)
 	return strconv.Itoa(dorm.DormOwnerID) == dormOwnerID
 }
 
-func mapCreateDorm(registerDormDTO dto.RegisterDormDTO) model.Dorm {
-	dormOwnerID, _ := strconv.Atoi(registerDormDTO.DormOwnerID)
+func mapCreateDorm(dormOwnerID string, registerDormDTO dto.RegisterDormDTO) model.Dorm {
+	convertedDormOwnerID, _ := strconv.Atoi(dormOwnerID)
 	facilities := make([]model.AllDormFacility, len(registerDormDTO.Facilities))
 
 	for index, facility := range registerDormDTO.Facilities {
@@ -206,7 +206,7 @@ func mapCreateDorm(registerDormDTO dto.RegisterDormDTO) model.Dorm {
 		Address:      registerDormDTO.Address,
 		Description:  registerDormDTO.Description,
 		DormZoneName: registerDormDTO.Zone,
-		DormOwnerID:  dormOwnerID,
+		DormOwnerID:  convertedDormOwnerID,
 		Facilities:   facilities,
 	}
 

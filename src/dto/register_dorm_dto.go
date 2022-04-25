@@ -9,6 +9,5 @@ type RegisterDormDTO struct {
 	Address     string   `json:"address" validate:"required,min=3"`
 	Description string   `json:"description"`
 	Zone        string   `json:"zone"  validate:"required,dormzone"`
-	DormOwnerID string   `json:"owner_id" validate:"required,numeric"`
 	Facilities  []string `json:"facilities" validate:"required,min=1,dormfacilities"`
 }
