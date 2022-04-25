@@ -61,10 +61,12 @@ func (authService *authService) RegisterDormOwner(registerDormOwnerDTO dto.Regis
 	}
 
 	dormOwner := model.DormOwner{
-		Firstname: registerDormOwnerDTO.Firstname,
-		Lastname:  registerDormOwnerDTO.Lastname,
-		Email:     registerDormOwnerDTO.Email,
-		Password:  string(hashedPassword),
+		Firstname:   registerDormOwnerDTO.Firstname,
+		Lastname:    registerDormOwnerDTO.Lastname,
+		Email:       registerDormOwnerDTO.Email,
+		Password:    string(hashedPassword),
+		LineID:      registerDormOwnerDTO.LineID,
+		PhoneNumber: registerDormOwnerDTO.PhoneNumber,
 	}
 
 	_, err := authService.dormOwnerRepository.CreateDormOwner(dormOwner)
