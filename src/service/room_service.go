@@ -150,8 +150,11 @@ func mapRoom(registerRoomDTO dto.RegisterRoomDTO) model.Room {
 		availableFrom, err := time.Parse("2006-01-02", *registerRoomDTO.AvailableFrom)
 
 		if err != nil {
-			room.AvailableFrom = &availableFrom
+			panic(err)
 		}
+
+		room.AvailableFrom = &availableFrom
+
 	}
 
 	return room
@@ -181,8 +184,10 @@ func mapUpdateRoom(roomID string, updateRoomDTO dto.UpdateRoomDTO) model.Room {
 		availableFrom, err := time.Parse("2006-01-02", *updateRoomDTO.AvailableFrom)
 
 		if err != nil {
-			room.AvailableFrom = &availableFrom
+			panic(err)
 		}
+
+		room.AvailableFrom = &availableFrom
 	}
 
 	return room
