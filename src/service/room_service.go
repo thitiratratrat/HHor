@@ -13,7 +13,7 @@ import (
 type RoomService interface {
 	GetAllRoomFacilities() []string
 	GetRoom(id string) model.Room
-	CreateRoom(registerRoomDTO dto.RegisterRoomDTO) model.Room
+	CreateRoom(dormOwnerID string, registerRoomDTO dto.RegisterRoomDTO) model.Room
 	UpdateRoom(id string, dormOwnerID string, updateRoomDTO dto.UpdateRoomDTO) model.Room
 	UpdateRoomPictures(id string, pictures []string) model.Room
 	DeleteRoom(id string, dormOwnerID string)
@@ -48,8 +48,8 @@ func (roomService *roomService) GetRoom(id string) model.Room {
 	return room
 }
 
-func (roomService *roomService) CreateRoom(registerRoomDTO dto.RegisterRoomDTO) model.Room {
-	if !roomService.canCreateRoom(registerRoomDTO.DormID, registerRoomDTO.DormOwnerID) {
+func (roomService *roomService) CreateRoom(dormOwnerID string, registerRoomDTO dto.RegisterRoomDTO) model.Room {
+	if !roomService.canCreateRoom(registerRoomDTO.DormID, dormOwnerID) {
 		panic(errortype.ErrInvalidDormOwner)
 	}
 
@@ -128,7 +128,6 @@ func (roomService *roomService) canCreateRoom(dormID string, dormOwnerID string)
 
 func mapRoom(registerRoomDTO dto.RegisterRoomDTO) model.Room {
 	dormID, _ := strconv.Atoi(registerRoomDTO.DormID)
-	availableFrom, err := time.Parse("2006-01-02", *registerRoomDTO.AvailableFrom)
 	facilities := make([]model.AllRoomFacility, len(registerRoomDTO.Facilities))
 
 	for index, facility := range registerRoomDTO.Facilities {
@@ -147,8 +146,12 @@ func mapRoom(registerRoomDTO dto.RegisterRoomDTO) model.Room {
 		Facilities:  facilities,
 	}
 
-	if err == nil {
-		room.AvailableFrom = &availableFrom
+	if registerRoomDTO.AvailableFrom != nil {
+		availableFrom, err := time.Parse("2006-01-02", *registerRoomDTO.AvailableFrom)
+
+		if err != nil {
+			room.AvailableFrom = &availableFrom
+		}
 	}
 
 	return room
@@ -156,7 +159,6 @@ func mapRoom(registerRoomDTO dto.RegisterRoomDTO) model.Room {
 
 func mapUpdateRoom(roomID string, updateRoomDTO dto.UpdateRoomDTO) model.Room {
 	id, _ := strconv.Atoi(roomID)
-	availableFrom, err := time.Parse("2006-01-02", *updateRoomDTO.AvailableFrom)
 	facilities := make([]model.AllRoomFacility, len(updateRoomDTO.Facilities))
 
 	for index, facility := range updateRoomDTO.Facilities {
@@ -175,8 +177,12 @@ func mapUpdateRoom(roomID string, updateRoomDTO dto.UpdateRoomDTO) model.Room {
 		Facilities:  facilities,
 	}
 
-	if err == nil {
-		room.AvailableFrom = &availableFrom
+	if updateRoomDTO.AvailableFrom != nil {
+		availableFrom, err := time.Parse("2006-01-02", *updateRoomDTO.AvailableFrom)
+
+		if err != nil {
+			room.AvailableFrom = &availableFrom
+		}
 	}
 
 	return room

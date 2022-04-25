@@ -63,9 +63,9 @@ func (authController *authController) RegisterStudent(context *gin.Context) {
 		panic(validateError)
 	}
 
-	createdStudent := authController.authService.RegisterStudent(registerStudentDTO)
+	authController.authService.RegisterStudent(registerStudentDTO)
 
-	context.IndentedJSON(http.StatusOK, createdStudent)
+	context.IndentedJSON(http.StatusCreated, "")
 }
 
 // @Summary register dorm owner account
@@ -95,9 +95,9 @@ func (authController *authController) RegisterDormOwner(context *gin.Context) {
 		panic(validateError)
 	}
 
-	createdDormOwner := authController.authService.RegisterDormOwner(registerDormOwnerDTO)
+	authController.authService.RegisterDormOwner(registerDormOwnerDTO)
 
-	context.IndentedJSON(http.StatusOK, createdDormOwner)
+	context.IndentedJSON(http.StatusCreated, "")
 }
 
 // @Summary login student

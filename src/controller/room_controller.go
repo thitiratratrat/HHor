@@ -90,7 +90,8 @@ func (roomController *roomController) CreateRoom(context *gin.Context) {
 		panic(validateError)
 	}
 
-	createdRoom := roomController.roomService.CreateRoom(registerRoomDTO)
+	claims := roomController.jwtService.GetClaims(context.GetHeader("Authorization"))
+	createdRoom := roomController.roomService.CreateRoom(claims["id"].(string), registerRoomDTO)
 
 	context.IndentedJSON(http.StatusCreated, createdRoom)
 }

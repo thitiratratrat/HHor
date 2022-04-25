@@ -37,7 +37,7 @@ func setRoutes() {
 }
 
 func migrateDatabase() {
-	dbConnector.GetDB().AutoMigrate(&model.AllDormFacility{}, &model.DormOwner{}, &model.AllRoomFacility{}, &model.DormZone{}, &model.Location{}, &model.Dorm{}, &model.NearbyLocation{}, &model.Room{}, &model.RoomPicture{}, &model.DormPicture{}, &model.PetHabit{}, &model.SmokeHabit{}, &model.StudyHabit{}, &model.RoomCareHabit{}, &model.Gender{}, &model.Faculty{}, &model.Student{}, &model.PetPicture{}, &model.RoommateRequestWithNoRoom{}, &model.RoommateRequestWithRegisteredDorm{}, &model.RoommateRequestRegisteredDormPicture{}, &model.RoommateRequestWithUnregisteredDorm{}, &model.RoommateRequestUnregisteredDormPicture{})
+	dbConnector.GetDB().AutoMigrate(&model.AllDormFacility{}, &model.DormOwner{}, &model.AllRoomFacility{}, &model.DormZone{}, &model.Dorm{}, &model.NearbyLocation{}, &model.Room{}, &model.RoomPicture{}, &model.DormPicture{}, &model.PetHabit{}, &model.SmokeHabit{}, &model.StudyHabit{}, &model.RoomCareHabit{}, &model.Gender{}, &model.Faculty{}, &model.Student{}, &model.PetPicture{}, &model.RoommateRequestWithNoRoom{}, &model.RoommateRequestWithRegisteredDorm{}, &model.RoommateRequestRegisteredDormPicture{}, &model.RoommateRequestWithUnregisteredDorm{}, &model.RoommateRequestUnregisteredDormPicture{})
 
 }
 

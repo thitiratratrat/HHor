@@ -22,6 +22,6 @@ type Dorm struct {
 	DormOwnerID     int               `gorm:"column:owner" json:"-"`
 	Facilities      []AllDormFacility `gorm:"many2many:dorm_facility;" json:"facilities"`
 	Pictures        []DormPicture     `gorm:"foreignKey:DormID" json:"pictures"`
-	NearbyLocations []NearbyLocation  `gorm:"many2many:nearby_locations;" json:"nearby_locations"`
+	NearbyLocations []NearbyLocation  `json:"nearby_locations"`
 	Rooms           []Room            `json:"rooms"`
 }

@@ -190,8 +190,6 @@ definitions:
         type: string
       dorm_id:
         type: string
-      dorm_owner_id:
-        type: string
       facilities:
         items:
           type: string
@@ -203,10 +201,8 @@ definitions:
       size:
         type: number
     required:
-    - available_from
     - capacity
     - dorm_id
-    - dorm_owner_id
     - facilities
     - name
     - price
@@ -479,7 +475,6 @@ definitions:
       size:
         type: number
     required:
-    - available_from
     - capacity
     - facilities
     - name
@@ -600,23 +595,16 @@ definitions:
       name:
         type: string
     type: object
-  model.Location:
+  model.NearbyLocation:
     properties:
-      id:
-        type: integer
+      distance:
+        type: number
       lat:
         type: number
       long:
         type: number
       name:
         type: string
-    type: object
-  model.NearbyLocation:
-    properties:
-      distance:
-        type: number
-      location:
-        $ref: '#/definitions/model.Location'
     type: object
   model.PersonalHabit:
     properties:

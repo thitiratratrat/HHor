@@ -47,7 +47,7 @@ func (repository *studentRepository) FindStudent(id string) (model.Student, erro
 func (repository *studentRepository) FindStudentByEmail(email string) (model.Student, error) {
 	var student model.Student
 
-	err := repository.db.Preload("SmokeHabit").Preload("StudyHabit").Preload("RoomCareHabit").Preload("PetHabit").Preload("SleepHabit").Preload("PreferredSmokeHabit").Preload("PreferredStudyHabit").Preload("PreferredRoomCareHabit").Preload("PreferredPetHabit").Preload("PreferredSleepHabit").Preload("PetPictures").Where("email = ?", email).First(&student).Error
+	err := repository.db.Where("email = ?", email).First(&student).Error
 
 	return student, err
 }

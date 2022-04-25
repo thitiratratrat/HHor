@@ -55,12 +55,8 @@ func (repository *dormRepository) FindDorms(dormFilterDTO dto.DormFilterDTO) []m
 
 func (repository *dormRepository) FindDorm(dormID string) (model.Dorm, error) {
 	var dorm model.Dorm
-	var nearbyLocations []model.NearbyLocation
 
-	err := repository.db.Preload("Pictures").Preload("Rooms", "available_from IS NOT NULL").Preload("Rooms.Pictures").Preload("Rooms.Facilities").Preload("Facilities").First(&dorm, dormID).Error
-	repository.db.Where("dorm_id = ?", dormID).Preload("Location").Find(&nearbyLocations)
-
-	dorm.NearbyLocations = nearbyLocations
+	err := repository.db.Preload("Pictures").Preload("Rooms", "available_from IS NOT NULL").Preload("Rooms.Pictures").Preload("Rooms.Facilities").Preload("Facilities").Preload("NearbyLocations").First(&dorm, dormID).Error
 
 	return dorm, err
 }

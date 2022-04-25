@@ -2183,10 +2183,8 @@ var doc = `{
         "dto.RegisterRoomDTO": {
             "type": "object",
             "required": [
-                "available_from",
                 "capacity",
                 "dorm_id",
-                "dorm_owner_id",
                 "facilities",
                 "name",
                 "price",
@@ -2203,9 +2201,6 @@ var doc = `{
                     "type": "string"
                 },
                 "dorm_id": {
-                    "type": "string"
-                },
-                "dorm_owner_id": {
                     "type": "string"
                 },
                 "facilities": {
@@ -2588,7 +2583,6 @@ var doc = `{
         "dto.UpdateRoomDTO": {
             "type": "object",
             "required": [
-                "available_from",
                 "capacity",
                 "facilities",
                 "name",
@@ -2796,11 +2790,11 @@ var doc = `{
                 }
             }
         },
-        "model.Location": {
+        "model.NearbyLocation": {
             "type": "object",
             "properties": {
-                "id": {
-                    "type": "integer"
+                "distance": {
+                    "type": "number"
                 },
                 "lat": {
                     "type": "number"
@@ -2810,17 +2804,6 @@ var doc = `{
                 },
                 "name": {
                     "type": "string"
-                }
-            }
-        },
-        "model.NearbyLocation": {
-            "type": "object",
-            "properties": {
-                "distance": {
-                    "type": "number"
-                },
-                "location": {
-                    "$ref": "#/definitions/model.Location"
                 }
             }
         },

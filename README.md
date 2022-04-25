@@ -45,6 +45,7 @@ export DB_PASS=postgres
 export DB_NAME=hhor
 export DB_PORT=5432
 export SECRET_KEY=<Secret>
+export PLACES_KEY=<PlacesKey>
 ```
 
 4. Download dependencies

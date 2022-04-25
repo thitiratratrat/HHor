@@ -6,6 +6,6 @@ type UpdateRoomDTO struct {
 	Size          float32  `json:"size" validate:"required,min=10"`
 	Description   string   `json:"description"`
 	Capacity      int      `json:"capacity" validate:"required,min=1"`
-	AvailableFrom *string  `json:"available_from" validate:"required,datetime=2006-01-02"`
+	AvailableFrom *string  `json:"available_from" validate:"omitempty,datetime=2006-01-02"`
 	Facilities    []string `json:"facilities" validate:"required,roomfacility"`
 }
