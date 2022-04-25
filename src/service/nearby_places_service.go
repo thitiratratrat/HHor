@@ -21,7 +21,7 @@ type nearbyPlacesService struct{}
 
 func (nearbyPlacesService *nearbyPlacesService) GetNearbyPlaces(lat float64, long float64) []model.NearbyLocation {
 	apiKey := os.Getenv("PLACES_KEY")
-	url := fmt.Sprintf("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-%v,%v&radius=1500&key=%s", lat, long, apiKey)
+	url := fmt.Sprintf("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-%v,%v&radius=1000&key=%s", lat, long, apiKey)
 	method := "GET"
 
 	client := &http.Client{}

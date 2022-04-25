@@ -96,7 +96,8 @@ func (repository *dormRepository) CreateDorm(dorm model.Dorm) (model.Dorm, error
 }
 
 func (repository *dormRepository) UpdateDorm(dorm model.Dorm) (model.Dorm, error) {
-	err := repository.db.Model(&model.Dorm{}).Where("id = ?", dorm.ID).Select("Name", "Type", "Rules", "Longitude", "Latitude", "Address", "Description", "Zone").Updates(dorm).Error
+	var updatedDorm model.Dorm
+	err := repository.db.Model(&model.Dorm{}).Where("id = ?", dorm.ID).Select("Name", "Type", "Rules", "Longitude", "Latitude", "Address", "Description", "DormZoneName").Updates(dorm).Error
 
 	if err != nil {
 		return model.Dorm{}, err
@@ -105,7 +106,9 @@ func (repository *dormRepository) UpdateDorm(dorm model.Dorm) (model.Dorm, error
 	repository.db.Table("dorm_facility").Where("dorm_id = ?", dorm.ID).Delete(model.AllDormFacility{})
 	repository.db.Model(&dorm).Association("Facilities").Append(dorm.Facilities)
 
-	return repository.FindDorm(strconv.FormatUint(uint64(dorm.ID), 10))
+	err = repository.db.Preload("Rooms.Pictures").Preload("Rooms.Facilities").Preload("Facilities").Preload("Rooms").Preload("Pictures").Preload("DormZone").Preload("NearbyLocations").First(&updatedDorm, dorm.ID).Error
+
+	return updatedDorm, err
 }
 
 func (repository *dormRepository) UpdateDormPictures(id string, pictureUrls []string) (model.Dorm, error) {
