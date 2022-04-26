@@ -147,7 +147,7 @@ func (authService *authService) VerifyCodeStudent(verifyCodeDTO dto.VerifyCodeDT
 		panic(errortype.ErrUserNotFound)
 	}
 
-	if *student.VerificationCode != verifyCodeDTO.Code {
+	if student.VerificationCode == nil || *student.VerificationCode != verifyCodeDTO.Code {
 		panic(errortype.ErrIncorrectCode)
 	}
 
@@ -161,7 +161,7 @@ func (authService *authService) VerifyCodeDormOwner(verifyCodeDTO dto.VerifyCode
 		panic(errortype.ErrUserNotFound)
 	}
 
-	if *dormOwner.VerificationCode != verifyCodeDTO.Code {
+	if dormOwner.VerificationCode == nil || *dormOwner.VerificationCode != verifyCodeDTO.Code {
 		panic(errortype.ErrIncorrectCode)
 	}
 
