@@ -46,6 +46,7 @@ type roommateRequestController struct {
 	fieldValidator         fieldvalidator.FieldValidator
 }
 
+// @Security BearerAuth
 // @Summary get roommate requests with room
 // @Tags roommate-request
 // @Produce json
@@ -90,6 +91,7 @@ func (roommateRequestController *roommateRequestController) GetRoommateRequestsW
 	context.IndentedJSON(http.StatusOK, roommateRequests)
 }
 
+// @Security BearerAuth
 // @Summary get roommate requests with no room
 // @Tags roommate-request
 // @Produce json
@@ -129,6 +131,7 @@ func (roommateRequestController *roommateRequestController) GetRoommateRequestsN
 	context.IndentedJSON(http.StatusOK, roommateRequests)
 }
 
+// @Security BearerAuth
 // @Summary get roommate request
 // @Tags roommate-request
 // @Produce json

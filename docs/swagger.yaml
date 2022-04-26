@@ -1460,6 +1460,8 @@ paths:
             items:
               $ref: '#/definitions/dto.RoommateRequestDTO'
             type: array
+      security:
+      - BearerAuth: []
       summary: get roommate request
       tags:
       - roommate-request
@@ -1520,6 +1522,8 @@ paths:
             items:
               $ref: '#/definitions/model.RoommateRequestWithNoRoom'
             type: array
+      security:
+      - BearerAuth: []
       summary: get roommate requests with no room
       tags:
       - roommate-request
@@ -1729,6 +1733,8 @@ paths:
             items:
               $ref: '#/definitions/dto.RoommateRequestWithRoomDTO'
             type: array
+      security:
+      - BearerAuth: []
       summary: get roommate requests with room
       tags:
       - roommate-request

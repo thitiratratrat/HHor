@@ -14,10 +14,9 @@ const roommateReqBasePath = "roommate-request"
 func SetRoommateRequestRoutes(router *gin.Engine, roommateRequestController controller.RoommateRequestController) {
 	roommateReqGroup := router.Group(fmt.Sprintf("/%s", roommateReqBasePath)).Use(middleware.AuthorizeJWT(service.Student))
 
-	router.GET(fmt.Sprintf("/%s/room", roommateReqBasePath), roommateRequestController.GetRoommateRequestsWithRoom)
-	router.GET(fmt.Sprintf("/%s/no-room", roommateReqBasePath), roommateRequestController.GetRoommateRequestsNoRoom)
-	router.GET(fmt.Sprintf("/%s/:id", roommateReqBasePath), roommateRequestController.GetRoommateRequest)
-
+	roommateReqGroup.GET("/room", roommateRequestController.GetRoommateRequestsWithRoom)
+	roommateReqGroup.GET("/no-room", roommateRequestController.GetRoommateRequestsNoRoom)
+	roommateReqGroup.GET("/:id", roommateRequestController.GetRoommateRequest)
 	roommateReqGroup.POST("/no-room/:userid", roommateRequestController.CreateRoommateRequestNoRoom)
 	roommateReqGroup.POST("/registered-dorm/:userid", roommateRequestController.CreateRoommateRequestRegDorm)
 	roommateReqGroup.POST("/unregistered-dorm/:userid", roommateRequestController.CreateRoommateRequestUnregDorm)
