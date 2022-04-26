@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"strconv"
 
 	"github.com/thitiratratrat/hhor/src/model"
 	"github.com/thitiratratrat/hhor/src/repository"
@@ -48,7 +47,7 @@ func init() {
 
 	for _, dorm := range dorms {
 		nearbyLocations := nearbyPlacesService.GetNearbyPlaces(dorm.ID, dorm.Latitude, dorm.Longitude)
-		dormRepository.UpdateNearbyLocations(strconv.FormatUint(uint64(dorm.ID), 10), nearbyLocations)
+		dormRepository.UpdateNearbyLocations(fmt.Sprintf("%v", dorm.ID), nearbyLocations)
 	}
 }
 

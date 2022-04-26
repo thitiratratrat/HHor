@@ -46,6 +46,8 @@ export DB_NAME=hhor
 export DB_PORT=5432
 export SECRET_KEY=<Secret>
 export PLACES_KEY=<PlacesKey>
+export EMAIL_USER=<EmailUser>
+export EMAIL_PASS=<EmailPass>
 ```
 
 4. Download dependencies

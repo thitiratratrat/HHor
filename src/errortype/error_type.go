@@ -62,3 +62,18 @@ var ErrInvalidDormOwner = ErrorMessage{
 	StatusCode: http.StatusUnauthorized,
 	Message:    "you do not own this dorm",
 }
+
+var ErrHasNotVerifiedCode = ErrorMessage{
+	StatusCode: http.StatusConflict,
+	Message:    "you have not verified your code",
+}
+
+var ErrIncorrectCode = ErrorMessage{
+	StatusCode: http.StatusBadRequest,
+	Message:    "incorrect code",
+}
+
+var ErrAlreadyVerified = ErrorMessage{
+	StatusCode: http.StatusBadRequest,
+	Message:    "you have already verified your code",
+}

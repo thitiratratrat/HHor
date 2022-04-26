@@ -1,8 +1,8 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -17,6 +17,10 @@ type AuthController interface {
 	LoginStudent(context *gin.Context)
 	RegisterDormOwner(context *gin.Context)
 	LoginDormOwner(context *gin.Context)
+	VerifyCodeStudent(context *gin.Context)
+	VerifyCodeDormOwner(context *gin.Context)
+	ResendCodeStudent(context *gin.Context)
+	ResendCodeDormOwner(context *gin.Context)
 }
 
 func AuthControllerHandler(authService service.AuthService, jwtService service.JWTService, fieldValidator fieldvalidator.FieldValidator) AuthController {
@@ -160,11 +164,131 @@ func (authController *authController) LoginDormOwner(context *gin.Context) {
 	}
 
 	dormOwner := authController.authService.LoginDormOwner(loginCredentialsDTO)
-	dormOwnerID := strconv.FormatUint(uint64(dormOwner.ID), 10)
+	dormOwnerID := fmt.Sprintf("%v", dormOwner.ID)
 	token := authController.jwtService.GenerateToken(dormOwnerID, service.DormOwner)
 
 	context.IndentedJSON(http.StatusOK, dto.LoginDTO{
 		ID:    dormOwnerID,
 		Token: token,
 	})
+}
+
+// @Summary verify code student
+// @Tags auth
+// @Produce json
+// @Param data body dto.VerifyCodeDTO true "verify code"
+// @Success 200 "OK"
+// @Failure 400,401,409,500  {object} dto.ErrorResponse
+// @Router /auth/student/verify-code [post]
+func (authController *authController) VerifyCodeStudent(context *gin.Context) {
+	defer utils.RecoverInvalidInput(context)
+	validate := validator.New()
+
+	var verifyCodeDTO dto.VerifyCodeDTO
+
+	bindErr := context.ShouldBind(&verifyCodeDTO)
+
+	if bindErr != nil {
+		panic(bindErr)
+	}
+
+	validateError := validate.Struct(verifyCodeDTO)
+
+	if validateError != nil {
+		panic(validateError)
+	}
+
+	authController.authService.VerifyCodeStudent(verifyCodeDTO)
+
+	context.IndentedJSON(http.StatusOK, "")
+}
+
+// @Summary verify code dorm owner
+// @Tags auth
+// @Produce json
+// @Param data body dto.VerifyCodeDTO true "verify code"
+// @Success 200 "OK"
+// @Failure 400,401,409,500  {object} dto.ErrorResponse
+// @Router /auth/dorm-owner/verify-code [post]
+func (authController *authController) VerifyCodeDormOwner(context *gin.Context) {
+	defer utils.RecoverInvalidInput(context)
+	validate := validator.New()
+
+	var verifyCodeDTO dto.VerifyCodeDTO
+
+	bindErr := context.ShouldBind(&verifyCodeDTO)
+
+	if bindErr != nil {
+		panic(bindErr)
+	}
+
+	validateError := validate.Struct(verifyCodeDTO)
+
+	if validateError != nil {
+		panic(validateError)
+	}
+
+	authController.authService.VerifyCodeDormOwner(verifyCodeDTO)
+
+	context.IndentedJSON(http.StatusOK, "")
+}
+
+// @Summary resend code student
+// @Tags auth
+// @Produce json
+// @Param data body dto.ResendCodeDTO true "resend code"
+// @Success 200 "OK"
+// @Failure 400,401,409,500  {object} dto.ErrorResponse
+// @Router /auth/student/resend-code [post]
+func (authController *authController) ResendCodeStudent(context *gin.Context) {
+	defer utils.RecoverInvalidInput(context)
+	validate := validator.New()
+
+	var resendCodeDTO dto.ResendCodeDTO
+
+	bindErr := context.ShouldBind(&resendCodeDTO)
+
+	if bindErr != nil {
+		panic(bindErr)
+	}
+
+	validateError := validate.Struct(resendCodeDTO)
+
+	if validateError != nil {
+		panic(validateError)
+	}
+
+	authController.authService.ResendCodeStudent(resendCodeDTO)
+
+	context.IndentedJSON(http.StatusOK, "")
+}
+
+// @Summary resend code dorm owner
+// @Tags auth
+// @Produce json
+// @Param data body dto.ResendCodeDTO true "resend code"
+// @Success 200 "OK"
+// @Failure 400,401,409,500  {object} dto.ErrorResponse
+// @Router /auth/dorm-owner/resend-code [post]
+func (authController *authController) ResendCodeDormOwner(context *gin.Context) {
+	defer utils.RecoverInvalidInput(context)
+	validate := validator.New()
+
+	var resendCodeDTO dto.ResendCodeDTO
+
+	bindErr := context.ShouldBind(&resendCodeDTO)
+
+	if bindErr != nil {
+		panic(bindErr)
+	}
+
+	validateError := validate.Struct(resendCodeDTO)
+
+	if validateError != nil {
+		panic(validateError)
+	}
+
+	authController.authService.ResendCodeDormOwner(resendCodeDTO)
+
+	context.IndentedJSON(http.StatusOK, "")
 }

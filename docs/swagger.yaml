@@ -233,6 +233,13 @@ definitions:
     - password
     - student_id
     type: object
+  dto.ResendCodeDTO:
+    properties:
+      email:
+        type: string
+    required:
+    - email
+    type: object
   dto.RoommateRequestDTO:
     properties:
       budget:
@@ -500,6 +507,16 @@ definitions:
     - faculty
     - firstname
     - lastname
+    type: object
+  dto.VerifyCodeDTO:
+    properties:
+      code:
+        type: string
+      email:
+        type: string
+    required:
+    - code
+    - email
     type: object
   model.AllDormFacility:
     properties:
@@ -886,6 +903,72 @@ paths:
       summary: register dorm owner account
       tags:
       - auth
+  /auth/dorm-owner/resend-code:
+    post:
+      parameters:
+      - description: resend code
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ResendCodeDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: resend code dorm owner
+      tags:
+      - auth
+  /auth/dorm-owner/verify-code:
+    post:
+      parameters:
+      - description: verify code
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.VerifyCodeDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: verify code dorm owner
+      tags:
+      - auth
   /auth/student/login:
     post:
       parameters:
@@ -946,6 +1029,72 @@ paths:
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
       summary: register student account
+      tags:
+      - auth
+  /auth/student/resend-code:
+    post:
+      parameters:
+      - description: resend code
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ResendCodeDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: resend code student
+      tags:
+      - auth
+  /auth/student/verify-code:
+    post:
+      parameters:
+      - description: verify code
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.VerifyCodeDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: verify code student
       tags:
       - auth
   /dorm:

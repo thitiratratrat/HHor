@@ -65,10 +65,11 @@ func init() {
 	encryptor := utils.EncryptorHandler()
 
 	jwtService := service.JWTServiceHandler()
+	emailService := service.EmailServiceHandler()
 	nearbyPlacesService := service.NearbyPlacesHandler()
 	dormService := service.DormServiceHandler(nearbyPlacesService, dormRepository, roomRepository, dormOwnerRepository)
 	roomService := service.RoomServiceHandler(dormRepository, roomRepository)
-	authService := service.AuthServiceHandler(studentRepository, dormOwnerRepository)
+	authService := service.AuthServiceHandler(emailService, studentRepository, dormOwnerRepository)
 	studentService := service.StudentServiceHandler(studentRepository)
 	roommateRequestService := service.RoommateRequestServiceHandler(roommateRequestRpository, studentService)
 	dormOwnerService := service.DormOwnerServiceHandler(dormOwnerRepository, encryptor)

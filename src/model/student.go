@@ -18,6 +18,8 @@ type Student struct {
 	PersonalHabit      PersonalHabit      `gorm:"embedded" json:"personal_habit"`
 	RoommatePreference RoommatePreference `gorm:"embedded" json:"roommate_preference"`
 	RoommateRequest    *string            `json:"-"`
+	VerificationCode   *string            `json:"-"`
+	HasVerified        bool               `gorm:"default:false;" json:"-"`
 }
 
 type SocialMedia struct {

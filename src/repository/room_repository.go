@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/thitiratratrat/hhor/src/model"
@@ -62,7 +63,7 @@ func (repository *roomRepository) UpdateRoom(room model.Room) (model.Room, error
 	repository.db.Table("room_facility").Where("room_id = ?", room.ID).Delete(model.AllRoomFacility{})
 	repository.db.Model(&room).Association("Facilities").Append(room.Facilities)
 
-	return repository.FindRoom(strconv.FormatUint(uint64(room.ID), 10))
+	return repository.FindRoom(fmt.Sprintf("%v", room.ID))
 }
 
 func (repository *roomRepository) UpdateRoomPictures(id string, pictureUrls []string) (model.Room, error) {

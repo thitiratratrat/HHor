@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 
@@ -107,7 +108,7 @@ func (roomService *roomService) CanUpdateRoom(roomID string, dormOwnerID string)
 		panic(err)
 	}
 
-	dorm, err := roomService.dormRepository.FindDorm(strconv.FormatUint(uint64(room.DormID), 10))
+	dorm, err := roomService.dormRepository.FindDorm(fmt.Sprintf("%v", room.DormID))
 
 	if err != nil {
 		panic(err)

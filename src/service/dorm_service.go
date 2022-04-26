@@ -67,7 +67,7 @@ func (dormService *dormService) GetDorms(dormFilterDTO dto.DormFilterDTO) []dto.
 
 func (dormService *dormService) GetDorm(dormID string) dto.DormDetailDTO {
 	dorm, err := dormService.dormRepository.FindDorm(dormID)
-	dormOwner, err := dormService.dormOwnerRepository.FindDormOwnerByID(strconv.FormatUint(uint64(dorm.DormOwnerID), 10))
+	dormOwner, err := dormService.dormOwnerRepository.FindDormOwnerByID(fmt.Sprintf("%v", dorm.DormOwnerID))
 
 	if err != nil {
 		panic(errortype.ErrResourceNotFound)
@@ -114,7 +114,7 @@ func (dormService *dormService) CreateDorm(dormOwnerID string, registerDormDTO d
 	}
 
 	nearbyLocations := dormService.nearbyPlacesService.GetNearbyPlaces(createdDorm.ID, createdDorm.Latitude, createdDorm.Longitude)
-	createdDorm, err = dormService.dormRepository.UpdateNearbyLocations(strconv.FormatUint(uint64(createdDorm.ID), 10), nearbyLocations)
+	createdDorm, err = dormService.dormRepository.UpdateNearbyLocations(fmt.Sprintf("%v", createdDorm.ID), nearbyLocations)
 
 	if err != nil {
 		panic(err)
@@ -160,7 +160,7 @@ func (dormService *dormService) DeleteDorm(id string, dormOwnerID string) {
 	}
 
 	for _, room := range dorm.Rooms {
-		err := dormService.roomRepository.DeleteRoom(strconv.FormatUint(uint64(room.ID), 10))
+		err := dormService.roomRepository.DeleteRoom(fmt.Sprintf("%v", room.ID))
 
 		if err != nil {
 			panic(err)
