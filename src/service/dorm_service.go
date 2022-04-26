@@ -23,8 +23,9 @@ type DormService interface {
 	CanUpdateDorm(dormOwnerID string, dormID string) bool
 }
 
-func DormServiceHandler(dormRepository repository.DormRepository, roomRepository repository.RoomRepository, dormOwnerRepository repository.DormOwnerRepository) DormService {
+func DormServiceHandler(nearbyPlacesService NearbyPlacesService, dormRepository repository.DormRepository, roomRepository repository.RoomRepository, dormOwnerRepository repository.DormOwnerRepository) DormService {
 	return &dormService{
+		nearbyPlacesService: nearbyPlacesService,
 		dormRepository:      dormRepository,
 		roomRepository:      roomRepository,
 		dormOwnerRepository: dormOwnerRepository,
@@ -32,6 +33,7 @@ func DormServiceHandler(dormRepository repository.DormRepository, roomRepository
 }
 
 type dormService struct {
+	nearbyPlacesService NearbyPlacesService
 	dormRepository      repository.DormRepository
 	dormOwnerRepository repository.DormOwnerRepository
 	roomRepository      repository.RoomRepository
@@ -106,6 +108,13 @@ func (dormService *dormService) GetDormZones() []string {
 func (dormService *dormService) CreateDorm(dormOwnerID string, registerDormDTO dto.RegisterDormDTO) model.Dorm {
 	dorm := mapCreateDorm(dormOwnerID, registerDormDTO)
 	createdDorm, err := dormService.dormRepository.CreateDorm(dorm)
+
+	if err != nil {
+		panic(err)
+	}
+
+	nearbyLocations := dormService.nearbyPlacesService.GetNearbyPlaces(createdDorm.ID, createdDorm.Latitude, createdDorm.Longitude)
+	createdDorm, err = dormService.dormRepository.UpdateNearbyLocations(strconv.FormatUint(uint64(createdDorm.ID), 10), nearbyLocations)
 
 	if err != nil {
 		panic(err)

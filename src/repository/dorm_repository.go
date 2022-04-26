@@ -19,6 +19,7 @@ type DormRepository interface {
 	FindDormZones() []string
 	CreateDorm(model.Dorm) (model.Dorm, error)
 	UpdateDorm(dorm model.Dorm) (model.Dorm, error)
+	UpdateNearbyLocations(id string, nearbyLocations []model.NearbyLocation) (model.Dorm, error)
 	UpdateDormPictures(id string, pictureUrls []string) (model.Dorm, error)
 	DeleteDorm(id string) error
 }
@@ -107,6 +108,20 @@ func (repository *dormRepository) UpdateDorm(dorm model.Dorm) (model.Dorm, error
 	repository.db.Model(&dorm).Association("Facilities").Append(dorm.Facilities)
 
 	err = repository.db.Preload("Rooms.Pictures").Preload("Rooms.Facilities").Preload("Facilities").Preload("Rooms").Preload("Pictures").Preload("DormZone").Preload("NearbyLocations").First(&updatedDorm, dorm.ID).Error
+
+	return updatedDorm, err
+}
+
+func (repository *dormRepository) UpdateNearbyLocations(id string, nearbyLocations []model.NearbyLocation) (model.Dorm, error) {
+	var updatedDorm model.Dorm
+	repository.db.Table("nearby_locations").Where("dorm_id = ?", id).Delete(model.NearbyLocation{})
+	err := repository.db.Create(&nearbyLocations).Error
+
+	if err != nil {
+		return model.Dorm{}, err
+	}
+
+	err = repository.db.Preload("Rooms.Pictures").Preload("Rooms.Facilities").Preload("Facilities").Preload("Rooms").Preload("Pictures").Preload("DormZone").Preload("NearbyLocations").First(&updatedDorm, id).Error
 
 	return updatedDorm, err
 }
