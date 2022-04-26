@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/smtp"
 	"os"
+	"path/filepath"
 	"text/template"
 )
 
@@ -30,7 +31,8 @@ func (emailService *emailService) SendEmail(recipient string, code string) {
 	smtpPort := "587"
 
 	auth := smtp.PlainAuth("", from, password, smtpHost)
-	template, templateErr := template.ParseFiles("./template/template.html")
+	cwd, _ := os.Getwd()
+	template, templateErr := template.ParseFiles(filepath.Join(cwd, "./template/template.html"))
 
 	if templateErr != nil {
 		panic(templateErr)
