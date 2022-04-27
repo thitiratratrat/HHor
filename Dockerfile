@@ -24,6 +24,9 @@ WORKDIR /app
 COPY --from=build /hhor /app/hhor
 COPY ./template /app/template
 
+RUN apt-get -y update \
+    && apt-get -y install --no-install-recommends ca-certificates
+
 EXPOSE $PORT
 
 ENTRYPOINT ["/app/hhor"]
