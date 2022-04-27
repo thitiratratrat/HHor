@@ -15,14 +15,15 @@ RUN go build -o /hhor
 ##
 ## Deploy
 ##
-FROM gcr.io/distroless/base-debian10
+FROM debian:buster-slim
+
+ARG DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /app
 
 COPY --from=build /hhor /app/hhor
+COPY ./template /app/template
 
 EXPOSE $PORT
-
-USER nonroot:nonroot
 
 ENTRYPOINT ["/app/hhor"]
