@@ -271,7 +271,7 @@ func (dormController *dormController) UpdateDormPictures(context *gin.Context) {
 			panic(err)
 		}
 
-		dormPictureUrl := utils.UploadPicture(picture, fmt.Sprintf("%s%s/", constant.DormPictureFolder, dormID), dormPicture.Filename, context.Request)
+		dormPictureUrl := utils.UploadPicture(picture, fmt.Sprintf("%s%s/", constant.DormPictureFolder, dormID), dormPicture.Filename)
 		dormPicturesUrl = append(dormPicturesUrl, dormPictureUrl)
 	}
 

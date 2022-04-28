@@ -169,7 +169,7 @@ func (dormOwnerController *dormOwnerController) UploadPicture(context *gin.Conte
 			panic(err)
 		}
 
-		profilePicture := utils.UploadPicture(file, constant.DormOwnerProfilePictureFolder, filename, context.Request)
+		profilePicture := utils.UploadPicture(file, constant.DormOwnerProfilePictureFolder, filename)
 		profilePictureUrl = profilePicture
 	}
 
@@ -182,7 +182,7 @@ func (dormOwnerController *dormOwnerController) UploadPicture(context *gin.Conte
 			panic(err)
 		}
 
-		bankQr := utils.UploadPicture(file, constant.BankQRPictureFolder, filename, context.Request)
+		bankQr := utils.UploadPicture(file, constant.BankQRPictureFolder, filename)
 		bankQrUrl = bankQr
 	}
 

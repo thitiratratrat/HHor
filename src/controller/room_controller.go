@@ -180,7 +180,7 @@ func (roomController *roomController) UpdateRoomPictures(context *gin.Context) {
 			panic(err)
 		}
 
-		roomPictureUrl := utils.UploadPicture(picture, fmt.Sprintf("%s%s/", constant.RoomPictureFolder, roomID), roomPicture.Filename, context.Request)
+		roomPictureUrl := utils.UploadPicture(picture, fmt.Sprintf("%s%s/", constant.RoomPictureFolder, roomID), roomPicture.Filename)
 		roomPicturesUrl = append(roomPicturesUrl, roomPictureUrl)
 	}
 

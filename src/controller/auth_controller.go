@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/thitiratratrat/hhor/src/constant"
 	"github.com/thitiratratrat/hhor/src/dto"
 	"github.com/thitiratratrat/hhor/src/fieldvalidator"
 	"github.com/thitiratratrat/hhor/src/service"
@@ -40,7 +41,9 @@ type authController struct {
 // @Summary register student account
 // @Tags auth
 // @Produce json
-// @Param data body dto.RegisterStudentDTO true "student registration"
+// @Accept  multipart/form-data
+// @Param   profile_picture formData file false  "profile picture"
+// @Param data formData dto.RegisterStudentDTO true "student registration"
 // @Success 200 {object} model.Student "OK"
 // @Failure 400,409  {object} dto.ErrorResponse
 // @Router /auth/student/register [post]
@@ -67,15 +70,30 @@ func (authController *authController) RegisterStudent(context *gin.Context) {
 		panic(validateError)
 	}
 
-	authController.authService.RegisterStudent(registerStudentDTO)
+	var pictureUrl *string
+	if registerStudentDTO.ProfilePicture != nil {
+		filename := registerStudentDTO.StudentID + ".png"
+		file, _, err := context.Request.FormFile("profile_picture")
+
+		if err != nil {
+			panic(err)
+		}
+
+		url := utils.UploadPicture(file, constant.StudentProfilePictureFolder, filename)
+		pictureUrl = &url
+	}
+
+	authController.authService.RegisterStudent(registerStudentDTO, pictureUrl)
 
 	context.IndentedJSON(http.StatusCreated, "")
 }
 
 // @Summary register dorm owner account
+// @Accept  multipart/form-data
 // @Tags auth
 // @Produce json
-// @Param data body dto.RegisterDormOwnerDTO true "dorm owner registration"
+// @Param   profile_picture formData file false  "profile picture"
+// @Param data formData dto.RegisterDormOwnerDTO true "dorm owner registration"
 // @Success 200 {object} model.DormOwner "OK"
 // @Failure 400,409  {object} dto.ErrorResponse
 // @Router /auth/dorm-owner/register [post]
@@ -99,7 +117,20 @@ func (authController *authController) RegisterDormOwner(context *gin.Context) {
 		panic(validateError)
 	}
 
-	authController.authService.RegisterDormOwner(registerDormOwnerDTO)
+	var pictureUrl *string
+	if registerDormOwnerDTO.ProfilePicture != nil {
+		filename := registerDormOwnerDTO.Email + ".png"
+		file, _, err := context.Request.FormFile("profile_picture")
+
+		if err != nil {
+			panic(err)
+		}
+
+		url := utils.UploadPicture(file, constant.StudentProfilePictureFolder, filename)
+		pictureUrl = &url
+	}
+
+	authController.authService.RegisterDormOwner(registerDormOwnerDTO, pictureUrl)
 
 	context.IndentedJSON(http.StatusCreated, "")
 }

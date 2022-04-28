@@ -155,28 +155,6 @@ definitions:
     - type
     - zone
     type: object
-  dto.RegisterDormOwnerDTO:
-    properties:
-      email:
-        type: string
-      firstname:
-        type: string
-      lastname:
-        type: string
-      line_id:
-        type: string
-      password:
-        type: string
-      phone_number:
-        type: string
-    required:
-    - email
-    - firstname
-    - lastname
-    - line_id
-    - password
-    - phone_number
-    type: object
   dto.RegisterRoomDTO:
     properties:
       available_from:
@@ -204,34 +182,6 @@ definitions:
     - name
     - price
     - size
-    type: object
-  dto.RegisterStudentDTO:
-    properties:
-      email:
-        type: string
-      enrollment_year:
-        type: integer
-      faculty:
-        type: string
-      firstname:
-        type: string
-      gender:
-        type: string
-      lastname:
-        type: string
-      password:
-        type: string
-      student_id:
-        type: string
-    required:
-    - email
-    - enrollment_year
-    - faculty
-    - firstname
-    - gender
-    - lastname
-    - password
-    - student_id
     type: object
   dto.ResendCodeDTO:
     properties:
@@ -878,13 +828,37 @@ paths:
       - auth
   /auth/dorm-owner/register:
     post:
+      consumes:
+      - multipart/form-data
       parameters:
-      - description: dorm owner registration
-        in: body
-        name: data
+      - description: profile picture
+        in: formData
+        name: profile_picture
+        type: file
+      - in: formData
+        name: email
         required: true
-        schema:
-          $ref: '#/definitions/dto.RegisterDormOwnerDTO'
+        type: string
+      - in: formData
+        name: firstname
+        required: true
+        type: string
+      - in: formData
+        name: lastname
+        required: true
+        type: string
+      - in: formData
+        name: line_id
+        required: true
+        type: string
+      - in: formData
+        name: password
+        required: true
+        type: string
+      - in: formData
+        name: phone_number
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1006,13 +980,45 @@ paths:
       - auth
   /auth/student/register:
     post:
+      consumes:
+      - multipart/form-data
       parameters:
-      - description: student registration
-        in: body
-        name: data
+      - description: profile picture
+        in: formData
+        name: profile_picture
+        type: file
+      - in: formData
+        name: email
         required: true
-        schema:
-          $ref: '#/definitions/dto.RegisterStudentDTO'
+        type: string
+      - in: formData
+        name: enrollment_year
+        required: true
+        type: integer
+      - in: formData
+        name: faculty
+        required: true
+        type: string
+      - in: formData
+        name: firstname
+        required: true
+        type: string
+      - in: formData
+        name: gender
+        required: true
+        type: string
+      - in: formData
+        name: lastname
+        required: true
+        type: string
+      - in: formData
+        name: password
+        required: true
+        type: string
+      - in: formData
+        name: student_id
+        required: true
+        type: string
       produces:
       - application/json
       responses:

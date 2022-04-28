@@ -176,7 +176,7 @@ func (studentController *studentController) UploadPicture(context *gin.Context) 
 			panic(err)
 		}
 
-		pictureUrl := utils.UploadPicture(file, constant.StudentProfilePictureFolder, filename, context.Request)
+		pictureUrl := utils.UploadPicture(file, constant.StudentProfilePictureFolder, filename)
 		updatedStudent = studentController.studentService.UpdateStudent(id, map[string]interface{}{"picture_url": pictureUrl})
 	}
 
@@ -192,7 +192,7 @@ func (studentController *studentController) UploadPicture(context *gin.Context) 
 				panic(err)
 			}
 
-			petPictureUrl := utils.UploadPicture(picture, fmt.Sprintf("%s%s/", constant.PetPicturesFolder, id), petPicture.Filename, context.Request)
+			petPictureUrl := utils.UploadPicture(picture, fmt.Sprintf("%s%s/", constant.PetPicturesFolder, id), petPicture.Filename)
 			petPictureUrls = append(petPictureUrls, petPictureUrl)
 		}
 

@@ -313,7 +313,7 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 			panic(err)
 		}
 
-		roomPictureUrl := utils.UploadPicture(picture, fmt.Sprintf("%s%s/", constant.RoommateRequestRoomPictureFolder, studentId), roomPicture.Filename, context.Request)
+		roomPictureUrl := utils.UploadPicture(picture, fmt.Sprintf("%s%s/", constant.RoommateRequestRoomPictureFolder, studentId), roomPicture.Filename)
 		roomPictureUrls = append(roomPictureUrls, roomPictureUrl)
 	}
 
@@ -371,7 +371,7 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 			panic(err)
 		}
 
-		roomPictureUrl := utils.UploadPicture(picture, fmt.Sprintf("%s%s/", constant.RoommateRequestRoomPictureFolder, studentId), roomPicture.Filename, context.Request)
+		roomPictureUrl := utils.UploadPicture(picture, fmt.Sprintf("%s%s/", constant.RoommateRequestRoomPictureFolder, studentId), roomPicture.Filename)
 		roomPictureUrls = append(roomPictureUrls, roomPictureUrl)
 	}
 

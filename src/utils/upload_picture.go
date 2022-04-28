@@ -11,12 +11,13 @@ import (
 	"google.golang.org/appengine"
 )
 
-func UploadPicture(file multipart.File, foldername string, filename string, request *http.Request) string {
+func UploadPicture(file multipart.File, foldername string, filename string) string {
 	bucket := "hhor_pictures"
 
 	var err error
 
-	ctx := appengine.NewContext(request)
+	client := &http.Request{}
+	ctx := appengine.NewContext(client)
 
 	storageClient, err := storage.NewClient(ctx, option.WithCredentialsFile("credentials/keys.json"))
 

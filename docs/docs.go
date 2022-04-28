@@ -79,6 +79,9 @@ var doc = `{
         },
         "/auth/dorm-owner/register": {
             "post": {
+                "consumes": [
+                    "multipart/form-data"
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -88,13 +91,46 @@ var doc = `{
                 "summary": "register dorm owner account",
                 "parameters": [
                     {
-                        "description": "dorm owner registration",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.RegisterDormOwnerDTO"
-                        }
+                        "type": "file",
+                        "description": "profile picture",
+                        "name": "profile_picture",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "email",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "firstname",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "lastname",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "line_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "password",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "phone_number",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -277,6 +313,9 @@ var doc = `{
         },
         "/auth/student/register": {
             "post": {
+                "consumes": [
+                    "multipart/form-data"
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -286,13 +325,58 @@ var doc = `{
                 "summary": "register student account",
                 "parameters": [
                     {
-                        "description": "student registration",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.RegisterStudentDTO"
-                        }
+                        "type": "file",
+                        "description": "profile picture",
+                        "name": "profile_picture",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "email",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "name": "enrollment_year",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "faculty",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "firstname",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "gender",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "lastname",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "password",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "student_id",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2364,37 +2448,6 @@ var doc = `{
                 }
             }
         },
-        "dto.RegisterDormOwnerDTO": {
-            "type": "object",
-            "required": [
-                "email",
-                "firstname",
-                "lastname",
-                "line_id",
-                "password",
-                "phone_number"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "firstname": {
-                    "type": "string"
-                },
-                "lastname": {
-                    "type": "string"
-                },
-                "line_id": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "phone_number": {
-                    "type": "string"
-                }
-            }
-        },
         "dto.RegisterRoomDTO": {
             "type": "object",
             "required": [
@@ -2432,45 +2485,6 @@ var doc = `{
                 },
                 "size": {
                     "type": "number"
-                }
-            }
-        },
-        "dto.RegisterStudentDTO": {
-            "type": "object",
-            "required": [
-                "email",
-                "enrollment_year",
-                "faculty",
-                "firstname",
-                "gender",
-                "lastname",
-                "password",
-                "student_id"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "enrollment_year": {
-                    "type": "integer"
-                },
-                "faculty": {
-                    "type": "string"
-                },
-                "firstname": {
-                    "type": "string"
-                },
-                "gender": {
-                    "type": "string"
-                },
-                "lastname": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "student_id": {
-                    "type": "string"
                 }
             }
         },

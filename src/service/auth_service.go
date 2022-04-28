@@ -12,8 +12,8 @@ import (
 )
 
 type AuthService interface {
-	RegisterStudent(dto.RegisterStudentDTO)
-	RegisterDormOwner(dto.RegisterDormOwnerDTO)
+	RegisterStudent(dto.RegisterStudentDTO, *string)
+	RegisterDormOwner(dto.RegisterDormOwnerDTO, *string)
 	LoginStudent(dto.LoginCredentialsDTO) model.Student
 	LoginDormOwner(dto.LoginCredentialsDTO) model.DormOwner
 	VerifyCodeStudent(dto.VerifyCodeDTO)
@@ -36,7 +36,7 @@ type authService struct {
 	dormOwnerRepository repository.DormOwnerRepository
 }
 
-func (authService *authService) RegisterStudent(registerStudentDTO dto.RegisterStudentDTO) {
+func (authService *authService) RegisterStudent(registerStudentDTO dto.RegisterStudentDTO, pictureUrl *string) {
 	hashedPassword, hashErr := bcrypt.GenerateFromPassword([]byte(registerStudentDTO.Password), bcrypt.DefaultCost)
 
 	if hashErr != nil {
@@ -50,6 +50,7 @@ func (authService *authService) RegisterStudent(registerStudentDTO dto.RegisterS
 	}
 
 	student := model.Student{
+		PictureUrl:       pictureUrl,
 		Firstname:        registerStudentDTO.Firstname,
 		Lastname:         registerStudentDTO.Lastname,
 		ID:               registerStudentDTO.StudentID,
@@ -71,7 +72,7 @@ func (authService *authService) RegisterStudent(registerStudentDTO dto.RegisterS
 	authService.emailService.SendEmail(student.Email, code)
 }
 
-func (authService *authService) RegisterDormOwner(registerDormOwnerDTO dto.RegisterDormOwnerDTO) {
+func (authService *authService) RegisterDormOwner(registerDormOwnerDTO dto.RegisterDormOwnerDTO, pictureUrl *string) {
 	hashedPassword, hashErr := bcrypt.GenerateFromPassword([]byte(registerDormOwnerDTO.Password), bcrypt.DefaultCost)
 
 	if hashErr != nil {
@@ -85,6 +86,7 @@ func (authService *authService) RegisterDormOwner(registerDormOwnerDTO dto.Regis
 	}
 
 	dormOwner := model.DormOwner{
+		PictureUrl:       pictureUrl,
 		Firstname:        registerDormOwnerDTO.Firstname,
 		Lastname:         registerDormOwnerDTO.Lastname,
 		Email:            registerDormOwnerDTO.Email,
