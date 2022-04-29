@@ -19,7 +19,7 @@ func RecoverInvalidInput(context *gin.Context) {
 
 		default:
 			context.IndentedJSON(http.StatusBadRequest, dto.ErrorResponse{
-				Message: fmt.Sprintf("%v", errType),
+				Message: fmt.Sprint(errType),
 			})
 
 		}

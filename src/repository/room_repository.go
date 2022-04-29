@@ -63,7 +63,7 @@ func (repository *roomRepository) UpdateRoom(room model.Room) (model.Room, error
 	repository.db.Table("room_facility").Where("room_id = ?", room.ID).Delete(model.AllRoomFacility{})
 	repository.db.Model(&room).Association("Facilities").Append(room.Facilities)
 
-	return repository.FindRoom(fmt.Sprintf("%v", room.ID))
+	return repository.FindRoom(fmt.Sprint(room.ID))
 }
 
 func (repository *roomRepository) UpdateRoomPictures(id string, pictureUrls []string) (model.Room, error) {

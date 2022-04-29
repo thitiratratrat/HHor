@@ -46,10 +46,10 @@ func (repository *dormRepository) FindDorms(dormFilterDTO dto.DormFilterDTO) []m
 	roomFacilitiesCondition := getRoomFacilitiesCondition(dormFilterDTO.RoomFacilities)
 	dormFacilitiesCondition := getDormFacilitiesCondition(dormFilterDTO.DormFacilities)
 
-	roomWhereCondition := fmt.Sprintf("AND 0 != (select count(*) from rooms where dorms.id = rooms.dorm_id and available_from IS NOT NULL %s %s %s)", capacityCondition, priceCondition, roomFacilitiesCondition)
-	dormWhereCondition := fmt.Sprintf("%s %s %s %s %s %s", nameCondition, typeCondition, zoneCondition, latLongCondition, dormFacilitiesCondition, roomWhereCondition)
+	roomWhereCondition := fmt.Sprintf("name LIKE '%%' %s %s %s", capacityCondition, priceCondition, roomFacilitiesCondition)
+	dormWhereCondition := fmt.Sprintf("%s %s %s %s %s", nameCondition, typeCondition, zoneCondition, latLongCondition, dormFacilitiesCondition)
 
-	repository.db.Preload("Rooms").Preload("Pictures").Preload("DormZone").Where(dormWhereCondition).Find(&dorms)
+	repository.db.Preload("Rooms", roomWhereCondition).Preload("Pictures").Preload("DormZone").Where(dormWhereCondition).Find(&dorms)
 
 	return dorms
 }
@@ -57,7 +57,9 @@ func (repository *dormRepository) FindDorms(dormFilterDTO dto.DormFilterDTO) []m
 func (repository *dormRepository) FindDorm(dormID string) (model.Dorm, error) {
 	var dorm model.Dorm
 
-	err := repository.db.Preload("Pictures").Preload("Rooms", "available_from IS NOT NULL").Preload("Rooms.Pictures").Preload("Rooms.Facilities").Preload("Facilities").Preload("NearbyLocations").First(&dorm, dormID).Error
+	err := repository.db.Preload("Pictures").Preload("Rooms", func(db *gorm.DB) *gorm.DB {
+		return db.Order("rooms.price ASC")
+	}).Preload("Rooms.Pictures").Preload("Rooms.Facilities").Preload("Facilities").Preload("NearbyLocations").First(&dorm, dormID).Error
 
 	return dorm, err
 }
@@ -166,7 +168,7 @@ func getNameCondition(name *string) string {
 		return "name LIKE '%%'"
 	}
 
-	return "name LIKE '%" + *name + "%'"
+	return "SOUNDEX(name) = SOUNDEX('" + *name + "')"
 }
 
 func getTypeCondition(typeFilter []string) string {

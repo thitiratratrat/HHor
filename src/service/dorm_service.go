@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 
 	"github.com/thitiratratrat/hhor/src/dto"
@@ -37,7 +38,6 @@ type dormService struct {
 	dormRepository      repository.DormRepository
 	dormOwnerRepository repository.DormOwnerRepository
 	roomRepository      repository.RoomRepository
-	jwtService          JWTService
 }
 
 func (dormService *dormService) GetDorms(dormFilterDTO dto.DormFilterDTO) []dto.DormDTO {
@@ -45,8 +45,11 @@ func (dormService *dormService) GetDorms(dormFilterDTO dto.DormFilterDTO) []dto.
 	dormDTOs := []dto.DormDTO{}
 
 	for _, dorm := range dorms {
-		dormDTO := dto.DormDTO{}
+		if len(dorm.Rooms) == 0 {
+			continue
+		}
 
+		dormDTO := dto.DormDTO{}
 		dormDTO.ID = fmt.Sprint(dorm.ID)
 
 		if len(dorm.Pictures) != 0 {
@@ -62,12 +65,21 @@ func (dormService *dormService) GetDorms(dormFilterDTO dto.DormFilterDTO) []dto.
 		dormDTOs = append(dormDTOs, dormDTO)
 	}
 
+	sort.SliceStable(dormDTOs, func(i, j int) bool {
+		return dormDTOs[i].StartingPrice < dormDTOs[j].StartingPrice
+	})
+
 	return dormDTOs
 }
 
 func (dormService *dormService) GetDorm(dormID string) dto.DormDetailDTO {
 	dorm, err := dormService.dormRepository.FindDorm(dormID)
-	dormOwner, err := dormService.dormOwnerRepository.FindDormOwnerByID(fmt.Sprintf("%v", dorm.DormOwnerID))
+
+	if err != nil {
+		panic(errortype.ErrResourceNotFound)
+	}
+
+	dormOwner, err := dormService.dormOwnerRepository.FindDormOwnerByID(fmt.Sprint(dorm.DormOwnerID))
 
 	if err != nil {
 		panic(errortype.ErrResourceNotFound)
@@ -114,7 +126,7 @@ func (dormService *dormService) CreateDorm(dormOwnerID string, registerDormDTO d
 	}
 
 	nearbyLocations := dormService.nearbyPlacesService.GetNearbyPlaces(createdDorm.ID, createdDorm.Latitude, createdDorm.Longitude)
-	createdDorm, err = dormService.dormRepository.UpdateNearbyLocations(fmt.Sprintf("%v", createdDorm.ID), nearbyLocations)
+	createdDorm, err = dormService.dormRepository.UpdateNearbyLocations(fmt.Sprint(createdDorm.ID), nearbyLocations)
 
 	if err != nil {
 		panic(err)
@@ -160,7 +172,7 @@ func (dormService *dormService) DeleteDorm(id string, dormOwnerID string) {
 	}
 
 	for _, room := range dorm.Rooms {
-		err := dormService.roomRepository.DeleteRoom(fmt.Sprintf("%v", room.ID))
+		err := dormService.roomRepository.DeleteRoom(fmt.Sprint(room.ID))
 
 		if err != nil {
 			panic(err)

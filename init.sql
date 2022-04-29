@@ -7,3 +7,4 @@ CREATE TYPE dorm_type AS ENUM (
 
 \c hhor
 CREATE EXTENSION citext
+CREATE EXTENSION fuzzystrmatch

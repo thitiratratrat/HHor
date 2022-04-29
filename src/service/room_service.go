@@ -108,7 +108,7 @@ func (roomService *roomService) CanUpdateRoom(roomID string, dormOwnerID string)
 		panic(err)
 	}
 
-	dorm, err := roomService.dormRepository.FindDorm(fmt.Sprintf("%v", room.DormID))
+	dorm, err := roomService.dormRepository.FindDorm(fmt.Sprint(room.DormID))
 
 	if err != nil {
 		panic(err)

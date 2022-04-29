@@ -47,7 +47,7 @@ func init() {
 
 	for _, dorm := range dorms {
 		nearbyLocations := nearbyPlacesService.GetNearbyPlaces(dorm.ID, dorm.Latitude, dorm.Longitude)
-		dormRepository.UpdateNearbyLocations(fmt.Sprintf("%v", dorm.ID), nearbyLocations)
+		dormRepository.UpdateNearbyLocations(fmt.Sprint(dorm.ID), nearbyLocations)
 	}
 }
 

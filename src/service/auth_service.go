@@ -167,7 +167,7 @@ func (authService *authService) VerifyCodeDormOwner(verifyCodeDTO dto.VerifyCode
 		panic(errortype.ErrIncorrectCode)
 	}
 
-	authService.dormOwnerRepository.UpdateDormOwner(fmt.Sprintf("%v", dormOwner.ID), model.DormOwner{HasVerified: true})
+	authService.dormOwnerRepository.UpdateDormOwner(fmt.Sprint(dormOwner.ID), model.DormOwner{HasVerified: true})
 }
 
 func (authService *authService) ResendCodeDormOwner(resendCodeDTO dto.ResendCodeDTO) {
@@ -187,7 +187,7 @@ func (authService *authService) ResendCodeDormOwner(resendCodeDTO dto.ResendCode
 		panic(codeErr)
 	}
 
-	authService.dormOwnerRepository.UpdateDormOwner(fmt.Sprintf("%v", dormOwner.ID), model.DormOwner{VerificationCode: &code})
+	authService.dormOwnerRepository.UpdateDormOwner(fmt.Sprint(dormOwner.ID), model.DormOwner{VerificationCode: &code})
 	authService.emailService.SendEmail(dormOwner.Email, code)
 }
 

@@ -195,7 +195,7 @@ func (authController *authController) LoginDormOwner(context *gin.Context) {
 	}
 
 	dormOwner := authController.authService.LoginDormOwner(loginCredentialsDTO)
-	dormOwnerID := fmt.Sprintf("%v", dormOwner.ID)
+	dormOwnerID := fmt.Sprint(dormOwner.ID)
 	token := authController.jwtService.GenerateToken(dormOwnerID, service.DormOwner)
 
 	context.IndentedJSON(http.StatusOK, dto.LoginDTO{
