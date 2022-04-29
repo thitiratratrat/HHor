@@ -57,7 +57,7 @@ func (dormService *dormService) GetDorms(dormFilterDTO dto.DormFilterDTO) []dto.
 		}
 
 		dormDTO.Name = dorm.Name
-		dormDTO.StartingPrice = getCheapestRoomPrice(dorm.Rooms)
+		dormDTO.StartingPrice = dorm.Rooms[0].Price
 		dormDTO.Zone = dorm.DormZone.Name
 		dormDTO.Latitude = dorm.Latitude
 		dormDTO.Longitude = dorm.Longitude
@@ -184,18 +184,6 @@ func (dormService *dormService) DeleteDorm(id string, dormOwnerID string) {
 	if err != nil {
 		panic(err)
 	}
-}
-
-func getCheapestRoomPrice(rooms []model.Room) int {
-	min := rooms[0].Price
-
-	for _, room := range rooms {
-		if room.Price < min {
-			min = room.Price
-		}
-	}
-
-	return min
 }
 
 func (dormService *dormService) CanUpdateDorm(dormOwnerID string, dormID string) bool {

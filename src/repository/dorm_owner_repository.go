@@ -34,7 +34,9 @@ func (repository *dormOwnerRepository) FindDormOwnerByEmail(email string) (model
 func (repository *dormOwnerRepository) FindDormOwnerByID(id string) (model.DormOwner, error) {
 	var dormOwner model.DormOwner
 
-	err := repository.db.Preload("Dorms.Rooms.Pictures").Preload("Dorms.Rooms.Facilities").Preload("Dorms.Facilities").Preload("Dorms.Rooms").Preload("Dorms.Pictures").Preload("Dorms.DormZone").Preload("Dorms.NearbyLocations").Preload("Dorms").Where("id = ?", id).First(&dormOwner).Error
+	err := repository.db.Preload("Dorms.Rooms.Pictures").Preload("Dorms.Rooms.Facilities").Preload("Dorms.Facilities").Preload("Dorms.Rooms", func(db *gorm.DB) *gorm.DB {
+		return db.Order("rooms.price ASC")
+	}).Preload("Dorms.Pictures").Preload("Dorms.DormZone").Preload("Dorms.NearbyLocations").Preload("Dorms").Where("id = ?", id).First(&dormOwner).Error
 
 	return dormOwner, err
 }
