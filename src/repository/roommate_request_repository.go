@@ -250,11 +250,11 @@ func (repository *roommateRequestRepository) getNameCondition(name *string, requ
 	case requestType == constant.RoommateRequestRegDorm && name == nil:
 		return `"Dorm".name` + " LIKE '%%'"
 	case requestType == constant.RoommateRequestRegDorm:
-		return `"Dorm".name` + " LIKE '%" + *name + "%'"
+		return `SOUNDEX("Dorm".name)` + " = SOUNDEX('" + *name + "')"
 	case requestType == constant.RoommateRequestUnregDorm && name == nil:
 		return "dorm_name LIKE '%%'"
 	default:
-		return "dorm_name LIKE '%" + *name + "%'"
+		return `SOUNDEX(dorm_name)` + " = SOUNDEX('" + *name + "')"
 	}
 }
 
