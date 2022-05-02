@@ -30,10 +30,9 @@ docker compose up --build
 export GO111MODULE=on
 ```
 
-2. Build and run development postgres image
+2. Build and run dependencies
 ```
-docker build -t hhor-db -f Dockerfile.dev .
-docker run -p 5432:5432 hhor-db
+docker compose -f docker-compose-dev.yaml up
 ```
 
 3. Set environment variables
