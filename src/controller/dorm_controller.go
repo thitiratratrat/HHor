@@ -1,12 +1,16 @@
 package controller
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"sort"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/go-redis/redis"
+	"github.com/sirupsen/logrus"
 	"github.com/thitiratratrat/hhor/src/constant"
 	"github.com/thitiratratrat/hhor/src/dto"
 	"github.com/thitiratratrat/hhor/src/errortype"
@@ -27,11 +31,12 @@ type DormController interface {
 	DeleteDorm(context *gin.Context)
 }
 
-func DormControllerHandler(dormService service.DormService, jwtService service.JWTService, fieldValidator fieldvalidator.FieldValidator) DormController {
+func DormControllerHandler(dormService service.DormService, jwtService service.JWTService, fieldValidator fieldvalidator.FieldValidator, cacheClient *redis.Client) DormController {
 	return &dormController{
 		dormService:    dormService,
 		fieldValidator: fieldValidator,
 		jwtService:     jwtService,
+		cacheClient:    cacheClient,
 	}
 }
 
@@ -39,6 +44,7 @@ type dormController struct {
 	dormService    service.DormService
 	jwtService     service.JWTService
 	fieldValidator fieldvalidator.FieldValidator
+	cacheClient    *redis.Client
 }
 
 //TODO: filter by match score, cosine similarity, similarity measures
@@ -79,7 +85,28 @@ func (dormController *dormController) GetDorms(context *gin.Context) {
 		panic(validateError)
 	}
 
+	sort.Strings(dormFilterDTO.Type)
+	sort.Strings(dormFilterDTO.DormFacilities)
+	sort.Strings(dormFilterDTO.RoomFacilities)
+
+	dormFilterMarshal, marshalErr := json.Marshal(dormFilterDTO)
+	value, err := dormController.cacheClient.Get(fmt.Sprintf("%s:%s", constant.Dorm, dormFilterMarshal)).Bytes()
+
+	if err == nil {
+		logrus.Info("Data found in cache")
+
+		context.IndentedJSON(http.StatusOK, utils.ToJson(value))
+
+		return
+	}
+
+	logrus.Info("Data not found in cache")
+
 	dormDTOs := dormController.dormService.GetDorms(dormFilterDTO)
+
+	if marshalErr == nil {
+		utils.SaveToCache(dormController.cacheClient, constant.Dorm, string(dormFilterMarshal), dormDTOs)
+	}
 
 	context.IndentedJSON(http.StatusOK, dormDTOs)
 }
@@ -103,6 +130,8 @@ func (dormController *dormController) GetDorm(context *gin.Context) {
 	}
 
 	dorm := dormController.dormService.GetDorm(dormID)
+
+	utils.SaveToCache(dormController.cacheClient, constant.Dorm, dormID, dorm)
 
 	context.IndentedJSON(http.StatusOK, dorm)
 }
@@ -219,6 +248,8 @@ func (dormController *dormController) UpdateDorm(context *gin.Context) {
 	claims := dormController.jwtService.GetClaims(context.GetHeader("Authorization"))
 	updatedDorm := dormController.dormService.UpdateDorm(dormID, claims["id"].(string), updateDormDTO)
 
+	utils.SaveToCache(dormController.cacheClient, constant.Dorm, dormID, updatedDorm)
+
 	context.IndentedJSON(http.StatusOK, updatedDorm)
 }
 
@@ -277,6 +308,8 @@ func (dormController *dormController) UpdateDormPictures(context *gin.Context) {
 
 	updatedDorm := dormController.dormService.UpdateDormPictures(dormID, dormPicturesUrl)
 
+	utils.SaveToCache(dormController.cacheClient, constant.Dorm, dormID, updatedDorm)
+
 	context.IndentedJSON(http.StatusOK, updatedDorm)
 }
 
@@ -294,6 +327,8 @@ func (dormController *dormController) DeleteDorm(context *gin.Context) {
 	claims := dormController.jwtService.GetClaims(context.GetHeader("Authorization"))
 
 	dormController.dormService.DeleteDorm(dormID, claims["id"].(string))
+
+	utils.DeleteCache(dormController.cacheClient, constant.Dorm, dormID)
 
 	context.IndentedJSON(http.StatusOK, "")
 }

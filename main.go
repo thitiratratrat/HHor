@@ -19,6 +19,7 @@ import (
 
 var server *gin.Engine
 var dbConnector utils.DBConnector
+var cacheConnector utils.CacheConnector
 var controllers router.Controllers
 
 func setUpSwagger() {
@@ -32,7 +33,7 @@ func setUpSwagger() {
 }
 
 func setRoutes() {
-	router.InitRoutes(server, controllers)
+	router.InitRoutes(server, controllers, cacheConnector.GetClient())
 	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 }
 
@@ -53,8 +54,10 @@ func init() {
 	}))
 
 	dbConnector = utils.DBConnectorHandler()
+	cacheConnector = utils.CacheConnectorHandler()
 
 	dbConnector.Open()
+	cacheConnector.Open()
 
 	dormRepository := repository.DormRepositoryHandler(dbConnector.GetDB())
 	roomRepository := repository.RoomRepositoryHandler(dbConnector.GetDB())
@@ -76,12 +79,12 @@ func init() {
 
 	fieldValidator := fieldvalidator.FieldValidatorHandler(dormService, roomService, studentService)
 
-	dormController := controller.DormControllerHandler(dormService, jwtService, fieldValidator)
-	roomController := controller.RoomControllerHandler(roomService, jwtService, fieldValidator)
+	dormController := controller.DormControllerHandler(dormService, jwtService, fieldValidator, cacheConnector.GetClient())
+	roomController := controller.RoomControllerHandler(roomService, jwtService, fieldValidator, cacheConnector.GetClient())
 	authController := controller.AuthControllerHandler(authService, jwtService, fieldValidator)
-	studentController := controller.StudentControllerHandler(studentService, fieldValidator)
-	roommateRequestController := controller.RoommateRequestControllerHandler(roommateRequestService, dormService, roomService, fieldValidator)
-	dormOwnerController := controller.DormOwnerControllerHandler(dormOwnerService, fieldValidator)
+	studentController := controller.StudentControllerHandler(studentService, fieldValidator, cacheConnector.GetClient())
+	roommateRequestController := controller.RoommateRequestControllerHandler(roommateRequestService, dormService, roomService, fieldValidator, cacheConnector.GetClient())
+	dormOwnerController := controller.DormOwnerControllerHandler(dormOwnerService, fieldValidator, cacheConnector.GetClient())
 
 	controllers = router.Controllers{
 		DormController:            dormController,
@@ -101,6 +104,7 @@ func main() {
 	port := os.Getenv("PORT")
 
 	defer dbConnector.Close()
+	defer cacheConnector.Close()
 
 	server.Run(":" + port)
 }

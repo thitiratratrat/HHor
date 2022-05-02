@@ -15,3 +15,13 @@ const (
 	RoommateRequestRegDorm   RoommateRequestType = "REGISTERED_DORM"
 	RoommateRequestUnregDorm RoommateRequestType = "UNREGISTERED_DORM"
 )
+
+type CacheNameSpace string
+
+const (
+	Dorm      CacheNameSpace = "dorm"
+	Room      CacheNameSpace = "room"
+	Roommate  CacheNameSpace = "roommate"
+	Student   CacheNameSpace = "student"
+	DormOwner CacheNameSpace = "dormowner"
+)

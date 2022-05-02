@@ -4,6 +4,8 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis"
+	"github.com/thitiratratrat/hhor/src/constant"
 	"github.com/thitiratratrat/hhor/src/controller"
 	"github.com/thitiratratrat/hhor/src/middleware"
 	"github.com/thitiratratrat/hhor/src/service"
@@ -11,12 +13,12 @@ import (
 
 const roommateReqBasePath = "roommate-request"
 
-func SetRoommateRequestRoutes(router *gin.Engine, roommateRequestController controller.RoommateRequestController) {
+func SetRoommateRequestRoutes(router *gin.Engine, roommateRequestController controller.RoommateRequestController, cacheClient *redis.Client) {
 	roommateReqGroup := router.Group(fmt.Sprintf("/%s", roommateReqBasePath)).Use(middleware.AuthorizeJWT(service.Student))
 
 	roommateReqGroup.GET("/room", roommateRequestController.GetRoommateRequestsWithRoom)
 	roommateReqGroup.GET("/no-room", roommateRequestController.GetRoommateRequestsNoRoom)
-	roommateReqGroup.GET("/:id", roommateRequestController.GetRoommateRequest)
+	roommateReqGroup.GET("/:id", middleware.VerifyCache(cacheClient, constant.Roommate), roommateRequestController.GetRoommateRequest)
 	roommateReqGroup.POST("/no-room/:userid", roommateRequestController.CreateRoommateRequestNoRoom)
 	roommateReqGroup.POST("/registered-dorm/:userid", roommateRequestController.CreateRoommateRequestRegDorm)
 	roommateReqGroup.POST("/unregistered-dorm/:userid", roommateRequestController.CreateRoommateRequestUnregDorm)

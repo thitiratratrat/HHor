@@ -7,6 +7,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/go-redis/redis"
 	"github.com/thitiratratrat/hhor/src/constant"
 	"github.com/thitiratratrat/hhor/src/dto"
 	"github.com/thitiratratrat/hhor/src/fieldvalidator"
@@ -25,16 +26,18 @@ type StudentController interface {
 	UploadPicture(context *gin.Context)
 }
 
-func StudentControllerHandler(studentService service.StudentService, fieldValidator fieldvalidator.FieldValidator) StudentController {
+func StudentControllerHandler(studentService service.StudentService, fieldValidator fieldvalidator.FieldValidator, cacheClient *redis.Client) StudentController {
 	return &studentController{
 		studentService: studentService,
 		fieldValidator: fieldValidator,
+		cacheClient:    cacheClient,
 	}
 }
 
 type studentController struct {
 	studentService service.StudentService
 	fieldValidator fieldvalidator.FieldValidator
+	cacheClient    *redis.Client
 }
 
 // @Security BearerAuth
@@ -69,6 +72,8 @@ func (studentController *studentController) UpdateStudent(context *gin.Context) 
 	studentUpdateMap := structs.Map(studentUpdateDTO)
 	updatedStudent := studentController.studentService.UpdateStudent(id, studentUpdateMap)
 
+	utils.SaveToCache(studentController.cacheClient, constant.Student, id, updatedStudent)
+
 	context.IndentedJSON(http.StatusOK, updatedStudent)
 }
 
@@ -101,6 +106,8 @@ func (studentController *studentController) UpdateHabit(context *gin.Context) {
 	studentUpdateMap := structs.Map(studentUpdateDTO)
 	updatedStudent := studentController.studentService.UpdateStudent(id, studentUpdateMap)
 
+	utils.SaveToCache(studentController.cacheClient, constant.Student, id, updatedStudent)
+
 	context.IndentedJSON(http.StatusOK, updatedStudent)
 }
 
@@ -132,6 +139,8 @@ func (studentController *studentController) UpdatePreference(context *gin.Contex
 
 	studentUpdateMap := structs.Map(studentUpdateDTO)
 	updatedStudent := studentController.studentService.UpdateStudent(id, studentUpdateMap)
+
+	utils.SaveToCache(studentController.cacheClient, constant.Student, id, updatedStudent)
 
 	context.IndentedJSON(http.StatusOK, updatedStudent)
 }
@@ -199,6 +208,8 @@ func (studentController *studentController) UploadPicture(context *gin.Context) 
 		updatedStudent = studentController.studentService.UpdateStudentPetPictures(id, petPictureUrls)
 	}
 
+	utils.SaveToCache(studentController.cacheClient, constant.Student, id, updatedStudent)
+
 	context.IndentedJSON(http.StatusOK, updatedStudent)
 }
 
@@ -215,6 +226,8 @@ func (studentController *studentController) GetStudent(context *gin.Context) {
 
 	id := context.Param("userid")
 	student := studentController.studentService.GetStudent(id)
+
+	utils.SaveToCache(studentController.cacheClient, constant.Student, id, student)
 
 	context.IndentedJSON(http.StatusOK, student)
 }

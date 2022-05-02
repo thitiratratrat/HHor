@@ -1,12 +1,16 @@
 package controller
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"sort"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/go-redis/redis"
+	"github.com/sirupsen/logrus"
 	"github.com/thitiratratrat/hhor/src/constant"
 	"github.com/thitiratratrat/hhor/src/dto"
 	"github.com/thitiratratrat/hhor/src/errortype"
@@ -30,12 +34,13 @@ type RoommateRequestController interface {
 	DeleteRoommateRequest(context *gin.Context)
 }
 
-func RoommateRequestControllerHandler(roommateRequestService service.RoommateRequestService, dormService service.DormService, roomService service.RoomService, fieldValidator fieldvalidator.FieldValidator) RoommateRequestController {
+func RoommateRequestControllerHandler(roommateRequestService service.RoommateRequestService, dormService service.DormService, roomService service.RoomService, fieldValidator fieldvalidator.FieldValidator, cacheClient *redis.Client) RoommateRequestController {
 	return &roommateRequestController{
 		roommateRequestService: roommateRequestService,
 		dormService:            dormService,
 		roomService:            roomService,
 		fieldValidator:         fieldValidator,
+		cacheClient:            cacheClient,
 	}
 }
 
@@ -44,6 +49,7 @@ type roommateRequestController struct {
 	dormService            service.DormService
 	roomService            service.RoomService
 	fieldValidator         fieldvalidator.FieldValidator
+	cacheClient            *redis.Client
 }
 
 // @Security BearerAuth
@@ -86,7 +92,30 @@ func (roommateRequestController *roommateRequestController) GetRoommateRequestsW
 		panic(validateError)
 	}
 
+	sort.Ints(roommateRequestRoomFilterDTO.NumberOfRoommates)
+	sort.Strings(roommateRequestRoomFilterDTO.RoomFacilities)
+	sort.Strings(roommateRequestRoomFilterDTO.Gender)
+	sort.Strings(roommateRequestRoomFilterDTO.Faculty)
+	sort.Ints(roommateRequestRoomFilterDTO.YearOfStudy)
+
+	roommateReqRoomFilterMarshal, marshalErr := json.Marshal(roommateRequestRoomFilterDTO)
+	value, err := roommateRequestController.cacheClient.Get(fmt.Sprintf("%s:%s", constant.Roommate, roommateReqRoomFilterMarshal)).Bytes()
+
+	if err == nil {
+		logrus.Info("Data found in cache")
+
+		context.IndentedJSON(http.StatusOK, utils.ToJson(value))
+
+		return
+	}
+
+	logrus.Info("Data not found in cache")
+
 	roommateRequests := roommateRequestController.roommateRequestService.GetRoommateRequestsWithRoom(roommateRequestRoomFilterDTO)
+
+	if marshalErr == nil {
+		utils.SaveToCache(roommateRequestController.cacheClient, constant.Roommate, string(roommateReqRoomFilterMarshal), roommateRequests)
+	}
 
 	context.IndentedJSON(http.StatusOK, roommateRequests)
 }
@@ -126,7 +155,28 @@ func (roommateRequestController *roommateRequestController) GetRoommateRequestsN
 		panic(validateError)
 	}
 
+	sort.Strings(roommateRequestFilterDTO.Gender)
+	sort.Strings(roommateRequestFilterDTO.Faculty)
+	sort.Ints(roommateRequestFilterDTO.YearOfStudy)
+
+	roommateReqFilterMarshal, marshalErr := json.Marshal(roommateRequestFilterDTO)
+	value, err := roommateRequestController.cacheClient.Get(fmt.Sprintf("%s:%s", constant.Roommate, roommateReqFilterMarshal)).Bytes()
+
+	if err == nil {
+		logrus.Info("Data found in cache")
+
+		context.IndentedJSON(http.StatusOK, utils.ToJson(value))
+
+		return
+	}
+
+	logrus.Info("Data not found in cache")
+
 	roommateRequests := roommateRequestController.roommateRequestService.GetRoommateRequestsNoRoom(roommateRequestFilterDTO)
+
+	if marshalErr == nil {
+		utils.SaveToCache(roommateRequestController.cacheClient, constant.Roommate, string(roommateReqFilterMarshal), roommateRequests)
+	}
 
 	context.IndentedJSON(http.StatusOK, roommateRequests)
 }
@@ -149,9 +199,11 @@ func (roommateRequestController *roommateRequestController) GetRoommateRequest(c
 		return
 	}
 
-	roommateRequests := roommateRequestController.roommateRequestService.GetRoommateRequest(roommateRequestID)
+	roommateRequest := roommateRequestController.roommateRequestService.GetRoommateRequest(roommateRequestID)
 
-	context.IndentedJSON(http.StatusOK, roommateRequests)
+	utils.SaveToCache(roommateRequestController.cacheClient, constant.Roommate, roommateRequestID, roommateRequest)
+
+	context.IndentedJSON(http.StatusOK, roommateRequest)
 }
 
 // @Security BearerAuth
@@ -317,9 +369,11 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 		roomPictureUrls = append(roomPictureUrls, roomPictureUrl)
 	}
 
-	createdRoommateRequest := roommateRequestController.roommateRequestService.UpdateRoommateRequestRegDormPictures(studentId, roomPictureUrls)
+	updatedRoommateRequest := roommateRequestController.roommateRequestService.UpdateRoommateRequestRegDormPictures(studentId, roomPictureUrls)
 
-	context.IndentedJSON(http.StatusOK, createdRoommateRequest)
+	utils.SaveToCache(roommateRequestController.cacheClient, constant.Roommate, studentId, updatedRoommateRequest)
+
+	context.IndentedJSON(http.StatusOK, updatedRoommateRequest)
 }
 
 // @Security BearerAuth
@@ -375,9 +429,11 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 		roomPictureUrls = append(roomPictureUrls, roomPictureUrl)
 	}
 
-	createdRoommateRequest := roommateRequestController.roommateRequestService.UpdateRoommateRequestUnregDormPictures(studentId, roomPictureUrls)
+	updatedRoommateRequest := roommateRequestController.roommateRequestService.UpdateRoommateRequestUnregDormPictures(studentId, roomPictureUrls)
 
-	context.IndentedJSON(http.StatusOK, createdRoommateRequest)
+	utils.SaveToCache(roommateRequestController.cacheClient, constant.Roommate, studentId, updatedRoommateRequest)
+
+	context.IndentedJSON(http.StatusOK, updatedRoommateRequest)
 }
 
 // @Security BearerAuth
@@ -411,9 +467,11 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 		panic(errortype.ErrRoomDoesNotBelongToDorm)
 	}
 
-	createdRoommateRequest := roommateRequestController.roommateRequestService.UpdateRoommateRequestRegDorm(studentId, roommateRequestRegDormDTO)
+	updatedRoommateRequest := roommateRequestController.roommateRequestService.UpdateRoommateRequestRegDorm(studentId, roommateRequestRegDormDTO)
 
-	context.IndentedJSON(http.StatusOK, createdRoommateRequest)
+	utils.SaveToCache(roommateRequestController.cacheClient, constant.Roommate, studentId, updatedRoommateRequest)
+
+	context.IndentedJSON(http.StatusOK, updatedRoommateRequest)
 }
 
 // @Security BearerAuth
@@ -449,9 +507,11 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 		panic(validateError)
 	}
 
-	createdRoommateRequest := roommateRequestController.roommateRequestService.UpdateRoommateRequestUnregDorm(studentId, roommateRequestUnregDormDTO)
+	updatedRoommateRequest := roommateRequestController.roommateRequestService.UpdateRoommateRequestUnregDorm(studentId, roommateRequestUnregDormDTO)
 
-	context.IndentedJSON(http.StatusOK, createdRoommateRequest)
+	utils.SaveToCache(roommateRequestController.cacheClient, constant.Roommate, studentId, updatedRoommateRequest)
+
+	context.IndentedJSON(http.StatusOK, updatedRoommateRequest)
 }
 
 // @Security BearerAuth
@@ -485,6 +545,8 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 
 	updatedRoommateRequest := roommateRequestController.roommateRequestService.UpdateRoommateRequestNoRoom(studentId, updatedRoommateRequestNoRoomDTO)
 
+	utils.SaveToCache(roommateRequestController.cacheClient, constant.Roommate, studentId, updatedRoommateRequest)
+
 	context.IndentedJSON(http.StatusOK, updatedRoommateRequest)
 }
 
@@ -507,6 +569,8 @@ func (roommateRequestController *roommateRequestController) DeleteRoommateReques
 	}
 
 	roommateRequestController.roommateRequestService.DeleteRoommateRequest(roommateRequestID)
+
+	utils.DeleteCache(roommateRequestController.cacheClient, constant.Roommate, roommateRequestID)
 
 	context.IndentedJSON(http.StatusOK, "")
 }

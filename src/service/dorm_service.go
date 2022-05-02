@@ -126,10 +126,13 @@ func (dormService *dormService) CreateDorm(dormOwnerID string, registerDormDTO d
 	}
 
 	nearbyLocations := dormService.nearbyPlacesService.GetNearbyPlaces(createdDorm.ID, createdDorm.Latitude, createdDorm.Longitude)
-	createdDorm, err = dormService.dormRepository.UpdateNearbyLocations(fmt.Sprint(createdDorm.ID), nearbyLocations)
 
-	if err != nil {
-		panic(err)
+	if len(nearbyLocations) > 0 {
+		createdDorm, err = dormService.dormRepository.UpdateNearbyLocations(fmt.Sprint(createdDorm.ID), nearbyLocations)
+
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	return createdDorm

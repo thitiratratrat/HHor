@@ -48,6 +48,8 @@ export SECRET_KEY=<Secret>
 export PLACES_KEY=<PlacesKey>
 export EMAIL_USER=<EmailUser>
 export EMAIL_PASS=<EmailPass>
+export CACHE_HOST=localhost:6379
+export CACHE_PASS=hhorredis
 ```
 
 4. Download dependencies

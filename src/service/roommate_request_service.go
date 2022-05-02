@@ -1,6 +1,7 @@
 package service
 
 import (
+	"sort"
 	"strconv"
 
 	"github.com/thitiratratrat/hhor/src/constant"
@@ -183,6 +184,10 @@ func (roommateRequestService *roommateRequestService) GetRoommateRequestsWithRoo
 		})
 	}
 
+	sort.SliceStable(roommateRequestsWithRoom, func(i, j int) bool {
+		return roommateRequestsWithRoom[i].SharedRoomPrice < roommateRequestsWithRoom[j].SharedRoomPrice
+	})
+
 	return roommateRequestsWithRoom
 }
 
@@ -194,6 +199,10 @@ func (roommateRequestService *roommateRequestService) GetRoommateRequestsNoRoom(
 		roommateRequest.Student = roommateRequestService.studentService.GetStudent(roommateRequest.Student.ID)
 		result[index] = roommateRequest
 	}
+
+	sort.SliceStable(result, func(i, j int) bool {
+		return result[i].Budget < result[j].Budget
+	})
 
 	return result
 }

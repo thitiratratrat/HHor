@@ -1,8 +1,9 @@
 package middleware
 
 import (
-	"fmt"
 	"net/http"
+
+	"github.com/sirupsen/logrus"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -36,7 +37,7 @@ func AuthorizeJWT(role service.Role) gin.HandlerFunc {
 			}
 
 		} else {
-			fmt.Println(err)
+			logrus.Error(err)
 			context.AbortWithStatus(http.StatusUnauthorized)
 		}
 

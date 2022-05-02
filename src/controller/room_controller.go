@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/go-redis/redis"
 	"github.com/thitiratratrat/hhor/src/constant"
 	"github.com/thitiratratrat/hhor/src/dto"
 	"github.com/thitiratratrat/hhor/src/errortype"
@@ -23,11 +24,12 @@ type RoomController interface {
 	DeleteRoom(context *gin.Context)
 }
 
-func RoomControllerHandler(roomService service.RoomService, jwtService service.JWTService, fieldValidator fieldvalidator.FieldValidator) RoomController {
+func RoomControllerHandler(roomService service.RoomService, jwtService service.JWTService, fieldValidator fieldvalidator.FieldValidator, cacheClient *redis.Client) RoomController {
 	return &roomController{
 		roomService:    roomService,
 		jwtService:     jwtService,
 		fieldValidator: fieldValidator,
+		cacheClient:    cacheClient,
 	}
 }
 
@@ -35,6 +37,7 @@ type roomController struct {
 	roomService    service.RoomService
 	jwtService     service.JWTService
 	fieldValidator fieldvalidator.FieldValidator
+	cacheClient    *redis.Client
 }
 
 // @Summary get room facilities
@@ -59,6 +62,8 @@ func (roomController *roomController) GetRoom(context *gin.Context) {
 
 	id := context.Param("id")
 	room := roomController.roomService.GetRoom(id)
+
+	utils.SaveToCache(roomController.cacheClient, constant.Room, id, room)
 
 	context.IndentedJSON(http.StatusOK, room)
 }
@@ -126,9 +131,11 @@ func (roomController *roomController) UpdateRoom(context *gin.Context) {
 	}
 
 	claims := roomController.jwtService.GetClaims(context.GetHeader("Authorization"))
-	createdRoom := roomController.roomService.UpdateRoom(roomID, claims["id"].(string), updateRoomDTO)
+	updatedRoom := roomController.roomService.UpdateRoom(roomID, claims["id"].(string), updateRoomDTO)
 
-	context.IndentedJSON(http.StatusCreated, createdRoom)
+	utils.SaveToCache(roomController.cacheClient, constant.Room, roomID, updatedRoom)
+
+	context.IndentedJSON(http.StatusCreated, updatedRoom)
 }
 
 // @Security BearerAuth
@@ -186,6 +193,8 @@ func (roomController *roomController) UpdateRoomPictures(context *gin.Context) {
 
 	updatedRoom := roomController.roomService.UpdateRoomPictures(roomID, roomPicturesUrl)
 
+	utils.SaveToCache(roomController.cacheClient, constant.Room, roomID, updatedRoom)
+
 	context.IndentedJSON(http.StatusOK, updatedRoom)
 }
 
@@ -203,6 +212,8 @@ func (roomController *roomController) DeleteRoom(context *gin.Context) {
 
 	claims := roomController.jwtService.GetClaims(context.GetHeader("Authorization"))
 	roomController.roomService.DeleteRoom(roomID, claims["id"].(string))
+
+	utils.DeleteCache(roomController.cacheClient, constant.Room, roomID)
 
 	context.IndentedJSON(http.StatusOK, "")
 }

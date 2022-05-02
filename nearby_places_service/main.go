@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/sirupsen/logrus"
 	"github.com/thitiratratrat/hhor/src/model"
 	"github.com/thitiratratrat/hhor/src/repository"
 	"github.com/thitiratratrat/hhor/src/service"
@@ -31,7 +32,7 @@ func init() {
 		dorm, err := dormRepository.FindDorm(id)
 
 		if err != nil {
-			fmt.Println("invalid dorm ID")
+			logrus.Error("invalid dorm ID")
 
 			return
 		}

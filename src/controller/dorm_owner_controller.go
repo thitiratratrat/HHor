@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/go-redis/redis"
 	"github.com/thitiratratrat/hhor/src/constant"
 	"github.com/thitiratratrat/hhor/src/dto"
 	"github.com/thitiratratrat/hhor/src/fieldvalidator"
@@ -20,16 +21,18 @@ type DormOwnerController interface {
 	DeleteBankAccount(context *gin.Context)
 }
 
-func DormOwnerControllerHandler(dormOwnerService service.DormOwnerService, fieldValidator fieldvalidator.FieldValidator) DormOwnerController {
+func DormOwnerControllerHandler(dormOwnerService service.DormOwnerService, fieldValidator fieldvalidator.FieldValidator, cacheClient *redis.Client) DormOwnerController {
 	return &dormOwnerController{
 		dormOwnerService: dormOwnerService,
 		fieldValidator:   fieldValidator,
+		cacheClient:      cacheClient,
 	}
 }
 
 type dormOwnerController struct {
 	dormOwnerService service.DormOwnerService
 	fieldValidator   fieldvalidator.FieldValidator
+	cacheClient      *redis.Client
 }
 
 // @Security BearerAuth
@@ -43,6 +46,8 @@ func (dormOwnerController *dormOwnerController) GetDormOwner(context *gin.Contex
 	dormOwnerID := context.Param("userid")
 
 	dormOwner := dormOwnerController.dormOwnerService.GetDormOwner(dormOwnerID)
+
+	utils.SaveToCache(dormOwnerController.cacheClient, constant.DormOwner, dormOwnerID, dormOwner)
 
 	context.IndentedJSON(http.StatusOK, dormOwner)
 }
@@ -78,6 +83,8 @@ func (dormOwnerController *dormOwnerController) UpdateDormOwner(context *gin.Con
 
 	dormOwner := dormOwnerController.dormOwnerService.UpdateDormOwner(dormOwnerID, updateDormOwnerDTO)
 
+	utils.SaveToCache(dormOwnerController.cacheClient, constant.DormOwner, dormOwnerID, dormOwner)
+
 	context.IndentedJSON(http.StatusOK, dormOwner)
 }
 
@@ -109,6 +116,8 @@ func (dormOwnerController *dormOwnerController) UpdateBankAccount(context *gin.C
 
 	dormOwner := dormOwnerController.dormOwnerService.UpdateBankAccount(dormOwnerID, updateBankAccountDTO)
 
+	utils.SaveToCache(dormOwnerController.cacheClient, constant.DormOwner, dormOwnerID, dormOwner)
+
 	context.IndentedJSON(http.StatusOK, dormOwner)
 }
 
@@ -124,6 +133,8 @@ func (dormOwnerController *dormOwnerController) DeleteBankAccount(context *gin.C
 
 	dormOwnerID := context.Param("userid")
 	dormOwner := dormOwnerController.dormOwnerService.DeleteBankAccount(dormOwnerID)
+
+	utils.SaveToCache(dormOwnerController.cacheClient, constant.DormOwner, dormOwnerID, dormOwner)
 
 	context.IndentedJSON(http.StatusOK, dormOwner)
 }
@@ -187,6 +198,8 @@ func (dormOwnerController *dormOwnerController) UploadPicture(context *gin.Conte
 	}
 
 	updateDormOwner := dormOwnerController.dormOwnerService.UpdateDormOwnerPictures(dormOwnerID, profilePictureUrl, bankQrUrl)
+
+	utils.SaveToCache(dormOwnerController.cacheClient, constant.DormOwner, dormOwnerID, updateDormOwner)
 
 	context.IndentedJSON(http.StatusOK, updateDormOwner)
 }
