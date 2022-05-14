@@ -1,4 +1,5 @@
 .vscode/
+.idea
 credentials/
 coverage.out
 dev.env

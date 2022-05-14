@@ -11,7 +11,7 @@ type FieldValidator interface {
 	ValidDormZone(inputDormZones []string) bool
 	ValidRoomFacility(inputRoomFacilities []string) bool
 	ValidDormFacility(inputDormFacilities []string) bool
-	ValidPhoneNumber(phohneNumber string) bool
+	ValidPhoneNumber(phoneNumber string) bool
 }
 
 func FieldValidatorHandler(dormService service.DormService, roomService service.RoomService, studentService service.StudentService) FieldValidator {

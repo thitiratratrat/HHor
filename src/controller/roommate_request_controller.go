@@ -34,10 +34,9 @@ type RoommateRequestController interface {
 	DeleteRoommateRequest(context *gin.Context)
 }
 
-func RoommateRequestControllerHandler(roommateRequestService service.RoommateRequestService, dormService service.DormService, roomService service.RoomService, fieldValidator fieldvalidator.FieldValidator, cacheClient *redis.Client) RoommateRequestController {
+func RoommateRequestControllerHandler(roommateRequestService service.RoommateRequestService, roomService service.RoomService, fieldValidator fieldvalidator.FieldValidator, cacheClient *redis.Client) RoommateRequestController {
 	return &roommateRequestController{
 		roommateRequestService: roommateRequestService,
-		dormService:            dormService,
 		roomService:            roomService,
 		fieldValidator:         fieldValidator,
 		cacheClient:            cacheClient,
@@ -46,7 +45,6 @@ func RoommateRequestControllerHandler(roommateRequestService service.RoommateReq
 
 type roommateRequestController struct {
 	roommateRequestService service.RoommateRequestService
-	dormService            service.DormService
 	roomService            service.RoomService
 	fieldValidator         fieldvalidator.FieldValidator
 	cacheClient            *redis.Client
@@ -370,8 +368,9 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 	}
 
 	updatedRoommateRequest := roommateRequestController.roommateRequestService.UpdateRoommateRequestRegDormPictures(studentId, roomPictureUrls)
+	cacheRoommateRequest := roommateRequestController.roommateRequestService.GetRoommateRequest(studentId)
 
-	utils.SaveToCache(roommateRequestController.cacheClient, constant.Roommate, studentId, updatedRoommateRequest)
+	utils.SaveToCache(roommateRequestController.cacheClient, constant.Roommate, studentId, cacheRoommateRequest)
 
 	context.IndentedJSON(http.StatusOK, updatedRoommateRequest)
 }
@@ -430,8 +429,9 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 	}
 
 	updatedRoommateRequest := roommateRequestController.roommateRequestService.UpdateRoommateRequestUnregDormPictures(studentId, roomPictureUrls)
+	cacheRoommateRequest := roommateRequestController.roommateRequestService.GetRoommateRequest(studentId)
 
-	utils.SaveToCache(roommateRequestController.cacheClient, constant.Roommate, studentId, updatedRoommateRequest)
+	utils.SaveToCache(roommateRequestController.cacheClient, constant.Roommate, studentId, cacheRoommateRequest)
 
 	context.IndentedJSON(http.StatusOK, updatedRoommateRequest)
 }
@@ -468,8 +468,9 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 	}
 
 	updatedRoommateRequest := roommateRequestController.roommateRequestService.UpdateRoommateRequestRegDorm(studentId, roommateRequestRegDormDTO)
+	cacheRoommateRequest := roommateRequestController.roommateRequestService.GetRoommateRequest(studentId)
 
-	utils.SaveToCache(roommateRequestController.cacheClient, constant.Roommate, studentId, updatedRoommateRequest)
+	utils.SaveToCache(roommateRequestController.cacheClient, constant.Roommate, studentId, cacheRoommateRequest)
 
 	context.IndentedJSON(http.StatusOK, updatedRoommateRequest)
 }
@@ -508,8 +509,9 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 	}
 
 	updatedRoommateRequest := roommateRequestController.roommateRequestService.UpdateRoommateRequestUnregDorm(studentId, roommateRequestUnregDormDTO)
+	cacheRoommateRequest := roommateRequestController.roommateRequestService.GetRoommateRequest(studentId)
 
-	utils.SaveToCache(roommateRequestController.cacheClient, constant.Roommate, studentId, updatedRoommateRequest)
+	utils.SaveToCache(roommateRequestController.cacheClient, constant.Roommate, studentId, cacheRoommateRequest)
 
 	context.IndentedJSON(http.StatusOK, updatedRoommateRequest)
 }
@@ -544,8 +546,9 @@ func (roommateRequestController *roommateRequestController) UpdateRoommateReques
 	}
 
 	updatedRoommateRequest := roommateRequestController.roommateRequestService.UpdateRoommateRequestNoRoom(studentId, updatedRoommateRequestNoRoomDTO)
+	cacheRoommateRequest := roommateRequestController.roommateRequestService.GetRoommateRequest(studentId)
 
-	utils.SaveToCache(roommateRequestController.cacheClient, constant.Roommate, studentId, updatedRoommateRequest)
+	utils.SaveToCache(roommateRequestController.cacheClient, constant.Roommate, studentId, cacheRoommateRequest)
 
 	context.IndentedJSON(http.StatusOK, updatedRoommateRequest)
 }

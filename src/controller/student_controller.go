@@ -73,6 +73,7 @@ func (studentController *studentController) UpdateStudent(context *gin.Context) 
 	updatedStudent := studentController.studentService.UpdateStudent(id, studentUpdateMap)
 
 	utils.SaveToCache(studentController.cacheClient, constant.Student, id, updatedStudent)
+	utils.DeleteCache(studentController.cacheClient, constant.Roommate, id)
 
 	context.IndentedJSON(http.StatusOK, updatedStudent)
 }
@@ -107,6 +108,7 @@ func (studentController *studentController) UpdateHabit(context *gin.Context) {
 	updatedStudent := studentController.studentService.UpdateStudent(id, studentUpdateMap)
 
 	utils.SaveToCache(studentController.cacheClient, constant.Student, id, updatedStudent)
+	utils.DeleteCache(studentController.cacheClient, constant.Roommate, id)
 
 	context.IndentedJSON(http.StatusOK, updatedStudent)
 }
@@ -141,6 +143,7 @@ func (studentController *studentController) UpdatePreference(context *gin.Contex
 	updatedStudent := studentController.studentService.UpdateStudent(id, studentUpdateMap)
 
 	utils.SaveToCache(studentController.cacheClient, constant.Student, id, updatedStudent)
+	utils.DeleteCache(studentController.cacheClient, constant.Roommate, id)
 
 	context.IndentedJSON(http.StatusOK, updatedStudent)
 }
@@ -209,6 +212,7 @@ func (studentController *studentController) UploadPicture(context *gin.Context) 
 	}
 
 	utils.SaveToCache(studentController.cacheClient, constant.Student, id, updatedStudent)
+	utils.DeleteCache(studentController.cacheClient, constant.Roommate, id)
 
 	context.IndentedJSON(http.StatusOK, updatedStudent)
 }
