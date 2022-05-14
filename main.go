@@ -63,7 +63,9 @@ func init() {
 	roomRepository := repository.RoomRepositoryHandler(dbConnector.GetDB())
 	dormOwnerRepository := repository.DormOwnerRepositoryHandler(dbConnector.GetDB())
 	studentRepository := repository.StudentRepositoryHandler(dbConnector.GetDB())
-	roommateRequestRpository := repository.RoommateRequestRepositoryHandler(dbConnector.GetDB())
+	roommateReqNoRoomRepository := repository.RoommateReqNoRoomRepositoryHandler(dbConnector.GetDB())
+	roommateReqRegDormRepository := repository.RoommateReqRegDormRepositoryHandler(dbConnector.GetDB())
+	roommateReqUnregDormRepository := repository.RoommateReqUnregDormRepositoryHandler(dbConnector.GetDB())
 
 	encryptor := utils.EncryptorHandler()
 
@@ -74,7 +76,7 @@ func init() {
 	roomService := service.RoomServiceHandler(dormRepository, roomRepository)
 	authService := service.AuthServiceHandler(emailService, studentRepository, dormOwnerRepository)
 	studentService := service.StudentServiceHandler(studentRepository)
-	roommateRequestService := service.RoommateRequestServiceHandler(roommateRequestRpository, studentService)
+	roommateRequestService := service.RoommateRequestServiceHandler(roommateReqNoRoomRepository, roommateReqRegDormRepository, roommateReqUnregDormRepository, studentService)
 	dormOwnerService := service.DormOwnerServiceHandler(dormOwnerRepository, encryptor)
 
 	fieldValidator := fieldvalidator.FieldValidatorHandler(dormService, roomService, studentService)

@@ -37,14 +37,14 @@ type dormRepository struct {
 func (repository *dormRepository) FindDorms(dormFilterDTO dto.DormFilterDTO) []model.Dorm {
 	var dorms []model.Dorm
 
-	nameCondition := getNameCondition(dormFilterDTO.Name)
-	typeCondition := getTypeCondition(dormFilterDTO.Type)
-	zoneCondition := getZoneCondition(dormFilterDTO.Zone)
-	capacityCondition := getCapacityCondition(dormFilterDTO.Capacity)
-	latLongCondition := getLatLongCondition(dormFilterDTO.Lat, dormFilterDTO.Long)
-	priceCondition := getPriceCondition(dormFilterDTO.LowerPrice, dormFilterDTO.UpperPrice)
-	roomFacilitiesCondition := getRoomFacilitiesCondition(dormFilterDTO.RoomFacilities)
-	dormFacilitiesCondition := getDormFacilitiesCondition(dormFilterDTO.DormFacilities)
+	nameCondition := repository.getNameCondition(dormFilterDTO.Name)
+	typeCondition := repository.getTypeCondition(dormFilterDTO.Type)
+	zoneCondition := repository.getZoneCondition(dormFilterDTO.Zone)
+	capacityCondition := repository.getCapacityCondition(dormFilterDTO.Capacity)
+	latLongCondition := repository.getLatLongCondition(dormFilterDTO.Lat, dormFilterDTO.Long)
+	priceCondition := repository.getPriceCondition(dormFilterDTO.LowerPrice, dormFilterDTO.UpperPrice)
+	roomFacilitiesCondition := repository.getRoomFacilitiesCondition(dormFilterDTO.RoomFacilities)
+	dormFacilitiesCondition := repository.getDormFacilitiesCondition(dormFilterDTO.DormFacilities)
 
 	roomWhereCondition := fmt.Sprintf("name LIKE '%%' %s %s %s", capacityCondition, priceCondition, roomFacilitiesCondition)
 	dormWhereCondition := fmt.Sprintf("%s %s %s %s %s", nameCondition, typeCondition, zoneCondition, latLongCondition, dormFacilitiesCondition)
@@ -159,7 +159,7 @@ func (repository *dormRepository) DeleteDorm(id string) error {
 	return nil
 }
 
-func getNameCondition(name *string) string {
+func (repository *dormRepository) getNameCondition(name *string) string {
 	if name == nil {
 		return "name LIKE '%%'"
 	}
@@ -167,7 +167,7 @@ func getNameCondition(name *string) string {
 	return "SOUNDEX(name) = SOUNDEX('" + *name + "')"
 }
 
-func getTypeCondition(typeFilter []string) string {
+func (repository *dormRepository) getTypeCondition(typeFilter []string) string {
 	if len(typeFilter) == 0 {
 		return ""
 	}
@@ -177,7 +177,7 @@ func getTypeCondition(typeFilter []string) string {
 	return fmt.Sprintf("AND type in (%s)", formattedTypeFilter)
 }
 
-func getZoneCondition(zone *string) string {
+func (repository *dormRepository) getZoneCondition(zone *string) string {
 	if zone == nil {
 		return ""
 	}
@@ -185,7 +185,7 @@ func getZoneCondition(zone *string) string {
 	return fmt.Sprintf("AND dorm_zone_name = '%s'", *zone)
 }
 
-func getCapacityCondition(capacity *int) string {
+func (repository *dormRepository) getCapacityCondition(capacity *int) string {
 	if capacity == nil {
 		return ""
 	}
@@ -193,7 +193,7 @@ func getCapacityCondition(capacity *int) string {
 	return fmt.Sprintf("AND capacity >= %d", *capacity)
 }
 
-func getLatLongCondition(lat *float64, long *float64) string {
+func (repository *dormRepository) getLatLongCondition(lat *float64, long *float64) string {
 	if lat == nil || long == nil {
 		return ""
 	}
@@ -207,7 +207,7 @@ func getLatLongCondition(lat *float64, long *float64) string {
 	return fmt.Sprintf("AND latitude BETWEEN %f AND %f AND longitude BETWEEN %f AND %f", minLat, maxLat, minLong, maxLong)
 }
 
-func getPriceCondition(lowerPrice *int, upperPrice *int) string {
+func (repository *dormRepository) getPriceCondition(lowerPrice *int, upperPrice *int) string {
 	if lowerPrice == nil || upperPrice == nil || *upperPrice < *lowerPrice {
 		return ""
 	}
@@ -215,7 +215,7 @@ func getPriceCondition(lowerPrice *int, upperPrice *int) string {
 	return fmt.Sprintf("AND price BETWEEN %d AND %d", *lowerPrice, *upperPrice)
 }
 
-func getRoomFacilitiesCondition(roomFacilities []string) string {
+func (repository *dormRepository) getRoomFacilitiesCondition(roomFacilities []string) string {
 	if len(roomFacilities) == 0 {
 		return ""
 	}
@@ -225,7 +225,7 @@ func getRoomFacilitiesCondition(roomFacilities []string) string {
 	return fmt.Sprintf("AND %d = (select count(*) from room_facility where rooms.id = room_facility.room_id and all_room_facility_name IN (%s))", len(roomFacilities), formattedRoomFacilities)
 }
 
-func getDormFacilitiesCondition(dormFacilities []string) string {
+func (repository *dormRepository) getDormFacilitiesCondition(dormFacilities []string) string {
 	if len(dormFacilities) == 0 {
 		return ""
 	}

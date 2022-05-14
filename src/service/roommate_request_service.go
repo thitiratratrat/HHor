@@ -27,16 +27,20 @@ type RoommateRequestService interface {
 	CanUpdateRoommateRequest(studentID string, requestType constant.RoommateRequestType) bool
 }
 
-func RoommateRequestServiceHandler(roommateRequestRepository repository.RoommateRequestRepository, studentSerivce StudentService) RoommateRequestService {
+func RoommateRequestServiceHandler(roommateReqNoRoomRepository repository.RoommateReqNoRoomRepository, roommateReqRegDormRepository repository.RoommateReqRegDormRepository, roommateReqUnregDormRepository repository.RoommateReqUnregDormRepository, studentSerivce StudentService) RoommateRequestService {
 	return &roommateRequestService{
-		roommateRequestRepository: roommateRequestRepository,
-		studentService:            studentSerivce,
+		roommateReqNoRoomRepository:    roommateReqNoRoomRepository,
+		roommateReqRegDormRepository:   roommateReqRegDormRepository,
+		roommateReqUnregDormRepository: roommateReqUnregDormRepository,
+		studentService:                 studentSerivce,
 	}
 }
 
 type roommateRequestService struct {
-	roommateRequestRepository repository.RoommateRequestRepository
-	studentService            StudentService
+	roommateReqNoRoomRepository    repository.RoommateReqNoRoomRepository
+	roommateReqRegDormRepository   repository.RoommateReqRegDormRepository
+	roommateReqUnregDormRepository repository.RoommateReqUnregDormRepository
+	studentService                 StudentService
 }
 
 func (roommateRequestService *roommateRequestService) GetRoommateRequest(id string) dto.RoommateRequestDTO {
@@ -50,7 +54,7 @@ func (roommateRequestService *roommateRequestService) GetRoommateRequest(id stri
 
 	switch *student.RoommateRequest {
 	case string(constant.RoommateRequestNoRoom):
-		noRoomReq, err := roommateRequestService.roommateRequestRepository.FindRoommateRequestWithNoRoom(id)
+		noRoomReq, err := roommateRequestService.roommateReqNoRoomRepository.FindRoommateReqNoRoom(id)
 
 		if err != nil {
 			panic(err)
@@ -60,7 +64,7 @@ func (roommateRequestService *roommateRequestService) GetRoommateRequest(id stri
 		roommateRequest.Budget = &noRoomReq.Budget
 		roommateRequest.InterestedDormZones = &noRoomReq.Zones
 	case string(constant.RoommateRequestUnregDorm):
-		unregDormReq, err := roommateRequestService.roommateRequestRepository.FindRoommateRequestWithUnregisteredDorm(id)
+		unregDormReq, err := roommateRequestService.roommateReqUnregDormRepository.FindRoommateReqUnregDorm(id)
 
 		if err != nil {
 			panic(err)
@@ -89,7 +93,7 @@ func (roommateRequestService *roommateRequestService) GetRoommateRequest(id stri
 			Pictures:          roomPictures,
 		}
 	case string(constant.RoommateRequestRegDorm):
-		regDormReq, err := roommateRequestService.roommateRequestRepository.FindRoommateRequestWithRegisteredDorm(id)
+		regDormReq, err := roommateRequestService.roommateReqRegDormRepository.FindRoommateReqRegDorm(id)
 
 		if err != nil {
 			panic(err)
@@ -141,8 +145,8 @@ func (roommateRequestService *roommateRequestService) GetRoommateRequest(id stri
 
 func (roommateRequestService *roommateRequestService) GetRoommateRequestsWithRoom(roommateRequestRoomFilterDTO dto.RoommateRequestRoomFilterDTO) []dto.RoommateRequestWithRoomDTO {
 	roommateRequestsWithRoom := []dto.RoommateRequestWithRoomDTO{}
-	roommateRequestsWithRegisteredDorm := roommateRequestService.roommateRequestRepository.FindRoommateRequestWithRegisteredDorms(roommateRequestRoomFilterDTO)
-	roommateRequestWithUnregisteredDorm := roommateRequestService.roommateRequestRepository.FindRoommateRequestWithUnregisteredDorms(roommateRequestRoomFilterDTO)
+	roommateRequestsWithRegisteredDorm := roommateRequestService.roommateReqRegDormRepository.FindRoommateReqRegDorms(roommateRequestRoomFilterDTO)
+	roommateRequestWithUnregisteredDorm := roommateRequestService.roommateReqUnregDormRepository.FindRoommateReqUnregDorms(roommateRequestRoomFilterDTO)
 
 	for _, roommateRequest := range roommateRequestsWithRegisteredDorm {
 		student := roommateRequestService.studentService.GetStudent(roommateRequest.Student.ID)
@@ -192,7 +196,7 @@ func (roommateRequestService *roommateRequestService) GetRoommateRequestsWithRoo
 }
 
 func (roommateRequestService *roommateRequestService) GetRoommateRequestsNoRoom(roommateRequestFilterDTO dto.RoommateRequestFilterDTO) []model.RoommateRequestWithNoRoom {
-	roommateRequests := roommateRequestService.roommateRequestRepository.FindRoommateRequestWithNoRooms(roommateRequestFilterDTO)
+	roommateRequests := roommateRequestService.roommateReqNoRoomRepository.FindRoommateReqNoRooms(roommateRequestFilterDTO)
 	result := make([]model.RoommateRequestWithNoRoom, len(roommateRequests))
 
 	for index, roommateRequest := range roommateRequests {
@@ -213,7 +217,7 @@ func (roommateRequestService *roommateRequestService) CreateRoommateRequestNoRoo
 	}
 
 	roommateRequestWithNoRoom := roommateRequestService.mapRoommateRequestNoRoomDTO(studentId, roommateRequestWithNoRoomDTO)
-	createdRoommateRequest, err := roommateRequestService.roommateRequestRepository.CreateRoommateRequestWithNoRoom(roommateRequestWithNoRoom)
+	createdRoommateRequest, err := roommateRequestService.roommateReqNoRoomRepository.CreateRoommateReqNoRoom(roommateRequestWithNoRoom)
 
 	if err != nil {
 		panic(err)
@@ -230,7 +234,7 @@ func (roommateRequestService *roommateRequestService) CreateRoommateRequestRegDo
 	}
 
 	roommateRequestWithRegisteredDorm := roommateRequestService.mapRoommateRequestRegDormDTO(studentId, roommateRequestWithRegisteredDormDTO)
-	createdRoommateRequest, err := roommateRequestService.roommateRequestRepository.CreateRoommateRequestWithRegisteredDorm(roommateRequestWithRegisteredDorm)
+	createdRoommateRequest, err := roommateRequestService.roommateReqRegDormRepository.CreateRoommateReqRegDorm(roommateRequestWithRegisteredDorm)
 
 	if err != nil {
 		panic(err)
@@ -247,7 +251,7 @@ func (roommateRequestService *roommateRequestService) CreateRoommateRequestUnreg
 	}
 
 	roommateRequestWithUnregisteredDorm := roommateRequestService.mapRoommateRequestUnregDormDTO(studentId, roommateRequestWithUnregisteredDormDTO)
-	createdRoommateRequest, err := roommateRequestService.roommateRequestRepository.CreateRoommateRequestWithUnregisteredDorm(roommateRequestWithUnregisteredDorm)
+	createdRoommateRequest, err := roommateRequestService.roommateReqUnregDormRepository.CreateRoommateReqUnregDorm(roommateRequestWithUnregisteredDorm)
 
 	if err != nil {
 		panic(err)
@@ -259,7 +263,7 @@ func (roommateRequestService *roommateRequestService) CreateRoommateRequestUnreg
 }
 
 func (roommateRequestService *roommateRequestService) UpdateRoommateRequestRegDormPictures(id string, pictureUrls []string) model.RoommateRequestWithRegisteredDorm {
-	updatedRoommateRequestWithRegisteredDorm, err := roommateRequestService.roommateRequestRepository.UpdateRoommateRequestWithRegisteredDormPictures(id, pictureUrls)
+	updatedRoommateRequestWithRegisteredDorm, err := roommateRequestService.roommateReqRegDormRepository.UpdateRoommateReqRegDormPictures(id, pictureUrls)
 
 	if err != nil {
 		panic(err)
@@ -269,7 +273,7 @@ func (roommateRequestService *roommateRequestService) UpdateRoommateRequestRegDo
 }
 
 func (roommateRequestService *roommateRequestService) UpdateRoommateRequestUnregDormPictures(id string, pictureUrls []string) model.RoommateRequestWithUnregisteredDorm {
-	updatedRoommateRequestWithUnregisteredDorm, err := roommateRequestService.roommateRequestRepository.UpdateRoommateRequestWithUnregisteredDormPictures(id, pictureUrls)
+	updatedRoommateRequestWithUnregisteredDorm, err := roommateRequestService.roommateReqUnregDormRepository.UpdateRoommateReqUnregDormPictures(id, pictureUrls)
 
 	if err != nil {
 		panic(err)
@@ -284,7 +288,7 @@ func (roommateRequestService *roommateRequestService) UpdateRoommateRequestRegDo
 	}
 
 	update := roommateRequestService.mapRoommateRequestRegDormDTO(studentId, roommateRequest)
-	updatedRoommateRequest, err := roommateRequestService.roommateRequestRepository.UpdateRoommateRequestRegDorm(update.StudentID, update)
+	updatedRoommateRequest, err := roommateRequestService.roommateReqRegDormRepository.UpdateRoommateReqRegDorm(update.StudentID, update)
 
 	if err != nil {
 		panic(err)
@@ -299,7 +303,7 @@ func (roommateRequestService *roommateRequestService) UpdateRoommateRequestUnreg
 	}
 
 	update := roommateRequestService.mapRoommateRequestUnregDormDTO(studentId, roommateRequest)
-	updatedRoommateRequest, err := roommateRequestService.roommateRequestRepository.UpdateRoommateRequestUnregDorm(update.StudentID, update)
+	updatedRoommateRequest, err := roommateRequestService.roommateReqUnregDormRepository.UpdateRoommateReqUnregDorm(update.StudentID, update)
 
 	if err != nil {
 		panic(err)
@@ -314,7 +318,7 @@ func (roommateRequestService *roommateRequestService) UpdateRoommateRequestNoRoo
 	}
 
 	update := roommateRequestService.mapRoommateRequestNoRoomDTO(studentId, roommateRequest)
-	updatedRoommateRequest, err := roommateRequestService.roommateRequestRepository.UpdateRoommateRequestNoRoom(update.StudentID, update)
+	updatedRoommateRequest, err := roommateRequestService.roommateReqNoRoomRepository.UpdateRoommateReqNoRoom(update.StudentID, update)
 
 	if err != nil {
 		panic(err)
@@ -335,11 +339,11 @@ func (roommateRequestService *roommateRequestService) DeleteRoommateRequest(id s
 
 	switch *student.RoommateRequest {
 	case string(constant.RoommateRequestRegDorm):
-		err = roommateRequestService.roommateRequestRepository.DeleteRoommateRequestRegDorm(id)
+		err = roommateRequestService.roommateReqRegDormRepository.DeleteRoommateReqRegDorm(id)
 	case string(constant.RoommateRequestUnregDorm):
-		err = roommateRequestService.roommateRequestRepository.DeleteRoommateRequestUnregDorm(id)
+		err = roommateRequestService.roommateReqUnregDormRepository.DeleteRoommateReqUnregDorm(id)
 	case string(constant.RoommateRequestNoRoom):
-		err = roommateRequestService.roommateRequestRepository.DeleteRoommateRequestNoRoom(id)
+		err = roommateRequestService.roommateReqNoRoomRepository.DeleteRoommateReqNoRoom(id)
 	}
 
 	roommateRequestService.studentService.UpdateStudent(id, map[string]interface{}{"roommate_request": nil})
