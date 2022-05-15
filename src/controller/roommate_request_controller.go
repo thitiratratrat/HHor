@@ -97,7 +97,7 @@ func (roommateRequestController *roommateRequestController) GetRoommateRequestsW
 	sort.Ints(roommateRequestRoomFilterDTO.YearOfStudy)
 
 	roommateReqRoomFilterMarshal, marshalErr := json.Marshal(roommateRequestRoomFilterDTO)
-	value, err := roommateRequestController.cacheClient.Get(fmt.Sprintf("%s:%s", constant.Roommate, roommateReqRoomFilterMarshal)).Bytes()
+	value, err := roommateRequestController.cacheClient.Get(fmt.Sprintf("%s:%s", constant.RoommateWithRooms, roommateReqRoomFilterMarshal)).Bytes()
 
 	if err == nil {
 		logrus.Info("Data found in cache")
@@ -112,7 +112,7 @@ func (roommateRequestController *roommateRequestController) GetRoommateRequestsW
 	roommateRequests := roommateRequestController.roommateRequestService.GetRoommateRequestsWithRoom(roommateRequestRoomFilterDTO)
 
 	if marshalErr == nil {
-		utils.SaveToCache(roommateRequestController.cacheClient, constant.Roommate, string(roommateReqRoomFilterMarshal), roommateRequests)
+		utils.SaveToCache(roommateRequestController.cacheClient, constant.RoommateWithRooms, string(roommateReqRoomFilterMarshal), roommateRequests)
 	}
 
 	context.IndentedJSON(http.StatusOK, roommateRequests)
@@ -158,7 +158,7 @@ func (roommateRequestController *roommateRequestController) GetRoommateRequestsN
 	sort.Ints(roommateRequestFilterDTO.YearOfStudy)
 
 	roommateReqFilterMarshal, marshalErr := json.Marshal(roommateRequestFilterDTO)
-	value, err := roommateRequestController.cacheClient.Get(fmt.Sprintf("%s:%s", constant.Roommate, roommateReqFilterMarshal)).Bytes()
+	value, err := roommateRequestController.cacheClient.Get(fmt.Sprintf("%s:%s", constant.RoommateNoRoom, roommateReqFilterMarshal)).Bytes()
 
 	if err == nil {
 		logrus.Info("Data found in cache")
@@ -173,7 +173,7 @@ func (roommateRequestController *roommateRequestController) GetRoommateRequestsN
 	roommateRequests := roommateRequestController.roommateRequestService.GetRoommateRequestsNoRoom(roommateRequestFilterDTO)
 
 	if marshalErr == nil {
-		utils.SaveToCache(roommateRequestController.cacheClient, constant.Roommate, string(roommateReqFilterMarshal), roommateRequests)
+		utils.SaveToCache(roommateRequestController.cacheClient, constant.RoommateNoRoom, string(roommateReqFilterMarshal), roommateRequests)
 	}
 
 	context.IndentedJSON(http.StatusOK, roommateRequests)

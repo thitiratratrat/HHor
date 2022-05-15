@@ -164,7 +164,11 @@ func (repository *dormRepository) getNameCondition(name *string) string {
 		return "name LIKE '%%'"
 	}
 
-	return "SOUNDEX(name) = SOUNDEX('" + *name + "')"
+	if len(*name) == 1 {
+		return "name" + ` LIKE '` + *name + `%'`
+	}
+
+	return fmt.Sprintf("'%s'", *name) + "% ANY(STRING_TO_ARRAY(name,' '))"
 }
 
 func (repository *dormRepository) getTypeCondition(typeFilter []string) string {

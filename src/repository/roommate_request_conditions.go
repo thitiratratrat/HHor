@@ -38,11 +38,19 @@ func getNameCondition(name *string, requestType constant.RoommateRequestType) st
 	case requestType == constant.RoommateRequestRegDorm && name == nil:
 		return `"Dorm".name` + " LIKE '%%'"
 	case requestType == constant.RoommateRequestRegDorm:
-		return `SOUNDEX("Dorm".name)` + " = SOUNDEX('" + *name + "')"
+		if len(*name) == 1 {
+			return `"Dorm".name` + ` LIKE '` + *name + `%'`
+		}
+
+		return fmt.Sprintf("'%s'", *name) + ` % ANY(STRING_TO_ARRAY("Dorm".name,' '))`
 	case requestType == constant.RoommateRequestUnregDorm && name == nil:
 		return "dorm_name LIKE '%%'"
 	default:
-		return `SOUNDEX(dorm_name)` + " = SOUNDEX('" + *name + "')"
+		if len(*name) == 1 {
+			return "dorm_name" + ` LIKE '` + *name + `%'`
+		}
+
+		return fmt.Sprintf("'%s'", *name) + "% ANY(STRING_TO_ARRAY(dorm_name,' '))"
 	}
 }
 

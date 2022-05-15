@@ -19,9 +19,11 @@ const (
 type CacheNameSpace string
 
 const (
-	Dorm      CacheNameSpace = "dorm"
-	Room      CacheNameSpace = "room"
-	Roommate  CacheNameSpace = "roommate"
-	Student   CacheNameSpace = "student"
-	DormOwner CacheNameSpace = "dormowner"
+	Dorm              CacheNameSpace = "dorm"
+	Room              CacheNameSpace = "room"
+	Roommate          CacheNameSpace = "roommate"
+	RoommateNoRoom    CacheNameSpace = "roommatenoroom"
+	RoommateWithRooms CacheNameSpace = "roommatewithrooms"
+	Student           CacheNameSpace = "student"
+	DormOwner         CacheNameSpace = "dormowner"
 )
