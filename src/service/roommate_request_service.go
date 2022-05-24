@@ -164,8 +164,8 @@ func (roommateRequestService *roommateRequestService) GetRoommateRequestsWithRoo
 			DormName:        roommateRequest.Dorm.Name,
 			Student:         student,
 			SharedRoomPrice: roommateRequest.SharedRoomPrice,
-			Latitude:        &roommateRequest.Dorm.Latitude,
-			Longitude:       &roommateRequest.Dorm.Longitude,
+			Latitude:        roommateRequest.Dorm.Latitude,
+			Longitude:       roommateRequest.Dorm.Longitude,
 		})
 	}
 
@@ -183,8 +183,8 @@ func (roommateRequestService *roommateRequestService) GetRoommateRequestsWithRoo
 			DormName:        roommateRequest.DormName,
 			Student:         student,
 			SharedRoomPrice: roommateRequest.SharedRoomPrice,
-			Longitude:       &roommateRequest.Longitude,
-			Latitude:        &roommateRequest.Latitude,
+			Latitude:        roommateRequest.Latitude,
+			Longitude:       roommateRequest.Longitude,
 		})
 	}
 

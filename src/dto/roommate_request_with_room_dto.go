@@ -8,6 +8,6 @@ type RoommateRequestWithRoomDTO struct {
 	DormName        string        `json:"dorm_name"`
 	Student         model.Student `json:"student"`
 	SharedRoomPrice int           `json:"shared_room_price"`
-	Latitude        *float64      `json:"lat"`
-	Longitude       *float64      `json:"long"`
+	Latitude        float64       `json:"lat"`
+	Longitude       float64       `json:"long"`
 }
