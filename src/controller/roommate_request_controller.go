@@ -15,6 +15,7 @@ import (
 	"github.com/thitiratratrat/hhor/src/dto"
 	"github.com/thitiratratrat/hhor/src/errortype"
 	"github.com/thitiratratrat/hhor/src/fieldvalidator"
+	"github.com/thitiratratrat/hhor/src/model"
 	"github.com/thitiratratrat/hhor/src/service"
 	"github.com/thitiratratrat/hhor/src/utils"
 )
@@ -34,10 +35,11 @@ type RoommateRequestController interface {
 	DeleteRoommateRequest(context *gin.Context)
 }
 
-func RoommateRequestControllerHandler(roommateRequestService service.RoommateRequestService, roomService service.RoomService, fieldValidator fieldvalidator.FieldValidator, cacheClient *redis.Client) RoommateRequestController {
+func RoommateRequestControllerHandler(roommateRequestService service.RoommateRequestService, roomService service.RoomService, jwtService service.JWTService, fieldValidator fieldvalidator.FieldValidator, cacheClient *redis.Client) RoommateRequestController {
 	return &roommateRequestController{
 		roommateRequestService: roommateRequestService,
 		roomService:            roomService,
+		jwtService:             jwtService,
 		fieldValidator:         fieldValidator,
 		cacheClient:            cacheClient,
 	}
@@ -46,6 +48,7 @@ func RoommateRequestControllerHandler(roommateRequestService service.RoommateReq
 type roommateRequestController struct {
 	roommateRequestService service.RoommateRequestService
 	roomService            service.RoomService
+	jwtService             service.JWTService
 	fieldValidator         fieldvalidator.FieldValidator
 	cacheClient            *redis.Client
 }
@@ -96,13 +99,16 @@ func (roommateRequestController *roommateRequestController) GetRoommateRequestsW
 	sort.Strings(roommateRequestRoomFilterDTO.Faculty)
 	sort.Ints(roommateRequestRoomFilterDTO.YearOfStudy)
 
+	claims := roommateRequestController.jwtService.GetClaims(context.GetHeader("Authorization"))
 	roommateReqRoomFilterMarshal, marshalErr := json.Marshal(roommateRequestRoomFilterDTO)
 	value, err := roommateRequestController.cacheClient.Get(fmt.Sprintf("%s:%s", constant.RoommateWithRooms, roommateReqRoomFilterMarshal)).Bytes()
 
 	if err == nil {
 		logrus.Info("Data found in cache")
 
-		context.IndentedJSON(http.StatusOK, utils.ToJson(value))
+		requests := roommateRequestController.filterStudentCache(claims["id"].(string), utils.ToJson(value))
+
+		context.IndentedJSON(http.StatusOK, requests)
 
 		return
 	}
@@ -115,7 +121,7 @@ func (roommateRequestController *roommateRequestController) GetRoommateRequestsW
 		utils.SaveToCache(roommateRequestController.cacheClient, constant.RoommateWithRooms, string(roommateReqRoomFilterMarshal), roommateRequests)
 	}
 
-	context.IndentedJSON(http.StatusOK, roommateRequests)
+	context.IndentedJSON(http.StatusOK, roommateRequestController.filterStudentRoomRequest(claims["id"].(string), roommateRequests))
 }
 
 // @Security BearerAuth
@@ -157,13 +163,16 @@ func (roommateRequestController *roommateRequestController) GetRoommateRequestsN
 	sort.Strings(roommateRequestFilterDTO.Faculty)
 	sort.Ints(roommateRequestFilterDTO.YearOfStudy)
 
+	claims := roommateRequestController.jwtService.GetClaims(context.GetHeader("Authorization"))
 	roommateReqFilterMarshal, marshalErr := json.Marshal(roommateRequestFilterDTO)
 	value, err := roommateRequestController.cacheClient.Get(fmt.Sprintf("%s:%s", constant.RoommateNoRoom, roommateReqFilterMarshal)).Bytes()
 
 	if err == nil {
 		logrus.Info("Data found in cache")
 
-		context.IndentedJSON(http.StatusOK, utils.ToJson(value))
+		requests := roommateRequestController.filterStudentCache(claims["id"].(string), utils.ToJson(value))
+
+		context.IndentedJSON(http.StatusOK, requests)
 
 		return
 	}
@@ -176,7 +185,7 @@ func (roommateRequestController *roommateRequestController) GetRoommateRequestsN
 		utils.SaveToCache(roommateRequestController.cacheClient, constant.RoommateNoRoom, string(roommateReqFilterMarshal), roommateRequests)
 	}
 
-	context.IndentedJSON(http.StatusOK, roommateRequests)
+	context.IndentedJSON(http.StatusOK, roommateRequestController.filterStudentNoRoomRequest(claims["id"].(string), roommateRequests))
 }
 
 // @Security BearerAuth
@@ -583,4 +592,46 @@ func (roommateRequestController *roommateRequestController) roomBelongsToDorm(ro
 	convertedDormID, _ := strconv.Atoi(dormID)
 
 	return room.DormID == uint(convertedDormID)
+}
+
+func (roommateRequestController *roommateRequestController) filterStudentCache(studentID string, data interface{}) []interface{} {
+	var requests []interface{}
+
+	for _, request := range data.([]interface{}) {
+		if request.(map[string]interface{})["student"].(map[string]interface{})["id"] == studentID {
+			continue
+		}
+
+		requests = append(requests, request)
+	}
+
+	return requests
+}
+
+func (roommateRequestController *roommateRequestController) filterStudentRoomRequest(studentID string, requests []dto.RoommateRequestWithRoomDTO) []dto.RoommateRequestWithRoomDTO {
+	filtered := []dto.RoommateRequestWithRoomDTO{}
+
+	for _, roommateRequest := range requests {
+		if (roommateRequest.Student.ID) == studentID {
+			continue
+		}
+
+		filtered = append(filtered, roommateRequest)
+	}
+
+	return filtered
+}
+
+func (roommateRequestController *roommateRequestController) filterStudentNoRoomRequest(studentID string, requests []model.RoommateRequestWithNoRoom) []model.RoommateRequestWithNoRoom {
+	filtered := []model.RoommateRequestWithNoRoom{}
+
+	for _, roommateRequest := range requests {
+		if (roommateRequest.Student.ID) == studentID {
+			continue
+		}
+
+		filtered = append(filtered, roommateRequest)
+	}
+
+	return filtered
 }

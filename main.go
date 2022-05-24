@@ -85,7 +85,7 @@ func init() {
 	roomController := controller.RoomControllerHandler(roomService, jwtService, fieldValidator, cacheConnector.GetClient())
 	authController := controller.AuthControllerHandler(authService, jwtService, fieldValidator)
 	studentController := controller.StudentControllerHandler(studentService, fieldValidator, cacheConnector.GetClient())
-	roommateRequestController := controller.RoommateRequestControllerHandler(roommateRequestService, roomService, fieldValidator, cacheConnector.GetClient())
+	roommateRequestController := controller.RoommateRequestControllerHandler(roommateRequestService, roomService, jwtService, fieldValidator, cacheConnector.GetClient())
 	dormOwnerController := controller.DormOwnerControllerHandler(dormOwnerService, fieldValidator, cacheConnector.GetClient())
 
 	controllers = router.Controllers{
