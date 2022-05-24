@@ -61,7 +61,9 @@ func (repository *dormRepository) FindDorm(dormID string) (model.Dorm, error) {
 
 	err := repository.db.Preload("Pictures").Preload("Rooms", func(db *gorm.DB) *gorm.DB {
 		return db.Order("rooms.price ASC")
-	}).Preload("Rooms.Pictures").Preload("Rooms.Facilities").Preload("Facilities").Preload("NearbyLocations").First(&dorm, dormID).Error
+	}).Preload("Rooms.Pictures").Preload("Rooms.Facilities").Preload("Facilities").Preload("NearbyLocations", func(db *gorm.DB) *gorm.DB {
+		return db.Order("nearby_locations.distance ASC")
+	}).First(&dorm, dormID).Error
 
 	return dorm, err
 }
